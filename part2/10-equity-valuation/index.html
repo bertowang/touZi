@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 10 章 · 股票估值：从 DCF 到相对倍数 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="10">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第二篇 · 估值定价与组合理论 · 第二阶段 · 定价、组合与资产配置</span>
+<h1><span class="ch-num">第 10 章</span>股票估值：从 DCF 到相对倍数</h1>
+<p class="lede">估值不是算出一个「正确价格」，而是把一组假设显式地写成可审计的模型。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s2">定价 · 组合</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 09 章用折现给债券定价，本章把同一算子用于不确定的股权现金流；<a href='../11-index-arbitrage/index.html'>第 11 章 · 指数、折溢价与 ETF 套利机制</a> 讨论一篮子股权如何被指数化，<a href='../../part4/21-factors/index.html'>第 21 章 · 因子、CAPM 与 Fama-French</a> 讨论折现率如何被因子解释。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">DCF 是一个纯函数 <code>dcf(params) -&gt; value</code>；估值的工程难点不是实现函数，而是<strong>为参数写取值范围与来源</strong>。反推隐含参数等价于给黑箱做逆向测试。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能写出两阶段自由现金流折现模型并做敏感性分析。</li>
+<li>能解释 PE、PB、ROE 与增长之间的约束关系。</li>
+<li>能从市价反推隐含增长率，判断市场在定价什么。</li>
+<li>能说明 DCF 对折现率与永续增长率的极端敏感性。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>自由现金流 FCF</td><td><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a> · <a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>折现率与 WACC</td><td><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a> · <a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>两阶段 DCF</td><td><a href="https://en.wikipedia.org/wiki/Discounted_cash_flow" target="_blank" rel="noopener">Discounted cash flow</a> · <a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>永续增长率</td><td><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a> · <a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>终值占比</td><td><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a> · <a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>PE 与 PB</td><td><a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a> · <a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>ROE 与杜邦分解</td><td><a href="https://en.wikipedia.org/wiki/Return_on_equity" target="_blank" rel="noopener">Return on equity</a> · <a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>隐含增长与敏感性</td><td><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a> · <a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s10-1"><h2><span class="sec-num">§10.1</span>DCF 是一个参数化的假设容器</h2>
+<p class="eq">V_0 = Σ_{t=1}^{n} FCF_t / (1+r)^t + [FCF_(n+1) / (r − g)] / (1+r)^n</p>
+<p>其中 r 是折现率（通常用 WACC 近似），g 是永续增长率，且必须满足 <code>r &gt; g</code>。这个式子的价值不在于精度，而在于<strong>把「我看好这家公司」拆成四个可争论的数</strong>：起步现金流、增长率、折现率、永续增长率。</p>
+<p>实操中终值常占估值的大半，因此 <code>r − g</code> 的微小变化会显著改变结果。把 DCF 当作「一个点估计」是误用；正确用法是<strong>敏感性表 + 反推隐含假设</strong>。</p>
+</section>
+<section id="s10-2"><h2><span class="sec-num">§10.2</span>相对倍数：把绝对估值压缩成可比较的比值</h2>
+<table><thead><tr><th style="width:12%">倍数</th><th style="width:26%">定义</th><th style="width:32%">隐含假设</th><th style="width:30%">失效场景</th></tr></thead><tbody>
+<tr><td>PE</td><td>价格 / 每股收益</td><td>盈利可持续、会计口径可比</td><td>周期股盈利顶点、亏损公司</td></tr>
+<tr><td>PB</td><td>价格 / 每股净资产</td><td>净资产能反映价值</td><td>轻资产、无形资产为主</td></tr>
+<tr><td>PS</td><td>价格 / 每股收入</td><td>利润率会回归正常</td><td>长期无法盈利的商业模式</td></tr>
+<tr><td>ROE</td><td>净利润 / 净资产</td><td>杠杆与周转稳定</td><td>高杠杆放大、一次性损益</td></tr>
+</tbody></table>
+<p>可持续增长率 <code>g ≈ ROE × 留存率</code> 把 PB、ROE 与增长串起来：高 PB 只有在高且可持续的 ROE 下才合理。这就是「贵不贵」与「好不好」之间的桥梁。</p>
+</section>
+<section id="s10-3"><h2><span class="sec-num">§10.3</span>反推比预测更稳健</h2>
+<p>与其预测未来，不如问：<strong>按今天的价格，市场隐含了多高的增长？</strong>用二分法求解 <code>dcf(r, g) = 市价</code> 得到一个隐含 g，再判断这个 g 是否超出行业与历史的可行区间。这是把估值从「预测题」转成「一致性检查」，对工程师尤其自然：给定输出，反解输入，再验证输入是否落在合理域。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 10-1 · 两阶段 DCF、敏感性矩阵与隐含增长</h3>
+<pre class="code" data-file="code/10-dcf.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""用标准库实现 DCF，扫描折现率与增长率，并用二分法反推市价隐含的增长。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+FCF0 = 10.0        # 起始自由现金流
+STAGE1 = 5         # 高增长阶段年数
+G_TERM = 0.025     # 永续增长率
+R0 = 0.10          # 基准折现率
+G0 = 0.10          # 基准高增长阶段增长率
+MARKET = 180.0     # 观察到的市值（合成示意）
+R_LIST = [0.08, 0.09, 0.10, 0.11, 0.12]
+G_LIST = [0.02, 0.06, 0.10, 0.14, 0.18]
+
+# ---- 计算与作图 ----
+def dcf(r, g1):
+    fcf, pv = FCF0, 0.0
+    for t in range(1, STAGE1 + 1):
+        fcf *= (1 + g1)
+        pv += fcf / (1 + r) ** t
+    tv = fcf * (1 + G_TERM) / (r - G_TERM)
+    return pv + tv / (1 + r) ** STAGE1
+
+base = dcf(R0, G0)
+matrix = [[dcf(r, g) for g in G_LIST] for r in R_LIST]
+heatmap(FIG / "10-sensitivity.svg", matrix,
+        ["r=%.0f%%" % (100 * r) for r in R_LIST],
+        ["g=%.0f%%" % (100 * g) for g in G_LIST],
+        title="两阶段 DCF 敏感性：折现率 × 高增长率",
+        vmin=min(min(row) for row in matrix), vmax=max(max(row) for row in matrix))
+print("敏感性图:", str(FIG / "10-sensitivity.svg"))
+
+fcf_path, pv_path, fcf = [], [], FCF0
+for t in range(1, STAGE1 + 1):
+    fcf *= (1 + G0)
+    fcf_path.append(fcf)
+    pv_path.append(fcf / (1 + R0) ** t)
+c = Chart(FIG / "10-dcf.svg", "高增长期现金流与其现值", xlabel="年", ylabel="金额")
+c.bars(range(1, STAGE1 + 1), fcf_path, BLUE, label="FCF")
+c.bars(range(1, STAGE1 + 1), pv_path, GREEN, label="折现后现值")
+print("现金流图:", c.save())
+
+lo, hi = -0.10, 0.60
+for _ in range(80):
+    mid = (lo + hi) / 2
+    if dcf(R0, mid) &lt; MARKET:
+        lo = mid
+    else:
+        hi = mid
+implied = (lo + hi) / 2
+print("基准DCF=%.2f 终值占比=%.1f%% | 敏感性区间 %.1f ~ %.1f | 市价隐含 g=%.2f%%" %
+      (base, 100 * (1 - sum(pv_path) / base),
+       min(min(row) for row in matrix), max(max(row) for row in matrix), 100 * implied))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>R0</code> 上调 1 个百分点，观察估值下降幅度；再把 <code>G_TERM</code> 逼近 <code>R0</code> 看发散。　<strong>预期与判读：</strong>敏感性表里同一列的变动往往比同一行更剧烈，说明 <code>r − g</code> 是估值的主控参数。反推的隐含增长率告诉你<strong>市场在假定什么</strong>，比直接预测更有可证伪性。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>MARKET</code> 改成基准 DCF 的两倍，隐含增长率会升高；判断它是否超出行业合理区间。　文件位置：<code>part2/10-equity-valuation/code/10-dcf.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/10-sensitivity.svg" alt="折现率与增长率共同决定估值的热力图" loading="lazy"><figcaption>图 1　折现率与增长率共同决定估值的热力图（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/10-dcf.svg" alt="高增长期现金流与折现后现值" loading="lazy"><figcaption>图 2　高增长期现金流与折现后现值（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Discounted_cash_flow" target="_blank" rel="noopener">Discounted cash flow</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>把未来现金流折成现值</p>
+<span class="why"><strong>怎么用</strong>：现金流折现的标准定义与边界</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Discounted_cash_flow</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>相对估值与现金流折现的统一视角</p>
+<span class="why"><strong>怎么用</strong>：相对估值与绝对估值的统一视角</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Stock_valuation</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Return_on_equity" target="_blank" rel="noopener">Return on equity</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>股东权益回报率与杜邦分解</p>
+<span class="why"><strong>怎么用</strong>：ROE 与杜邦分解</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Return_on_equity</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.sec.gov/" target="_blank" rel="noopener">美国 SEC</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>披露文件、基金监管与执法信息</p>
+<span class="why"><strong>怎么用</strong>：上市公司披露文件，取真实财务数据的权威来源</span>
+<p style="margin:0"><code>https://www.sec.gov/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把 <code>g</code> 设到接近或超过 <code>r</code>，得到爆炸性估值。</li>
+<li>用周期股顶点盈利做永续增长基数。</li>
+<li>把 DCF 的点估计当成目标价，不做敏感性分析。</li>
+<li>跨行业直接比较 PE，忽略资本结构与会计口径差异。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导 <code>g ≈ ROE × 留存率</code>，并说明杠杆如何污染这个关系。</li>
+<li>在示例里固定 <code>r</code>，画出估值对 <code>G_TERM</code> 的曲线，解释非线性。</li>
+<li>找一家公司的年报，列出 DCF 四个参数各自的取数依据。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Stock valuation</strong>（百科）：相对估值与现金流折现的统一视角<br><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a></li>
+<li><strong>Price–earnings ratio</strong>（百科）：盈利口径下的估值倍数<br><a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a></li>
+<li><strong>Discounted cash flow</strong>（百科）：把未来现金流折成现值<br><a href="https://en.wikipedia.org/wiki/Discounted_cash_flow" target="_blank" rel="noopener">Discounted cash flow</a></li>
+<li><strong>Return on equity</strong>（百科）：股东权益回报率与杜邦分解<br><a href="https://en.wikipedia.org/wiki/Return_on_equity" target="_blank" rel="noopener">Return on equity</a></li>
+<li><strong>美国 SEC</strong>（机构）：披露文件、基金监管与执法信息<br><a href="https://www.sec.gov/" target="_blank" rel="noopener">美国 SEC</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=equity%20valuation%20financial%20statements%20DCF%20ROE%20PE%20ratio" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=equity%20valuation%20financial%20statements%20DCF%20ROE%20PE%20ratio" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=equity%20valuation%20financial%20statements%20DCF%20ROE%20PE%20ratio&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../11-index-arbitrage/index.html'>第 11 章 · 指数、折溢价与 ETF 套利机制</a> 指数编制与 ETF 套利；<a href='../../part4/21-factors/index.html'>第 21 章 · 因子、CAPM 与 Fama-French</a> 因子视角下的期望收益。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

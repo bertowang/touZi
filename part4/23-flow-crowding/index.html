@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 23 章 · 资金流、情绪与拥挤交易 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="23">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第四篇 · 因子、行为与市场证据 · 第四阶段 · 从直觉到可验证的证据</span>
+<h1><span class="ch-num">第 23 章</span>资金流、情绪与拥挤交易</h1>
+<p class="lede">当很多人用同一套信号时，因子暴露会变成流动性风险。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s4">因子 · 证据</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 21～22 章分别处理因子与个体偏差，本章处理它们的叠加；<a href='../24-read-papers/index.html'>第 24 章 · 怎样读一篇因子论文：从摘要到可复现</a> 给出阅读这类实证论文的标准清单。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">拥挤度是「同一段代码被多少个进程同时执行」的指标。单进程时退出无成本，所有进程同时退出时，<strong>锁竞争把吞吐打没了</strong>。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能定义资金流、拥挤度与情绪代理变量。</li>
+<li>能计算拥挤度分组后的前向收益并做对照。</li>
+<li>能解释「好策略被挤坏」的机制：同步性、冲击与反转。</li>
+<li>能说明另类数据的口径与可复现性问题。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>资金流与净申购</td><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>换手率与拥挤度</td><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>情绪代理变量</td><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>分箱与前向收益</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>同步性与相关性上升</td><td><a href="https://en.wikipedia.org/wiki/Diversification_(finance)" target="_blank" rel="noopener">Diversification (finance)</a> · <a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>反转效应</td><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>另类数据</td><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>容量与衰减</td><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s23-1"><h2><span class="sec-num">§23.1</span>资金流是有口径的量</h2>
+<p>「主力资金流入」在不同终端可能有完全不同的定义：按成交单笔金额分档、按主动买卖方向、或按基金净申购。三者不是同一个量，且都<strong>不对应真实的钱进入市场</strong>——每一笔买必有对应的卖。使用前必须写下：数据源、聚合窗口、方向判定规则、是否含 ETF 申赎。</p>
+<table><thead><tr><th style="width:28%">代理变量</th><th style="width:20%">可得性</th><th style="width:52%">主要偏差</th></tr></thead><tbody>
+<tr><td>基金净申购 / 份额变化</td><td>低（定期披露）</td><td>滞后、无法区分申赎动机</td></tr>
+<tr><td>大单净额</td><td>高（逐笔）</td><td>拆单、冰山单、主动方向标记口径</td></tr>
+<tr><td>换手率 / 成交额分位</td><td>高</td><td>同时受波动与指数调样影响</td></tr>
+<tr><td>搜索量 / 舆情</td><td>中</td><td>样本选择、平台用户偏差、不可复现</td></tr>
+</tbody></table>
+</section>
+<section id="s23-2"><h2><span class="sec-num">§23.2</span>拥挤如何把收益变成风险</h2>
+<p class="eq">拥挤度高 → 持仓重叠 ↑ → 同时减仓时相关性 ↑ → 冲击成本 ↑ → 反转概率 ↑</p>
+<p>一个因子在少数人使用时是溢价，在所有人使用时就变成<strong>共同的退出通道</strong>。第 21 章的因子暴露是横截面的，这一章补上时间维度：暴露的<strong>密度</strong>。这也是为什么策略评估必须报告容量与换手，而不只报夏普。</p>
+</section>
+<section id="s23-3"><h2><span class="sec-num">§23.3</span>检验方式：分箱 + 前向收益</h2>
+<p>把拥挤度按分位分成若干箱，比较各箱<strong>未来</strong> N 日平均收益，是无模型、易复核的第一步。注意三点：分箱阈值必须用历史可得数据；收益要扣除成本；分组结果本身也是一次参数选择，需在样本外重复。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 23-1 · 拥挤度分箱与前向收益</h3>
+<pre class="code" data-file="code/23-crowding.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""合成「追涨资金流 → 拥挤 → 后续收益受压」的数据生成过程，并做分箱对照。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N, FWD, BINS = 500, 20, 8
+W = 20             # 拥挤度滚动窗口
+GAMMA = 0.0009     # 拥挤对未来收益的压制系数
+NOISE = 0.009      # 收益噪声
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+rets, flow, crowd = [], [], []
+for i in range(N):
+    if i &gt;= W:
+        recent = flow[i - W:i]
+        m = statistics.fmean(flow[:i])
+        s = statistics.pstdev(flow[:i]) or 1.0
+        c = (statistics.fmean(recent) - m) / s
+    else:
+        c = 0.0
+    crowd.append(c)
+    r = 0.0003 - GAMMA * c + rng.gauss(0, NOISE)
+    rets.append(r)
+    chase = 0.7 * (statistics.fmean(rets[-5:]) / NOISE) if rets else 0.0
+    flow.append(chase + rng.gauss(0, 0.8))
+
+prices, v = [], 1.0
+for r in rets:
+    v *= (1 + r)
+    prices.append(v)
+fwd = [prices[i + FWD] / prices[i] - 1 if i + FWD &lt; N else None
+       for i in range(N)]
+
+lo, hi = min(crowd), max(crowd)
+width = (hi - lo) / BINS
+bucket = [[] for _ in range(BINS)]
+for c, f in zip(crowd, fwd):
+    if f is None:
+        continue
+    k = min(BINS - 1, int((c - lo) / width))
+    bucket[k].append(f)
+means = [statistics.fmean(b) if b else 0.0 for b in bucket]
+counts = [len(b) for b in bucket]
+
+c = Chart(FIG / "23-crowding.svg", "合成拥挤度时间序列", xlabel="交易日", ylabel="z 分数")
+c.line(range(N), crowd, BLUE, label="拥挤度")
+c.hline(2.0, RED, label="+2 高拥挤")
+c.hline(-2.0, GREEN, label="−2 低拥挤")
+print("拥挤图:", c.save())
+b = Chart(FIG / "23-bins.svg", "拥挤度分箱后的 20 日前向平均收益", xlabel="拥挤度分箱", ylabel="平均收益 %",
+          xticks=[(i, "Q%d" % (i + 1)) for i in range(BINS)])
+b.bars(range(BINS), [100 * x for x in means], AMBER, label="前向收益")
+b.hline(0.0, "#9aa6b2")
+print("分箱图:", b.save())
+valid = [(c, f) for c, f in zip(crowd, fwd) if f is not None]
+mc = statistics.fmean(x for x, _y in valid); mf = statistics.fmean(y for _x, y in valid)
+corr = sum((x - mc) * (y - mf) for x, y in valid) / math.sqrt(
+    sum((x - mc) ** 2 for x, _y in valid) * sum((y - mf) ** 2 for _x, y in valid))
+print("最低拥挤箱=%.3f%% 最高拥挤箱=%.3f%% 差=%+.3f%% | 相关系数=%.3f | 各箱样本 %s" %
+      (100 * means[0], 100 * means[-1], 100 * (means[-1] - means[0]), corr, counts))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>GAMMA</code> 设为 0（拥挤不影响未来收益），观察最高/最低箱之差是否只剩噪声。　<strong>预期与判读：</strong>在数据生成过程里人为注入「拥挤压制未来收益」后，高拥挤箱的平均前向收益明显更低、相关系数为负。<strong>这是演示检验方法</strong>：真实数据是否如此，需要独立样本与成本扣除。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>BINS</code> 改成 4 或 16，观察分箱数怎样影响极值箱的噪声与样本量。　文件位置：<code>part4/23-flow-crowding/code/23-crowding.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/23-crowding.svg" alt="随时间变化的拥挤度及高/低阈值" loading="lazy"><figcaption>图 1　随时间变化的拥挤度及高/低阈值（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/23-bins.svg" alt="按拥挤度分箱的前向平均收益" loading="lazy"><figcaption>图 2　按拥挤度分箱的前向平均收益（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>拥挤交易与反馈环</p>
+<span class="why"><strong>怎么用</strong>：羊群行为与反馈环</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Herd_behavior</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Momentum_(finance)" target="_blank" rel="noopener">Momentum investing</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>横截面动量与反转效应</p>
+<span class="why"><strong>怎么用</strong>：横截面动量与反转</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Momentum_(finance)</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>成交量与换手率的信息含量</p>
+<span class="why"><strong>怎么用</strong>：成交量与换手率的信息含量</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Volume_(finance)</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价格形成、冲击成本与做市机制</p>
+<span class="why"><strong>怎么用</strong>：拥挤平仓时的冲击成本机制</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Market_microstructure</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把「大单净流入」当成真实的资金进入。</li>
+<li>分箱阈值用全样本分位数，引入未来函数。</li>
+<li>只报最高/最低箱的差，不报中间箱与样本量。</li>
+<li>忽略拥挤策略的容量与换手成本。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>说明为什么「每一笔买必有一笔卖」使净流入指标只能是代理变量。</li>
+<li>在示例里加入 0.1% 的换仓成本，观察高低箱收益差是否还显著。</li>
+<li>设计一个只用历史信息计算分箱阈值的版本。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Herd behavior</strong>（百科）：拥挤交易与反馈环<br><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a></li>
+<li><strong>Market microstructure</strong>（百科）：价格形成、冲击成本与做市机制<br><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></li>
+<li><strong>Volume (finance)</strong>（百科）：成交量与换手率的信息含量<br><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a></li>
+<li><strong>Momentum investing</strong>（百科）：横截面动量与反转效应<br><a href="https://en.wikipedia.org/wiki/Momentum_(finance)" target="_blank" rel="noopener">Momentum investing</a></li>
+<li><strong>NBER</strong>（机构）：资产定价与实证金融工作论文<br><a href="https://www.nber.org/" target="_blank" rel="noopener">NBER</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=fund%20flow%20sentiment%20crowding%20alternative%20data" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=fund%20flow%20sentiment%20crowding%20alternative%20data" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=fund%20flow%20sentiment%20crowding%20alternative%20data&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../24-read-papers/index.html'>第 24 章 · 怎样读一篇因子论文：从摘要到可复现</a> 论文复现；<a href='../../part5/28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 多重检验；<a href='../../part6/29-execution/index.html'>第 29 章 · 订单执行、滑点与市场冲击</a> 冲击成本。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

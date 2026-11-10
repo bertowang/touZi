@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 16 章 · K 线、坐标与复权：看图前先校准数据 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="16">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第三篇 · 盘面语言与看图识图 · 第三阶段 · 盘面语言与看图识图</span>
+<h1><span class="ch-num">第 16 章</span>K 线、坐标与复权：看图前先校准数据</h1>
+<p class="lede">一根蜡烛只是 OHLC 四价的一种编码，颜色与坐标约定比形态本身更容易骗人。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s3">盘面 · 识图</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 1 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 15 章讲价格如何形成，本章讲它如何被压缩成图；<a href='../17-trend-ma/index.html'>第 17 章 · 均线、趋势与支撑阻力</a> 起在这些数据上叠加均线、指标与形态规则。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">一根 K 线是 <code>group by bucket</code> 后的聚合记录，<code>low ≤ min(o,c) ≤ max(o,c) ≤ high</code> 是它的 schema 约束。颜色只是前端 <code>theme</code>，不是数据字段。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能从 OHLCV 生成 K 线，并说明实体、上影、下影的定义。</li>
+<li>能解释 A 股与海外市场颜色约定相反的原因。</li>
+<li>能说明线性坐标与对数坐标在长期图上的差别。</li>
+<li>能在看图前完成复权、周期与坐标三项校准。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>K 线实体与影线</td><td><a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>颜色约定与涨跌</td><td><a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>开高低收的不变式</td><td><a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>线性坐标与对数坐标</td><td><a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a> · <a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>周期与聚合</td><td><a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>复权与拆股</td><td><a href="https://en.wikipedia.org/wiki/Stock_split" target="_blank" rel="noopener">Stock split</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>成交量与换手率</td><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>缺口</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s16-1"><h2><span class="sec-num">§16.1</span>把一根 K 线写成断言</h2>
+<p class="eq">low ≤ min(open, close) ≤ max(open, close) ≤ high　|　volume ≥ 0</p>
+<p>实体 = |close − open|，上影 = high − max(open, close)，下影 = min(open, close) − low。这三个量描述的是<strong>期内多空拉锯</strong>，不含任何预测能力。把上面那条不变式写成数据校验，能挡住绝大多数脏行情。</p>
+<table><thead><tr><th style="width:18%">形态</th><th style="width:28%">判定条件</th><th style="width:22%">常见解读</th><th style="width:32%">为什么容易误读</th></tr></thead><tbody>
+<tr><td>长实体阳线</td><td>close > open 且实体/振幅大</td><td>买方占优</td><td>可能是低流动性下的少量成交</td></tr>
+<tr><td>长上影</td><td>上影 ≫ 实体</td><td>冲高回落</td><td>可能是集合竞价或瞬时插针</td></tr>
+<tr><td>长下影</td><td>下影 ≫ 实体</td><td>探底回升</td><td>停牌复牌、除权日会造成假影线</td></tr>
+<tr><td>十字星</td><td>|close − open| ≈ 0</td><td>多空均衡</td><td>阈值取多少完全是人为约定</td></tr>
+</tbody></table>
+</section>
+<section id="s16-2"><h2><span class="sec-num">§16.2</span>三个必须先校准的口径</h2>
+<ul>
+<li><strong>复权</strong>：分红送转会造成价格断层，未复权图上的「暴跌」通常是假信号（第 06 章）。</li>
+<li><strong>坐标</strong>：线性坐标下早期波动被压扁，对数坐标让等比例变化等距；长期比较收益率应该用对数刻度。</li>
+<li><strong>周期</strong>：日线、周线、月线是对同一逐笔流的不同 group by，同一「支撑位」在不同周期未必是同一个价位。</li>
+<li><strong>颜色</strong>：A 股习惯红涨绿跌，多数海外终端相反；先看图例，不要凭直觉判方向。</li>
+</ul>
+<div class="card warn"><span class="card-label">合规提醒</span><p style="margin-bottom:0">交易 App 上的 K 线叠加了许多默认指标与自选配色。把界面设置与数据口径记进实验记录，否则换一台设备就可能得到不同结论。</p></div>
+</section>
+<section id="s16-3"><h2><span class="sec-num">§16.3</span>成交量是第二维，不是装饰</h2>
+<p>成交量 tells 有多少份额换手，换手率把它按流通盘归一化，才便于跨标的比较。放量可以来自分歧加大，也可以来自指数调样、ETF 申赎或大单拆单；第 23 章会把资金流与拥挤度单独拿出来做证据检验。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 16-1 · 合成 OHLCV、K 线图与数据不变式校验</h3>
+<pre class="code" data-file="code/16-candle.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""生成 60 根带趋势与均线的合成 K 线，画 K 线+成交量+均线，并统计影线。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 60              # K 线根数
+START = 50.0        # 起始价
+DRIFT = 0.0015      # 日漂移
+VOL = 0.014         # 日波动
+MA_FAST, MA_SLOW = 5, 20
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+ohlcv, px = [], START
+for _ in range(N):
+    o = px
+    px = o * (1 + rng.gauss(DRIFT, VOL))
+    c = px
+    h = max(o, c) * (1 + abs(rng.gauss(0, 0.004)))
+    l = min(o, c) * (1 - abs(rng.gauss(0, 0.004)))
+    v = int(800000 * (1 + abs(rng.gauss(0, 0.35))))
+    ohlcv.append((o, h, l, c, v))
+
+bad = 0
+for o, h, l, c, v in ohlcv:
+    if not (l &lt;= min(o, c) and max(o, c) &lt;= h and v &gt;= 0):
+        bad += 1
+closes = [r[3] for r in ohlcv]
+
+def sma(series, w):
+    return [None if i + 1 &lt; w else statistics.fmean(series[i + 1 - w:i + 1])
+            for i in range(len(series))]
+
+fast, slow = sma(closes, MA_FAST), sma(closes, MA_SLOW)
+candlestick(FIG / "16-candle.svg", ohlcv,
+            title="合成 K 线（60 根）· MA5 / MA20 · 成交量",
+            overlays=[(fast, BLUE, "MA5"), (slow, AMBER, "MA20")],
+            xticks=[(i, "T%d" % i) for i in range(0, N, 10)])
+print("K 线图:", str(FIG / "16-candle.svg"))
+
+up = sum(1 for r in ohlcv if r[3] &gt;= r[0])
+bodies = [abs(r[3] - r[0]) / r[0] for r in ohlcv]
+upper = [(r[1] - max(r[0], r[3])) / r[0] for r in ohlcv]
+lower = [(min(r[0], r[3]) - r[2]) / r[0] for r in ohlcv]
+doji = sum(1 for b in bodies if b &lt; 0.002)
+print("不变式违规=%d | 阳线=%d 阴线=%d 十字星=%d | 平均实体=%.2f%% 上影=%.2f%% 下影=%.2f%%" %
+      (bad, up, N - up, doji, 100 * statistics.fmean(bodies),
+       100 * statistics.fmean(upper), 100 * statistics.fmean(lower)))</code></pre>
+<p class="code-hint"><strong>操作：</strong>先核对「不变式违规=0」；把 <code>VOL</code> 调到 0.04，观察长影线与十字星数量如何变化。　<strong>预期与判读：</strong>K 线图把 OHLC 四价编码成实体与影线，叠加均线后更容易看出趋势与滞后。所有统计都来自<strong>合成数据</strong>，说明形态只是数据描述，不含预测结论。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>MA_FAST</code> 改成 3 与 10，对比均线穿越次数——引出第 17 章的滞后性。　文件位置：<code>part3/16-candlestick/code/16-candle.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/16-candle.svg" alt="K 线实体/影线、成交量与两条均线叠加" loading="lazy"><figcaption>图 1　K 线实体/影线、成交量与两条均线叠加（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>K 线实体、影线与颜色约定</p>
+<span class="why"><strong>怎么用</strong>：K 线实体、影线与颜色约定</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Candlestick_chart</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>开高低收四价的数据结构</p>
+<span class="why"><strong>怎么用</strong>：开高低收四价的数据结构</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Open-high-low-close_chart</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>前复权/后复权与公司行动处理</p>
+<span class="why"><strong>怎么用</strong>：前复权/后复权对长期图形的影响</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Adjusted_closing_price</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>成交量与换手率的信息含量</p>
+<span class="why"><strong>怎么用</strong>：成交量与换手率的信息含量</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Volume_(finance)</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>用不复权数据看长期 K 线，把除权跳空当暴跌。</li>
+<li>忽略 A 股与海外终端颜色相反，凭直觉读反方向。</li>
+<li>线性坐标下比较相隔十年的涨跌幅。</li>
+<li>把十字星、长影线当成确定性信号，而阈值其实由自己随意设定。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>在示例里实现后复权序列，说明它与前复权图的形状是否一致。</li>
+<li>把日线聚合成周线，重新计算一根周 K 线的 OHLCV。</li>
+<li>设计一条「影线异常」的数据校验规则，用于拦截插针行情。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Candlestick chart</strong>（百科）：K 线实体、影线与颜色约定<br><a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a></li>
+<li><strong>OHLC chart</strong>（百科）：开高低收四价的数据结构<br><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></li>
+<li><strong>Adjusted closing price</strong>（百科）：前复权/后复权与公司行动处理<br><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></li>
+<li><strong>Volume (finance)</strong>（百科）：成交量与换手率的信息含量<br><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a></li>
+<li><strong>Stock split</strong>（百科）：拆股与价格/数量的口径跳变<br><a href="https://en.wikipedia.org/wiki/Stock_split" target="_blank" rel="noopener">Stock split</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=candlestick%20chart%20OHLC%20volume%20adjusted%20close%20log%20scale" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=candlestick%20chart%20OHLC%20volume%20adjusted%20close%20log%20scale" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=candlestick%20chart%20OHLC%20volume%20adjusted%20close%20log%20scale&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../17-trend-ma/index.html'>第 17 章 · 均线、趋势与支撑阻力</a> 均线、趋势与支撑阻力；<a href='../18-indicators/index.html'>第 18 章 · MACD、RSI、布林带与 KDJ 的数学定义</a> 指标公式；<a href='../20-chart-pipeline/index.html'>第 20 章 · 用代码画图：SVG 图与看图陷阱</a> 用代码画图与看图陷阱。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

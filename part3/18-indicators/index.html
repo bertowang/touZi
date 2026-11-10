@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 18 章 · MACD、RSI、布林带与 KDJ 的数学定义 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="18">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第三篇 · 盘面语言与看图识图 · 第三阶段 · 盘面语言与看图识图</span>
+<h1><span class="ch-num">第 18 章</span>MACD、RSI、布林带与 KDJ 的数学定义</h1>
+<p class="lede">每个指标都是价格序列上的一个确定性变换；先写公式，再谈用法。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s3">盘面 · 识图</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 17 章的单条均线在这里扩展成指标族；<a href='../19-patterns/index.html'>第 19 章 · 形态识别：从主观描述到可判定规则</a> 把多根 K 线组合写成形态判定，<a href='../20-chart-pipeline/index.html'>第 20 章 · 用代码画图：SVG 图与看图陷阱</a> 则检查这些计算有没有偷看未来。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">指标是有状态的流式算子：<code>ema</code> 是递归滤波，<code>RSI</code> 是带衰减的涨跌比，布林带是滑动窗口的 z-score。<strong>它们共享同一个输入流，因此不是独立投票。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能写出 MACD、RSI、布林带、KDJ 的计算式与初始化方式。</li>
+<li>能说明指标的参数、滞后与自相关来源。</li>
+<li>能识别指标共用同一价格序列导致的信号相关性。</li>
+<li>能用标准库实现四个指标并核对数值。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>EMA 与 MACD</td><td><a href="https://en.wikipedia.org/wiki/MACD" target="_blank" rel="noopener">MACD</a> · <a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>DIF / DEA / 柱状图</td><td><a href="https://en.wikipedia.org/wiki/MACD" target="_blank" rel="noopener">MACD</a> · <a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>RSI 与 Wilder 平滑</td><td><a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a> · <a href="https://en.wikipedia.org/wiki/Stochastic_oscillator" target="_blank" rel="noopener">Stochastic oscillator</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>布林带与 %B</td><td><a href="https://en.wikipedia.org/wiki/Bollinger_Bands" target="_blank" rel="noopener">Bollinger Bands</a> · <a href="https://en.wikipedia.org/wiki/Normal_distribution" target="_blank" rel="noopener">Normal distribution</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>KDJ 与 RSV</td><td><a href="https://en.wikipedia.org/wiki/Stochastic_oscillator" target="_blank" rel="noopener">Stochastic oscillator</a> · <a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>指标滞后</td><td><a href="https://en.wikipedia.org/wiki/MACD" target="_blank" rel="noopener">MACD</a> · <a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>参数与自相关</td><td><a href="https://en.wikipedia.org/wiki/Diversification_(finance)" target="_blank" rel="noopener">Diversification (finance)</a> · <a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>指标不是独立证据</td><td><a href="https://en.wikipedia.org/wiki/MACD" target="_blank" rel="noopener">MACD</a> · <a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s18-1"><h2><span class="sec-num">§18.1</span>MACD：两条 EMA 之差</h2>
+<p class="eq">DIF = EMA_12(P) − EMA_26(P)　|　DEA = EMA_9(DIF)　|　MACD 柱 = 2 × (DIF − DEA)</p>
+<p>MACD 是<strong>趋势的二阶差分</strong>：DIF 衡量快慢均线距离，DEA 再平滑一次，柱状图是两者之差。它继承了均线的滞后，柱的符号变化比金叉更早，但假信号也更多。初始化方式（前 n 期用 SMA 还是首值递推）会造成数值差异，对照交易 App 时必须<strong>先对齐初始化口径</strong>。</p>
+</section>
+<section id="s18-2"><h2><span class="sec-num">§18.2</span>RSI、布林带与 KDJ</h2>
+<p class="eq">RSI = 100 − 100/(1 + RS)　，RS = 平均涨幅 / 平均跌幅（Wilder 平滑）</p>
+<p class="eq">布林: 上/下轨 = SMA_20 ± 2σ_20　|　%B = (P − 下轨)/(上轨 − 下轨)</p>
+<p class="eq">RSV = (C − L_n)/(H_n − L_n) × 100　，K = (2/3)K' + (1/3)RSV</p>
+<table><thead><tr><th style="width:14%">指标</th><th style="width:30%">回答的问题</th><th style="width:26%">隐含假设</th><th style="width:30%">典型失效</th></tr></thead><tbody>
+<tr><td>MACD</td><td>趋势动量是增强还是衰减</td><td>趋势有延续性</td><td>震荡市反复交叉</td></tr>
+<tr><td>RSI</td><td>涨跌幅度是否失衡</td><td>均值回复</td><td>单边趋势中长期超买</td></tr>
+<tr><td>布林带</td><td>波动是否异常扩张/收缩</td><td>波动有聚集性</td><td>突破后波动状态切换</td></tr>
+<tr><td>KDJ</td><td>收盘价在近期区间的位置</td><td>区间震荡</td><td>强趋势中高位钝化</td></tr>
+</tbody></table>
+<p>四个指标都是<strong>同一条价格序列的函数</strong>，因此它们高度相关，「三指标共振」不是三个独立证据，而是同一份信息被数了三遍。</p>
+</section>
+<section id="s18-3"><h2><span class="sec-num">§18.3</span>从指标到证据还差什么</h2>
+<p>指标给出的是<strong>描述统计量</strong>，不是收益预测。要变成策略，至少还需要：明确的信号定义、无未来函数的执行时点、成本、样本外检验与多重检验修正。第 20 章先解决未来函数，第 26～28 章补齐回测与统计检验。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 18-1 · 四个指标的手写实现与共振检查</h3>
+<pre class="code" data-file="code/18-indicators.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""用标准库计算 MACD、RSI、布林带、KDJ，并统计超买超卖与交叉次数。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 180
+START = 50.0
+DRIFT, VOL = 0.0008, 0.012
+FAST, SLOW, SIGNAL = 12, 26, 9
+RSI_N, BOLL_N, KDJ_N = 14, 20, 9
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+px, prices = START, []
+for _ in range(N):
+    px *= (1 + rng.gauss(DRIFT, VOL))
+    prices.append(px)
+
+def ema(series, w):
+    a, out, prev = 2.0 / (w + 1), [], series[0]
+    for v in series:
+        prev = a * v + (1 - a) * prev
+        out.append(prev)
+    return out
+
+dif = [a - b for a, b in zip(ema(prices, FAST), ema(prices, SLOW))]
+dea = ema(dif, SIGNAL)
+hist = [2 * (a - b) for a, b in zip(dif, dea)]
+changes = [prices[i] - prices[i - 1] for i in range(1, N)]
+gains = [max(c, 0.0) for c in changes]
+losses = [max(-c, 0.0) for c in changes]
+ag, al = statistics.fmean(gains[:RSI_N]), statistics.fmean(losses[:RSI_N])
+rsi = [None] * N
+for i in range(RSI_N, N):
+    ag = (ag * (RSI_N - 1) + gains[i - 1]) / RSI_N
+    al = (al * (RSI_N - 1) + losses[i - 1]) / RSI_N
+    rsi[i] = 100.0 if al == 0 else 100 - 100 / (1 + ag / al)
+
+upper, lower, pct_b = [None] * N, [None] * N, [None] * N
+for i in range(BOLL_N - 1, N):
+    win = prices[i + 1 - BOLL_N:i + 1]
+    m, s = statistics.fmean(win), statistics.pstdev(win)
+    upper[i], lower[i] = m + 2 * s, m - 2 * s
+    pct_b[i] = (prices[i] - lower[i]) / (upper[i] - lower[i]) if upper[i] &gt; lower[i] else 0.5
+
+k, d, j = [None] * N, [None] * N, [None] * N
+kp, dp = 50.0, 50.0
+for i in range(KDJ_N - 1, N):
+    win = prices[i + 1 - KDJ_N:i + 1]
+    hi, lo = max(win), min(win)
+    rsv = 100 * (prices[i] - lo) / (hi - lo) if hi &gt; lo else 50.0
+    kp, dp = (2 * kp + rsv) / 3, (2 * dp + kp) / 3
+    k[i], d[i], j[i] = kp, dp, 3 * kp - 2 * dp
+
+def clean(series):
+    xs = [i for i, v in enumerate(series) if v is not None]
+    return xs, [series[i] for i in xs]
+
+xu, yu = clean(upper); xl, yl = clean(lower)
+c = Chart(FIG / "18-indicators.svg", "布林带与价格（%B 提示价格在通道中的位置）",
+          xlabel="交易日", ylabel="价格")
+c.line(range(N), prices, BLUE, label="收盘价")
+c.line(xu, yu, RED, label="上轨 SMA+2σ", dash="5 4")
+c.line(xl, yl, GREEN, label="下轨 SMA−2σ", dash="5 4")
+print("布林图:", c.save())
+m = Chart(FIG / "18-macd.svg", "MACD：DIF / DEA / 柱状能量", xlabel="交易日", ylabel="数值")
+m.bars(range(N), hist, "#9aa6b2", label="MACD 柱")
+m.line(range(N), dif, BLUE, label="DIF")
+m.line(range(N), dea, AMBER, label="DEA")
+m.hline(0.0, "#8a909b")
+print("MACD 图:", m.save())
+
+cross = sum(1 for i in range(1, N) if (hist[i - 1] &lt;= 0 &lt; hist[i]) or (hist[i - 1] &gt;= 0 &gt; hist[i]))
+over = sum(1 for v in rsi if v is not None and v &gt; 70)
+under = sum(1 for v in rsi if v is not None and v &lt; 30)
+print("RSI=%.2f K=%.2f D=%.2f J=%.2f %%B=%.3f | RSI&gt;70 共%d 天 &lt;30 共%d 天 柱变号%d 次" %
+      (rsi[-1], k[-1], d[-1], j[-1], pct_b[-1], over, under, cross))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>RSI_N</code> 从 14 改成 5，观察超买超卖天数；注意所有指标都来自同一条 <code>prices</code>。　<strong>预期与判读：</strong>四个指标都是价格序列的确定性变换，彼此高度相关。参数一变信号计数就变，所以「共振」必须先声明参数并做样本外检验。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>DRIFT</code> 提高，观察 RSI 在单边趋势里长期停留在超买区（指标钝化）。　文件位置：<code>part3/18-indicators/code/18-indicators.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/18-indicators.svg" alt="布林带上下轨与收盘价" loading="lazy"><figcaption>图 1　布林带上下轨与收盘价（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/18-macd.svg" alt="DIF、DEA 与 MACD 柱状能量" loading="lazy"><figcaption>图 2　DIF、DEA 与 MACD 柱状能量（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/MACD" target="_blank" rel="noopener">MACD</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>双指数均线差与柱状能量</p>
+<span class="why"><strong>怎么用</strong>：双指数均线差与柱状能量的定义</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/MACD</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>涨跌幅度比的震荡指标</p>
+<span class="why"><strong>怎么用</strong>：相对强弱指标的原始公式</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Relative_strength_index</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Bollinger_Bands" target="_blank" rel="noopener">Bollinger Bands</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>均值 ± k 倍标准差通道</p>
+<span class="why"><strong>怎么用</strong>：均值 ± k 倍标准差通道</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Bollinger_Bands</code></p></div>
+<div class="repo-card">
+<h3><a href="https://ta-lib.org/" target="_blank" rel="noopener">TA-Lib</a></h3>
+<span class="tag">工具 · 参考资料</span>
+<p>技术指标的事实标准实现（对照本书手写公式）</p>
+<span class="why"><strong>怎么用</strong>：工业实现，用来核对手写公式的初始化口径</span>
+<p style="margin:0"><code>https://ta-lib.org/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>指标初始化口径不同，导致与 App 显示值不一致。</li>
+<li>把 RSI 超买直接当卖出信号，忽略趋势市中的钝化。</li>
+<li>把三个相关指标当成三份独立证据。</li>
+<li>用未来数据计算「当前」的滚动分位数。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导 EMA 的等效窗口长度，与同长度 SMA 比较滞后。</li>
+<li>在示例里统计 RSI 与 %B 同日向超买/超卖方向变动的比例，验证相关性。</li>
+<li>把四个指标的信号做或运算，说明为什么这不是四次独立试验。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>MACD</strong>（百科）：双指数均线差与柱状能量<br><a href="https://en.wikipedia.org/wiki/MACD" target="_blank" rel="noopener">MACD</a></li>
+<li><strong>Relative strength index</strong>（百科）：涨跌幅度比的震荡指标<br><a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a></li>
+<li><strong>Bollinger Bands</strong>（百科）：均值 ± k 倍标准差通道<br><a href="https://en.wikipedia.org/wiki/Bollinger_Bands" target="_blank" rel="noopener">Bollinger Bands</a></li>
+<li><strong>Stochastic oscillator</strong>（百科）：KDJ 类指标原始定义<br><a href="https://en.wikipedia.org/wiki/Stochastic_oscillator" target="_blank" rel="noopener">Stochastic oscillator</a></li>
+<li><strong>TA-Lib</strong>（工具）：技术指标的事实标准实现（对照本书手写公式）<br><a href="https://ta-lib.org/" target="_blank" rel="noopener">TA-Lib</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=MACD%20RSI%20Bollinger%20Bands%20stochastic%20indicator%20formula" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=MACD%20RSI%20Bollinger%20Bands%20stochastic%20indicator%20formula" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=MACD%20RSI%20Bollinger%20Bands%20stochastic%20indicator%20formula&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../20-chart-pipeline/index.html'>第 20 章 · 用代码画图：SVG 图与看图陷阱</a> 未来函数与画图陷阱；<a href='../../part5/28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 参数扫描与过拟合。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

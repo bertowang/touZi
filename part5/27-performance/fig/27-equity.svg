@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>组合与基准的累计净值</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">组合与基准的累计净值</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.938</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.02</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.10</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.19</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.27</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.35</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-1.44</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">6.34</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">14.11</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">21.89</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">29.66</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">37.44</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">月</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">净值</text>
+<polyline points="101.19,323.45 118.67,324.20 136.16,303.85 153.65,303.78 171.14,306.22 188.63,325.95 206.12,325.53 223.61,288.74 241.10,269.98 258.59,232.79 276.08,218.14 293.57,198.69 311.06,185.49 328.55,231.99 346.04,198.70 363.53,175.26 381.02,151.47 398.51,200.53 416.00,248.75 433.49,268.67 450.98,275.72 468.47,260.13 485.96,254.70 503.45,232.27 520.94,244.98 538.43,228.72 555.92,209.51 573.41,223.14 590.90,162.76 608.39,136.74 625.88,88.19 643.37,102.20 660.86,120.21 678.35,124.21 695.84,120.00 713.33,90.19 730.81,73.17" fill="none" stroke="#245a7a" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<polyline points="101.19,323.45 118.67,330.14 136.16,332.17 153.65,339.45 171.14,321.27 188.63,344.83 206.12,340.08 223.61,311.08 241.10,323.13 258.59,300.68 276.08,270.62 293.57,292.60 311.06,289.94 328.55,315.61 346.04,309.72 363.53,288.61 381.02,276.27 398.51,325.45 416.00,336.64 433.49,336.25 450.98,324.74 468.47,292.53 485.96,282.66 503.45,266.84 520.94,295.22 538.43,275.19 555.92,273.66 573.41,287.99 590.90,274.37 608.39,275.92 625.88,258.99 643.37,243.21 660.86,286.85 678.35,312.01 695.84,305.35 713.33,266.79 730.81,247.75" fill="none" stroke="#2f6b4f" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<rect x="80.0" y="50.0" width="178" height="48" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#245a7a" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">组合</text>
+<line x1="86.0" y1="86.0" x2="104.0" y2="86.0" stroke="#2f6b4f" stroke-width="3"/>
+<text x="110.0" y="90.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">基准</text>
+</svg>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 22 章 · 有效市场、行为偏差与处置效应 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="22">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第四篇 · 因子、行为与市场证据 · 第四阶段 · 从直觉到可验证的证据</span>
+<h1><span class="ch-num">第 22 章</span>有效市场、行为偏差与处置效应</h1>
+<p class="lede">价格不一定「正确」，但想稳定套利，你得先证明错误是可重复、可执行的。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s4">因子 · 证据</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 21 章给出「理性基准下的收益分解」，本章补上系统性偏离；<a href='../23-flow-crowding/index.html'>第 23 章 · 资金流、情绪与拥挤交易</a> 讨论许多人同时偏离时会发生什么。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">行为偏差是决策函数里的一个<strong>系统性偏置项</strong>：<code>sell_prob = f(pnl, reference_point)</code> 而非 <code>f(期望收益)</code>。只要偏置稳定可测，就能写进模型；但它是否带来可交易的错误定价，是另一个问题。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能说明有效市场三种形式与对应的可检验命题。</li>
+<li>能解释损失厌恶、参照点、锚定与羊群效应。</li>
+<li>能用 PGR/PLR 度量处置效应并复现它。</li>
+<li>能区分「市场不理性」与「存在可交易的错误定价」。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>有效市场假说</td><td><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a> · <a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>弱式/半强式/强式检验</td><td><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a> · <a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>前景理论与损失厌恶</td><td><a href="https://en.wikipedia.org/wiki/Prospect_theory" target="_blank" rel="noopener">Prospect theory</a> · <a href="https://en.wikipedia.org/wiki/Disposition_effect" target="_blank" rel="noopener">Disposition effect</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>参照点与锚定</td><td><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a> · <a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>处置效应与 PGR/PLR</td><td><a href="https://en.wikipedia.org/wiki/Disposition_effect" target="_blank" rel="noopener">Disposition effect</a> · <a href="https://en.wikipedia.org/wiki/Prospect_theory" target="_blank" rel="noopener">Prospect theory</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>羊群与反馈环</td><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a> · <a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>套利限制</td><td><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a> · <a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>偏差不等于策略</td><td><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a> · <a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s22-1"><h2><span class="sec-num">§22.1</span>有效市场是一个可证伪的基准</h2>
+<table><thead><tr><th style="width:14%">形式</th><th style="width:22%">信息集</th><th style="width:32%">若成立则</th><th style="width:32%">常见检验</th></tr></thead><tbody>
+<tr><td>弱式</td><td>历史价量</td><td>技术指标无法持续获得超额收益</td><td>序列相关、游程、事件前后收益</td></tr>
+<tr><td>半强式</td><td>全部公开信息</td><td>财报/新闻公布后无持续漂移（除漂移本身争议）</td><td>事件研究</td></tr>
+<tr><td>强式</td><td>含内幕信息</td><td>任何信息都无法持续套利</td><td>内幕交易监管与执法数据</td></tr>
+</tbody></table>
+<p>有效市场不是说价格永远等于价值，而是说<strong>扣除成本与风险后，公开信息难以被稳定套利</strong>。它是 H0，不是信仰：任何「我找到了规律」的主张都要先跨过成本、样本外与多重检验三道门槛。</p>
+</section>
+<section id="s22-2"><h2><span class="sec-num">§22.2</span>前景理论：效用定义在变化上，而不是财富上</h2>
+<p class="eq">U(ΔW) 在亏损区更陡（损失厌恶），且价值函数对收益凹、对损失凸</p>
+<p>这解释了两个常见现象：<strong>处置效应</strong>（过早卖出盈利、过久持有亏损）与<strong>锚定</strong>（把买入价、历史高点当参照点）。第 17 章说的「支撑阻力」，在行为层面可以理解为大量持仓共用同一个参照点。</p>
+</section>
+<section id="s22-3"><h2><span class="sec-num">§22.3</span>套利限制：为什么错误定价可以长期存在</h2>
+<ul>
+<li><strong>基本面风险</strong>：价格可能在收敛前继续远离价值。</li>
+<li><strong>噪声交易者风险</strong>：其他人非理性使短期亏损扩大。</li>
+<li><strong>实施成本</strong>：借券、保证金、流动性、期限与赎回压力。</li>
+<li><strong>同步性</strong>：大家同时平仓时，相关性趋近 1（第 23 章）。</li>
+</ul>
+<div class="card note"><span class="card-label">结论</span><p style="margin-bottom:0">「别人错了」不等于「你能赚到」。可交易性是一个工程约束，不是一个观点。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 22-1 · 处置效应的可测量版本（PGR / PLR）</h3>
+<pre class="code" data-file="code/22-disposition.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""模拟带损失厌恶的卖出概率，计算实现盈利比例与实现亏损比例。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N_DAYS, N_POS = 250, 1200
+START, DRIFT, VOL = 50.0, 0.0004, 0.012
+BASE_SELL = 0.03     # 基准卖出概率
+GAIN_EXTRA = 0.12    # 盈利时的额外卖出倾向
+STEEP = 60.0         # 概率函数陡峭程度
+
+# ---- 计算与作图 ----
+def sell_prob(pnl):
+    return BASE_SELL + GAIN_EXTRA / (1 + math.exp(-STEEP * pnl))
+
+rng = random.Random(7)
+px, prices = START, []
+for _ in range(N_DAYS):
+    px *= (1 + rng.gauss(DRIFT, VOL))
+    prices.append(px)
+
+sell_g = hold_g = sell_l = hold_l = 0
+win_days, lose_days = [], []
+for _ in range(N_POS):
+    entry = rng.randrange(0, N_DAYS - 20)
+    ep = prices[entry]
+    for t in range(entry + 1, N_DAYS):
+        pnl = prices[t] / ep - 1
+        if rng.random() &lt; sell_prob(pnl):
+            if pnl &gt; 0:
+                sell_g += 1; win_days.append(t - entry)
+            else:
+                sell_l += 1; lose_days.append(t - entry)
+            break
+        if pnl &gt; 0:
+            hold_g += 1
+        else:
+            hold_l += 1
+
+pgr = sell_g / (sell_g + hold_g) if sell_g + hold_g else 0.0
+plr = sell_l / (sell_l + hold_l) if sell_l + hold_l else 0.0
+
+pnl_bins = [-0.10 + i * 0.01 for i in range(21)]
+probs = [100 * sell_prob(x + 0.005) for x in pnl_bins]
+c = Chart(FIG / "22-disposition.svg", "卖出概率 vs 未实现盈亏（行为假设）",
+          xlabel="未实现盈亏", ylabel="卖出概率 %")
+c.bars(pnl_bins, probs, BLUE, label="卖出概率")
+print("概率图:", c.save())
+b = Chart(FIG / "22-pgr.svg", "PGR 与 PLR：处置效应的度量", xlabel="口径", ylabel="比例",
+          xticks=[(0, "PGR 实现盈利"), (1, "PLR 实现亏损")])
+b.bars([0, 1], [pgr, plr], RED, label="实现比例")
+print("度量图:", b.save())
+print("PGR=%.4f PLR=%.4f 差值=%+.4f | 盈利持仓平均持有=%.1f 天 亏损=%.1f 天" %
+      (pgr, plr, pgr - plr,
+       statistics.fmean(win_days) if win_days else 0,
+       statistics.fmean(lose_days) if lose_days else 0))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>GAIN_EXTRA</code> 设为 0（无偏差），PGR 与 PLR 应接近；再调大观察差值。　<strong>预期与判读：</strong>当卖出概率随浮盈上升时，PGR 显著大于 PLR，且盈利持仓的平均持有期更短——这正是「拔掉鲜花、浇灌野草」的量化形式。此处偏差是<strong>人为注入的</strong>，真实市场需用账户数据检验。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>DRIFT</code> 改成负数，观察整体浮盈变少后 PGR/PLR 的绝对水平如何变化。　文件位置：<code>part4/22-behavior/code/22-disposition.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/22-disposition.svg" alt="卖出概率随未实现盈亏上升的行为假设" loading="lazy"><figcaption>图 1　卖出概率随未实现盈亏上升的行为假设（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/22-pgr.svg" alt="实现盈利比例 PGR 与实现亏损比例 PLR" loading="lazy"><figcaption>图 2　实现盈利比例 PGR 与实现亏损比例 PLR（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价格是否已反映可用信息</p>
+<span class="why"><strong>怎么用</strong>：有效市场假说的三种形式与检验</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Efficient-market_hypothesis</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Prospect_theory" target="_blank" rel="noopener">Prospect theory</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>参照点依赖与损失厌恶</p>
+<span class="why"><strong>怎么用</strong>：前景理论与参照点依赖</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Prospect_theory</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Disposition_effect" target="_blank" rel="noopener">Disposition effect</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>过早卖出盈利、过久持有亏损</p>
+<span class="why"><strong>怎么用</strong>：处置效应的经典度量</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Disposition_effect</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>系统性偏离理性的行为偏差</p>
+<span class="why"><strong>怎么用</strong>：行为金融的偏差清单</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Behavioral_finance</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把「市场不理性」直接推导成「我能赚钱」。</li>
+<li>用单一偏差解释所有价格现象。</li>
+<li>忽略套利限制与资金期限。</li>
+<li>把处置效应归因于税收或再平衡而不做对照。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导 PGR/PLR 的定义，并说明为什么要用「比例」而非「次数」。</li>
+<li>在示例里加入一个理性对照组（sell_prob 为常数），比较两者 PGR−PLR。</li>
+<li>列举一个「看似行为偏差、其实是制度约束」的例子。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Efficient-market hypothesis</strong>（百科）：价格是否已反映可用信息<br><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a></li>
+<li><strong>Behavioral finance</strong>（百科）：系统性偏离理性的行为偏差<br><a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></li>
+<li><strong>Prospect theory</strong>（百科）：参照点依赖与损失厌恶<br><a href="https://en.wikipedia.org/wiki/Prospect_theory" target="_blank" rel="noopener">Prospect theory</a></li>
+<li><strong>Disposition effect</strong>（百科）：过早卖出盈利、过久持有亏损<br><a href="https://en.wikipedia.org/wiki/Disposition_effect" target="_blank" rel="noopener">Disposition effect</a></li>
+<li><strong>CFA Institute</strong>（机构）：投资组合管理、道德准则与从业者教育<br><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=efficient%20market%20hypothesis%20behavioral%20finance%20prospect%20theory%20biases" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=efficient%20market%20hypothesis%20behavioral%20finance%20prospect%20theory%20biases" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=efficient%20market%20hypothesis%20behavioral%20finance%20prospect%20theory%20biases&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../23-flow-crowding/index.html'>第 23 章 · 资金流、情绪与拥挤交易</a> 拥挤与反转；<a href='../24-read-papers/index.html'>第 24 章 · 怎样读一篇因子论文：从摘要到可复现</a> 从论文里识别偏差类主张；<a href='../../part6/31-ips-review/index.html'>第 31 章 · 投资政策说明书与长期复盘</a> 用决策日志约束自己。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 24 章 · 怎样读一篇因子论文：从摘要到可复现 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="24">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第四篇 · 因子、行为与市场证据 · 第四阶段 · 从直觉到可验证的证据</span>
+<h1><span class="ch-num">第 24 章</span>怎样读一篇因子论文：从摘要到可复现</h1>
+<p class="lede">论文的结论是一个条件命题：先读条件，再读结论。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s4">因子 · 证据</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第四阶段以「怎样判断一个主张是否可信」收尾；<a href='../../part5/25-data-pipeline/index.html'>第 25 章 · 数据管道：对齐、公司行动与幸存者偏差</a> 起进入第五阶段的第一部分：把评估协议落成可运行的数据与回测流水线。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">读论文像做 code review：先看输入数据的 schema 与时间边界，再看有没有隐藏的全局常量，最后才看输出指标。<strong>缺少复现协议的漂亮结果，等于没有测试的 benchmark。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能列出论文复现所需的最小信息清单。</li>
+<li>能识别样本选择、成本假设与样本外声明中的漏洞。</li>
+<li>能量化「选择性剔除 + 零成本」对夏普的抬升。</li>
+<li>能把论文的结论写成可检验的 H0 与评估协议。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>样本期与样本外</td><td><a href="https://en.wikipedia.org/wiki/Walk_forward_optimization" target="_blank" rel="noopener">Walk forward optimization</a> · <a href="https://en.wikipedia.org/wiki/Overfitting" target="_blank" rel="noopener">Overfitting</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>组合构建口径</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>成本与容量假设</td><td><a href="https://www.ssrn.com/" target="_blank" rel="noopener">SSRN</a> · <a href="https://arxiv.org/list/q-fin/recent" target="_blank" rel="noopener">arXiv q-fin</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>数据来源与 point-in-time</td><td><a href="https://www.ssrn.com/" target="_blank" rel="noopener">SSRN</a> · <a href="https://arxiv.org/list/q-fin/recent" target="_blank" rel="noopener">arXiv q-fin</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>t 值与多重检验</td><td><a href="https://en.wikipedia.org/wiki/Data_dredging" target="_blank" rel="noopener">p-hacking</a> · <a href="https://en.wikipedia.org/wiki/Data_dredging" target="_blank" rel="noopener">Data dredging</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>选择性剔除与幸存者</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>夏普比率的敏感性</td><td><a href="https://en.wikipedia.org/wiki/Sharpe_ratio" target="_blank" rel="noopener">Sharpe ratio</a> · <a href="https://en.wikipedia.org/wiki/Sortino_ratio" target="_blank" rel="noopener">Sortino ratio</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>复现协议</td><td><a href="https://www.ssrn.com/" target="_blank" rel="noopener">SSRN</a> · <a href="https://arxiv.org/list/q-fin/recent" target="_blank" rel="noopener">arXiv q-fin</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s24-1"><h2><span class="sec-num">§24.1</span>一份最小复现清单</h2>
+<table><thead><tr><th style="width:16%">项目</th><th style="width:42%">必须问清</th><th style="width:42%">缺失时的后果</th></tr></thead><tbody>
+<tr><td>样本</td><td>起止时间、市场、剔除规则</td><td>无法判断是否做过样本选择</td></tr>
+<tr><td>数据</td><td>价格复权、退市/停牌处理、可用时刻</td><td>幸存者偏差与前视偏差</td></tr>
+<tr><td>组合</td><td>权重、调仓频率、多空约束</td><td>权重口径不同可得相反结论</td></tr>
+<tr><td>成本</td><td>佣金、价差、冲击、借券费</td><td>毛夏普无法转成净收益</td></tr>
+<tr><td>推断</td><td>t 值、Newey-West、检验次数</td><td>多重检验下的假发现</td></tr>
+<tr><td>样本外</td><td>参数何时固定、是否真未使用</td><td>样本内过拟合</td></tr>
+</tbody></table>
+<p>读论文时把这张表当成<strong>接口契约</strong>：任何一格缺失，结论就只能算「有意思的观察」，还不能算可执行的证据。</p>
+</section>
+<section id="s24-2"><h2><span class="sec-num">§24.2</span>夏普比率对成本与样本选择极敏感</h2>
+<p class="eq">Sharpe_net ≈ (μ_gross − cost) / σ × √252</p>
+<p>日频策略里，0.03% 的双边成本就能吃掉相当一部分日均值；而「剔除最差的 10% 交易日」这种看似无害的清洗，等价于用了未来信息做样本选择。两者叠加足以把一个无 alpha 的策略包装成高夏普。</p>
+</section>
+<section id="s24-3"><h2><span class="sec-num">§24.3</span>把结论改写成协议</h2>
+<ul>
+<li><strong>H0</strong>：该因子在扣除成本后的样本外平均收益为 0。</li>
+<li><strong>冻结</strong>：在开始评估前写死参数、样本切分与成本假设。</li>
+<li><strong>评估</strong>：报告净夏普、t 值、最大回撤、换手与容量。</li>
+<li><strong>复现</strong>：换数据源、换市场、换时间窗，看符号是否稳定。</li>
+</ul>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 24-1 · 同一策略的四种报告口径</h3>
+<pre class="code" data-file="code/24-replication.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""量化「选择性剔除 + 零成本 + 样本内」对夏普的抬升，并与净额/样本外对照。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N, SPLIT = 600, 300
+MU, SIG = 0.0004, 0.010   # 合成策略的日均毛收益与波动
+COST = 0.0003             # 每日双边成本
+TRIM = 0.10               # 论文口径「剔除最差 10% 交易日」
+ANN = 252
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+raw = [rng.gauss(MU, SIG) for _ in range(N)]
+
+def sharpe(series):
+    s = statistics.pstdev(series)
+    return statistics.fmean(series) / s * math.sqrt(ANN) if s else 0.0
+
+def equity(series):
+    v, out = 1.0, [1.0]
+    for r in series:
+        v *= (1 + r)
+        out.append(v)
+    return out
+
+paper = sorted(raw)[int(N * TRIM):]           # 非法：用全样本挑掉最差的日子
+net = [r - COST for r in raw]
+oos = [r - COST for r in raw[SPLIT:]]
+is_net = [r - COST for r in raw[:SPLIT]]
+s_paper, s_net, s_is, s_oos = sharpe(paper), sharpe(net), sharpe(is_net), sharpe(oos)
+
+labels = ["论文口径", "全样本净额", "样本内净额", "样本外净额"]
+vals = [s_paper, s_net, s_is, s_oos]
+c = Chart(FIG / "24-sharpe.svg", "同一策略在四种报告口径下的夏普比率", xlabel="口径", ylabel="年化夏普",
+          xticks=[(i, n) for i, n in enumerate(labels)])
+c.bars(range(4), vals, BLUE, label="夏普")
+c.hline(0.0, "#9aa6b2")
+print("夏普图:", c.save())
+e = Chart(FIG / "24-equity.svg", "论文口径 vs 净额净值的账户曲线", xlabel="交易日", ylabel="净值")
+e.line(range(len(paper) + 1), equity(paper), RED, label="选择性剔除 + 零成本")
+e.line(range(N + 1), equity(net), BLUE, label="全样本 + 成本")
+e.hline(1.0, "#9aa6b2")
+print("净值图:", e.save())
+print("论文口径=%.3f 全样本净额=%.3f 样本内=%.3f 样本外=%.3f | 成本使夏普下降 %.3f" %
+      (s_paper, s_net, s_is, s_oos, s_paper - s_net))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>TRIM</code> 设为 0（不剔样本）、<code>COST</code> 设为 0，观察四种口径是否收敛。　<strong>预期与判读：</strong>「剔掉最差 10% 交易日」与「不计成本」各自都能显著抬高夏普，且都不需要任何真实预测能力。样本外净额通常最低。<strong>报告口径本身就是结论的一部分。</strong></p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>MU</code> 设为 0（无真实 alpha），论文口径仍可能显示正夏普——这是纯样本选择的结果。　文件位置：<code>part4/24-read-papers/code/24-replication.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/24-sharpe.svg" alt="四种报告口径下的年化夏普对比" loading="lazy"><figcaption>图 1　四种报告口径下的年化夏普对比（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/24-equity.svg" alt="论文口径与净额口径的净值曲线" loading="lazy"><figcaption>图 2　论文口径与净额口径的净值曲线（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://www.ssrn.com/" target="_blank" rel="noopener">SSRN</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>金融学预印本与因子研究检索</p>
+<span class="why"><strong>怎么用</strong>：金融学预印本与因子研究检索</span>
+<p style="margin:0"><code>https://www.ssrn.com/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://arxiv.org/list/q-fin/recent" target="_blank" rel="noopener">arXiv q-fin</a></h3>
+<span class="tag">数据 · 参考资料</span>
+<p>量化金融与因子研究预印本</p>
+<span class="why"><strong>怎么用</strong>：q-fin 量化金融预印本</span>
+<p style="margin:0"><code>https://arxiv.org/list/q-fin/recent</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Data_dredging" target="_blank" rel="noopener">p-hacking</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>多重检验下的假阳性膨胀</p>
+<span class="why"><strong>怎么用</strong>：多重检验下的假阳性膨胀</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Data_dredging</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA 主动/被动业绩对比</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>主动基金相对基准的长期胜率统计</p>
+<span class="why"><strong>怎么用</strong>：主动/被动长期业绩的公开统计</span>
+<p style="margin:0"><code>https://www.spglobal.com/spdji/en/research-insights/spiva/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>只看摘要里的夏普与 t 值，不读样本与成本附录。</li>
+<li>把作者自己报告的「样本外」当成真正的样本外。</li>
+<li>忽略因子数量与检验次数。</li>
+<li>用自己的数据口径复现失败后直接归咎于市场变化。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>给一篇真实论文填本章的最小复现清单，指出至少两处缺失信息。</li>
+<li>在示例里加入 Newey-West 调整的思路，说明自相关怎样影响 t 值。</li>
+<li>写出一份「评估前冻结」的 JSON 配置，列出所有参数与数据版本。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>SSRN</strong>（机构）：金融学预印本与因子研究检索<br><a href="https://www.ssrn.com/" target="_blank" rel="noopener">SSRN</a></li>
+<li><strong>arXiv q-fin</strong>（数据）：量化金融与因子研究预印本<br><a href="https://arxiv.org/list/q-fin/recent" target="_blank" rel="noopener">arXiv q-fin</a></li>
+<li><strong>p-hacking</strong>（百科）：多重检验下的假阳性膨胀<br><a href="https://en.wikipedia.org/wiki/Data_dredging" target="_blank" rel="noopener">p-hacking</a></li>
+<li><strong>SPIVA 主动/被动业绩对比</strong>（机构）：主动基金相对基准的长期胜率统计<br><a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA 主动/被动业绩对比</a></li>
+<li><strong>NBER</strong>（机构）：资产定价与实证金融工作论文<br><a href="https://www.nber.org/" target="_blank" rel="noopener">NBER</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=reading%20factor%20papers%20data%20mining%20out%20of%20sample%20evidence" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=reading%20factor%20papers%20data%20mining%20out%20of%20sample%20evidence" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=reading%20factor%20papers%20data%20mining%20out%20of%20sample%20evidence&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part5/25-data-pipeline/index.html'>第 25 章 · 数据管道：对齐、公司行动与幸存者偏差</a> point-in-time 数据；<a href='../../part5/28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 多重检验与滚动样本外；<a href='../../part6/31-ips-review/index.html'>第 31 章 · 投资政策说明书与长期复盘</a> 复盘协议。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

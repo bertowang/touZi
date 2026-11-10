@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 25 章 · 数据管道：对齐、公司行动与幸存者偏差 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="25">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第五篇 · 策略工程：从想法到证据 · 第四阶段 · 从直觉到可验证的证据</span>
+<h1><span class="ch-num">第 25 章</span>数据管道：对齐、公司行动与幸存者偏差</h1>
+<p class="lede">回测里最贵的 bug 不在策略，而在数据：看不见的样本已经替你把收益抬高了。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s4">策略 · 工程</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 24 章给出评估协议，本章给出支撑协议的数据层；<a href='../26-backtest/index.html'>第 26 章 · 事件驱动回测引擎：从信号到成交</a> 在此基础上实现事件驱动回测引擎。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">数据仓库里的 <code>DELETE FROM funds WHERE status='liquidated'</code> 会让回测自动获得前视能力。正确做法是软删除 + <code>as_of</code> 字段，让查询条件写成 <code>as_of &lt;= t</code>。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能描述一条 point-in-time 数据管道的各个阶段。</li>
+<li>能解释幸存者偏差如何抬高基金/指数回测收益。</li>
+<li>能处理停牌、退市、拆股与成分股历史变更。</li>
+<li>能为数据快照写明版本、可用时刻与来源。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>point-in-time 快照</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>数据版本与可用时刻</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>公司行动对齐</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>停牌与退市处理</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>成分股历史</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>幸存者偏差</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>前视偏差</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>可复现的数据契约</td><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s25-1"><h2><span class="sec-num">§25.1</span>一条可信的数据管道</h2>
+<ul>
+<li><strong>采集</strong>：行情、净值、财报、公司行动、指数成分，各带发布时间与来源。</li>
+<li><strong>对齐</strong>：统一交易日历、时区、币种；缺失值显式编码为「未成交 / 未披露」。</li>
+<li><strong>版本化</strong>：每条记录带 <code>as_of</code>（何时可知）与 <code>effective</code>（何时生效）。</li>
+<li><strong>快照</strong>：回测只读取 <code>as_of ≤ t</code> 的数据，禁止读取后来修订过的版本。</li>
+<li><strong>校验</strong>：复权不变式、价格非负、成分股权重和为 1、无未来时间戳。</li>
+</ul>
+<p>第 06 章处理了价格口径，本章处理<strong>时间口径</strong>：财报会被追溯修订，指数成分会被回溯调整，基金清盘后数据常被从数据库里删除。三者都会让历史回测「自动变好看」。</p>
+</section>
+<section id="s25-2"><h2><span class="sec-num">§25.2</span>幸存者偏差是可以量化的</h2>
+<p class="eq">偏差 = E[r | 存活到期末] − E[r | 全部样本（含清盘）]</p>
+<p>若表现差的基金被清盘并从历史库里移除，那么「用今天还活着的基金回测过去」等价于<strong>提前删掉所有失败路径</strong>。这不是小误差，而是对收益分布的条件化裁剪。</p>
+</section>
+<section id="s25-3"><h2><span class="sec-num">§25.3</span>把数据契约写进代码</h2>
+<p>建议每个数据集都配一份 <code>manifest</code>：来源 URL、拉取时间、字段 schema、复权方式、公司行动版本、缺失语义与校验和。回测启动时打印这份 manifest，让每次实验都能被第三方复跑。这与软件工程里的依赖锁文件是同一个思想。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 25-1 · 基金清盘造成的幸存者偏差</h3>
+<pre class="code" data-file="code/25-survivorship.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""合成 200 只基金，差的被清盘；比较「只看存活基金」与「含清盘全样本」的指数收益。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N_FUNDS, N_DAYS = 200, 500
+ANN = 252
+SIG = 0.012        # 日波动
+KILL = 0.65        # 净值跌破该比例即清盘
+LIQUID = -0.05     # 清盘时的额外损失
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+funds, alive_by_day = [], [0] * N_DAYS
+for _ in range(N_FUNDS):
+    mu = rng.gauss(0.0002, 0.0004)      # 管理人能力异质
+    v, row, alive = 1.0, [], True
+    for t in range(N_DAYS):
+        if alive:
+            r = rng.gauss(mu, SIG)
+            v *= (1 + r)
+            if v &lt; KILL:
+                r += LIQUID
+                alive = False
+            else:
+                alive_by_day[t] += 1
+            row.append(r)
+        else:
+            row.append(0.0)             # 清盘后资金回到指数（简化）
+    funds.append((row, alive))
+
+survivors = [p for p, a in funds if a]
+biased = [statistics.fmean(p[t] for p in survivors) for t in range(N_DAYS)]
+unbiased = [statistics.fmean(p[t] for p, _a in funds) for t in range(N_DAYS)]
+
+def curve(rets):
+    v, out = 1.0, [1.0]
+    for r in rets:
+        v *= (1 + r)
+        out.append(v)
+    return out
+
+cb, cu = curve(biased), curve(unbiased)
+cagr_b = cb[-1] ** (ANN / N_DAYS) - 1
+cagr_u = cu[-1] ** (ANN / N_DAYS) - 1
+
+c = Chart(FIG / "25-survivorship.svg", "只看存活基金 vs 含清盘全样本", xlabel="交易日", ylabel="净值")
+c.line(range(N_DAYS + 1), cb, RED, label="只看存活（有偏）")
+c.line(range(N_DAYS + 1), cu, BLUE, label="全样本（无偏）")
+print("净值图:", c.save())
+f = Chart(FIG / "25-funnel.svg", "随时间存活的基金数量", xlabel="交易日", ylabel="只数")
+f.line(range(N_DAYS), alive_by_day, GREEN, label="存活基金")
+print("存活图:", f.save())
+print("期初=%d 期末存活=%d | 有偏年化=%.2f%% 无偏年化=%.2f%% 偏差=%+.2f 个百分点" %
+      (N_FUNDS, len(survivors), 100 * cagr_b, 100 * cagr_u, 100 * (cagr_b - cagr_u)))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>KILL</code> 改成 0.0（永不退市），观察两条曲线是否重合；再收紧到 0.85 看偏差放大。　<strong>预期与判读：</strong>存活样本池随时间缩小；只用「今天还活着」的基金回测，年化收益被系统性抬高。这与第 24 章的选择性剔除是同一类错误，只是发生在<strong>标的物维度</strong>而非时间维度。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>LIQUID</code> 改成 −0.20（清盘损失更大），有偏与无偏的差距会进一步扩大。　文件位置：<code>part5/25-data-pipeline/code/25-survivorship.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/25-survivorship.svg" alt="有偏与无偏指数净值的分离" loading="lazy"><figcaption>图 1　有偏与无偏指数净值的分离（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/25-funnel.svg" alt="基金样本随时间减少的漏斗" loading="lazy"><figcaption>图 2　基金样本随时间减少的漏斗（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>只看存活基金/成分股导致的虚高收益</p>
+<span class="why"><strong>怎么用</strong>：幸存者偏差的定义与经典案例</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Survivorship_bias</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>前复权/后复权与公司行动处理</p>
+<span class="why"><strong>怎么用</strong>：公司行动与复权口径</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Adjusted_closing_price</code></p></div>
+<div class="repo-card">
+<h3><a href="https://pandas.pydata.org/" target="_blank" rel="noopener">pandas</a></h3>
+<span class="tag">工具 · 参考资料</span>
+<p>时间序列对齐、分组与缺失处理的工业标准</p>
+<span class="why"><strong>怎么用</strong>：时间序列对齐与分组的工业实现</span>
+<p style="margin:0"><code>https://pandas.pydata.org/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://github.com/akfamily/akshare" target="_blank" rel="noopener">AKShare</a></h3>
+<span class="tag">数据 · 参考资料</span>
+<p>开源中文金融数据接口（A 股/基金/宏观）</p>
+<span class="why"><strong>怎么用</strong>：中文行情与基金数据的开源接口</span>
+<p style="margin:0"><code>https://github.com/akfamily/akshare</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>用当前指数成分股回测十年前（成分股幸存者偏差）。</li>
+<li>使用被追溯修订过的财报数据。</li>
+<li>把停牌日填成 0 收益，人为降低波动。</li>
+<li>前复权序列更新后仍沿用旧回测结果，未重新生成。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>写出一份数据 manifest 的字段清单，并说明每个字段如何被校验。</li>
+<li>在示例里加入「清盘基金收益继续按指数计」与「按 0 计」两种口径，比较差异。</li>
+<li>举一个「财报追溯修订」导致前视偏差的具体路径。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Survivorship bias</strong>（百科）：只看存活基金/成分股导致的虚高收益<br><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a></li>
+<li><strong>Adjusted closing price</strong>（百科）：前复权/后复权与公司行动处理<br><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></li>
+<li><strong>pandas</strong>（工具）：时间序列对齐、分组与缺失处理的工业标准<br><a href="https://pandas.pydata.org/" target="_blank" rel="noopener">pandas</a></li>
+<li><strong>AKShare</strong>（数据）：开源中文金融数据接口（A 股/基金/宏观）<br><a href="https://github.com/akfamily/akshare" target="_blank" rel="noopener">AKShare</a></li>
+<li><strong>Tushare</strong>（数据）：中文量化数据平台（部分数据需积分）<br><a href="https://tushare.pro/" target="_blank" rel="noopener">Tushare</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=data%20pipeline%20survivorship%20bias%20corporate%20action%20alignment" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=data%20pipeline%20survivorship%20bias%20corporate%20action%20alignment" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=data%20pipeline%20survivorship%20bias%20corporate%20action%20alignment&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../26-backtest/index.html'>第 26 章 · 事件驱动回测引擎：从信号到成交</a> 回测引擎；<a href='../28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 样本外协议；<a href='../../part3/20-chart-pipeline/index.html'>第 20 章 · 用代码画图：SVG 图与看图陷阱</a> 未来函数。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

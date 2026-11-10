@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 06 章 · 行情数据模型：OHLCV、复权与时间戳 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="06">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第一篇 · 产品地图与市场基础设施 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 06 章</span>行情数据模型：OHLCV、复权与时间戳</h1>
+<p class="lede">先校准数据，再谈策略：一根 K 线里最危险的不是价格，而是口径。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">产品 · 制度</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 04 章的规则产出「成交」，本章把这些成交整理成可计算的时间序列；<a href='../07-funds-etf/index.html'>第 07 章 · 公募基金与 ETF：净值、申赎与跟踪</a> 用同样的口径处理基金净值，<a href='../../part3/16-candlestick/index.html'>第 16 章 · K 线、坐标与复权：看图前先校准数据</a> 把 OHLCV 画成 K 线。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">复权因子是数据库里的<strong>版本化 migration</strong>：公司行动一到，历史行的含义就变了。不记录快照版本的回测，等于用今天的 schema 去解释昨天的数据。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能写出一根 K 线的字段结构，并说明每字段的交易含义。</li>
+<li>能区分前复权、后复权与不复权，判断何时该用哪种。</li>
+<li>能识别拆股、分红造成的非交易性跳变并做修正。</li>
+<li>能说明时区、交易日历、缺失值与对齐如何造成伪信号。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>OHLCV 数据结构</td><td><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a> · <a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>成交量与成交额</td><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>前复权与后复权</td><td><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a> · <a href="https://en.wikipedia.org/wiki/Stock_split" target="_blank" rel="noopener">Stock split</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>拆股与公司行动</td><td><a href="https://en.wikipedia.org/wiki/Stock_split" target="_blank" rel="noopener">Stock split</a> · <a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>除息与分红</td><td><a href="https://en.wikipedia.org/wiki/Dividend" target="_blank" rel="noopener">Dividend</a> · <a href="https://en.wikipedia.org/wiki/Stock_split" target="_blank" rel="noopener">Stock split</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>交易日历与时间戳</td><td><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a> · <a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>时间序列对齐</td><td><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a> · <a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>缺失值与停牌</td><td><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a> · <a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s6-1"><h2><span class="sec-num">§6.1</span>一根 K 线是一个五元组加时间戳</h2>
+<p>任何交易 App 的图表底层都是同一张表：<code>(timestamp, open, high, low, close, volume, amount)</code>。K 线的周期（1 分钟 / 日 / 周）只是对逐笔成交的 <code>group by</code> 聚合：open = 首笔、close = 末笔、high/low = 极值、volume = 求和。</p>
+<table><thead><tr><th style="width:20%">字段</th><th style="width:24%">聚合方式</th><th style="width:56%">口径陷阱</th></tr></thead><tbody>
+<tr><td>open / close</td><td>first / last</td><td>集合竞价是否计入、收盘价是否为加权收盘价</td></tr>
+<tr><td>high / low</td><td>max / min</td><td>盘中瞬时插针，用错周期会消失</td></tr>
+<tr><td>volume</td><td>sum</td><td>拆股后股数翻倍，成交量口径需同步调整</td></tr>
+<tr><td>amount</td><td>sum</td><td>成交额含费用与否、币种换算</td></tr>
+<tr><td>timestamp</td><td>group by key</td><td>时区、交易日边界、是否用收盘时刻还是起始时刻</td></tr>
+<tr><td>adj_factor</td><td>公司行动累积</td><td>前复权会随新的公司行动整体改变历史值</td></tr>
+</tbody></table>
+<p>关键结论：<strong>复权价不是行情，而是「为了可比较而构造的派生列」</strong>。真实下单用的是不复权价与当时的最小单位；做收益计算、回测与技术指标必须用复权后序列。</p>
+</section>
+<section id="s6-2"><h2><span class="sec-num">§6.2</span>复权：把公司行动还原成连续收益</h2>
+<p class="eq">r_真实 ≈ (P_t × 调整因子_t) / (P_(t−1) × 调整因子_(t−1)) − 1</p>
+<p>1 股拆为 2 股时价格腰斩，但股东权益没变；若直接用不复权价算日收益，会得到一根 −50% 的假暴跌，进而触发所有止损、均线与波动指标。前复权把<strong>历史价格</strong>按比例缩小到当前口径，后复权把<strong>当前价格</strong>放大到历史口径；两者收益序列相同，绝对价格不同。</p>
+<ul>
+<li><strong>不复权</strong>：还原当时可成交的价格，用于订单与盘口复盘。</li>
+<li><strong>前复权</strong>：最新价格保持真实值，历史被缩放，看盘软件默认常用。</li>
+<li><strong>后复权</strong>：起点价格保持真实值，后续被放大，做长期收益与回测最直观。</li>
+<li><strong>注意</strong>：每次新增公司行动，前复权序列会整体变化，因此回测数据要记录快照版本（见第 25 章）。</li>
+</ul>
+</section>
+<section id="s6-3"><h2><span class="sec-num">§6.3</span>时间戳、对齐与缺失</h2>
+<p>多资产分析要把不同交易日历、不同时区、不同停牌日对齐到同一条时间轴。三种常见错误：<code>forward fill</code> 把停牌日填成旧价制造零收益（低估波动）；用未来交易日的消息填充过去（数据泄漏）；把两个市场的收盘价直接相减（时差造成的伪相关）。工程上的正确做法是先定义<strong>统一日历与观察时刻</strong>，再 join，最后把「没成交」「没数据」「已退市」三类缺失显式编码，而不是静默填充。</p>
+<div class="card note"><span class="card-label">检查清单</span><p style="margin-bottom:0">任何一条策略上线前，先问三句：价格复权了吗？时间戳是本地还是 UTC？缺失值是「没成交」还是「没数据」？</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 6-1 · 拆股造成的假暴跌与三种价格口径</h3>
+<pre class="code" data-file="code/06-adjust.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""构造含一次 1 拆 2 的合成 OHLCV，比较不复权与前复权收益，并画出价格与收益对照。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 60              # 交易日数
+SPLIT_DAY = 30      # 拆股发生日
+FACTOR = 2.0        # 1 股拆为 2 股
+BASE = 20.0         # 起始价格
+VOL = 0.015         # 日波动
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+raw, px = [], BASE
+for i in range(N):
+    px *= (1 + rng.gauss(0.001, VOL))
+    if i == SPLIT_DAY:
+        px /= FACTOR
+    raw.append(px)
+
+adjusted = [v / FACTOR if i &lt; SPLIT_DAY else v for i, v in enumerate(raw)]
+
+ohlcv = []
+for c in raw:
+    o = c / (1 + rng.gauss(0, 0.004))
+    h = max(o, c) * (1 + abs(rng.gauss(0, 0.003)))
+    l = min(o, c) * (1 - abs(rng.gauss(0, 0.003)))
+    v = int(1e6 * (1 + abs(rng.gauss(0, 0.3))))
+    ohlcv.append((round(o, 3), round(h, 3), round(l, 3), round(c, 3), v))
+
+raw_ret = [raw[i] / raw[i - 1] - 1 for i in range(1, N)]
+adj_ret = [adjusted[i] / adjusted[i - 1] - 1 for i in range(1, N)]
+
+c = Chart(FIG / "06-adjusted.svg", "拆股日前后：不复权价 vs 前复权价", xlabel="交易日", ylabel="价格")
+c.line(range(N), raw, RED, label="不复权收盘价")
+c.line(range(N), adjusted, BLUE, label="前复权收盘价")
+c.vline(SPLIT_DAY, "#9aa6b2", label="拆股日")
+print("价格图:", c.save())
+
+r = Chart(FIG / "06-returns.svg", "同一个拆股日的日收益率", xlabel="交易日", ylabel="日收益")
+r.line(range(1, N), raw_ret, RED, label="未复权（含假暴跌）")
+r.line(range(1, N), adj_ret, GREEN, label="前复权（真实收益）")
+r.hline(0.0, "#9aa6b2")
+print("收益图:", r.save())
+print("OHLCV 首行=%s" % (ohlcv[0],))
+print("拆股日 未复权收益=%.2f%% 前复权收益=%.2f%% | 全期 未复权=%.2f%% 前复权=%.2f%%" %
+      (100 * raw_ret[SPLIT_DAY - 1], 100 * adj_ret[SPLIT_DAY - 1],
+       100 * (raw[-1] / raw[0] - 1), 100 * (adjusted[-1] / adjusted[0] - 1)))</code></pre>
+<p class="code-hint"><strong>操作：</strong>观察 <code>raw_ret[29]</code> 附近的 −50% 尖峰；把 <code>FACTOR</code> 改成 1（无拆股）后尖峰应消失。　<strong>预期与判读：</strong>不复权序列在拆股日产生约 −50% 的假收益，前复权序列保持连续。全期累计收益两者相差约一倍：这解释了为什么长期回测必须使用复权价。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>SPLIT_DAY</code> 移到第 5 天，观察图形与累计收益如何变化。　文件位置：<code>part1/06-data-model/code/06-adjust.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/06-adjusted.svg" alt="不复权价与前复权价的跳变对照" loading="lazy"><figcaption>图 1　不复权价与前复权价的跳变对照（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/06-returns.svg" alt="复权前后的日收益率序列" loading="lazy"><figcaption>图 2　复权前后的日收益率序列（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>开高低收四价的数据结构</p>
+<span class="why"><strong>怎么用</strong>：OHLC 四价的数据结构定义</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Open-high-low-close_chart</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>前复权/后复权与公司行动处理</p>
+<span class="why"><strong>怎么用</strong>：前复权/后复权与公司行动处理</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Adjusted_closing_price</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Stock_split" target="_blank" rel="noopener">Stock split</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>拆股与价格/数量的口径跳变</p>
+<span class="why"><strong>怎么用</strong>：拆股导致的价格与数量口径跳变</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Stock_split</code></p></div>
+<div class="repo-card">
+<h3><a href="https://github.com/akfamily/akshare" target="_blank" rel="noopener">AKShare</a></h3>
+<span class="tag">数据 · 参考资料</span>
+<p>开源中文金融数据接口（A 股/基金/宏观）</p>
+<span class="why"><strong>怎么用</strong>：开源中文行情接口，便于课后替换真实数据</span>
+<p style="margin:0"><code>https://github.com/akfamily/akshare</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>用不复权价计算长期累计收益或均线。</li>
+<li>把前复权价格当成历史真实可成交价去下单。</li>
+<li>新增分红后未重新拉取前复权序列，导致历史回测结果悄悄变化。</li>
+<li>跨市场直接对齐收盘时刻，忽略时区与节假日差异。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导为什么前复权与后复权的收益率序列完全相同（提示：两者只差一个常数因子）。</li>
+<li>给示例增加一次现金分红，写出对应的复权因子形式。</li>
+<li>列出三种「缺失值」语义，并说明各自应如何处理。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>OHLC chart</strong>（百科）：开高低收四价的数据结构<br><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></li>
+<li><strong>Order book</strong>（百科）：买卖档位、深度与逐笔撮合<br><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></li>
+<li><strong>Adjusted closing price</strong>（百科）：前复权/后复权与公司行动处理<br><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></li>
+<li><strong>pandas</strong>（工具）：时间序列对齐、分组与缺失处理的工业标准<br><a href="https://pandas.pydata.org/" target="_blank" rel="noopener">pandas</a></li>
+<li><strong>AKShare</strong>（数据）：开源中文金融数据接口（A 股/基金/宏观）<br><a href="https://github.com/akfamily/akshare" target="_blank" rel="noopener">AKShare</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=OHLCV%20order%20book%20adjusted%20close%20market%20data%20model" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=OHLCV%20order%20book%20adjusted%20close%20market%20data%20model" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=OHLCV%20order%20book%20adjusted%20close%20market%20data%20model&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part3/16-candlestick/index.html'>第 16 章 · K 线、坐标与复权：看图前先校准数据</a> K 线与坐标；<a href='../../part5/25-data-pipeline/index.html'>第 25 章 · 数据管道：对齐、公司行动与幸存者偏差</a> 数据管道与 point-in-time 快照；<a href='../../part5/26-backtest/index.html'>第 26 章 · 事件驱动回测引擎：从信号到成交</a> 回测中的价格口径。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

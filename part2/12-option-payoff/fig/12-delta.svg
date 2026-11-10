@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>看涨期权 delta 随标的价格变化</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">看涨期权 delta 随标的价格变化</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">-0.022</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.189</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.400</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.611</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.822</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.03</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">67.60</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">80.56</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">93.52</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">106.5</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">119.4</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">132.4</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">标的价格</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">delta</text>
+<polyline points="101.19,344.83 111.68,341.66 122.17,341.66 132.67,337.23 143.16,330.34 153.65,327.88 164.15,327.88 174.64,320.85 185.14,311.54 195.63,309.27 206.12,309.27 216.62,301.49 227.11,289.75 237.60,285.78 248.10,285.78 258.59,280.91 269.09,267.04 279.58,258.06 290.07,258.06 300.57,258.06 311.06,245.61 321.56,230.29 332.05,227.42 342.54,227.42 353.04,226.90 363.53,211.05 374.02,195.73 384.52,195.73 395.01,195.73 405.51,195.73 416.00,180.38 426.49,165.03 436.99,165.03 447.48,165.03 457.98,165.03 468.47,155.28 478.96,141.35 489.46,137.18 499.95,137.18 510.44,137.18 520.94,135.76 531.43,123.93 541.93,113.52 552.42,113.52 562.91,113.52 573.41,113.52 583.90,111.22 594.40,101.81 604.89,94.70 615.38,94.70 625.88,94.70 636.37,94.70 646.86,94.30 657.36,87.30 667.85,80.68 678.35,80.68 688.84,80.68 699.33,80.68 709.83,80.68 720.32,78.05 730.81,73.17" fill="none" stroke="#245a7a" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<line x1="76.0" y1="210.74" x2="756.0" y2="210.74" stroke="#8a3b26" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="80.0" y="50.0" width="178" height="48" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#245a7a" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">delta（数值差分）</text>
+<line x1="86.0" y1="86.0" x2="104.0" y2="86.0" stroke="#8a3b26" stroke-width="3"/>
+<text x="110.0" y="90.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">平值附近 ≈ 0.5</text>
+</svg>

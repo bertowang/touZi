@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>ETF 折溢价率与套利成本边界</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">ETF 折溢价率与套利成本边界</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">-0.007</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">-0.004</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">-0.001</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.001</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.004</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.007</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-4.76</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">20.94</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">46.65</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">72.35</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">98.06</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">123.8</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">交易日</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">折溢价率</text>
+<polyline points="101.19,210.30 106.48,160.77 111.77,97.39 117.06,80.00 122.35,179.55 127.64,142.21 132.93,240.51 138.22,286.67 143.51,337.08 148.80,217.59 154.10,274.19 159.39,264.78 164.68,265.24 169.97,257.92 175.26,278.25 180.55,229.50 185.84,141.66 191.13,149.43 196.42,133.07 201.71,125.44 207.01,178.43 212.30,242.22 217.59,263.21 222.88,204.17 228.17,282.34 233.46,270.65 238.75,213.63 244.04,175.28 249.33,179.74 254.62,145.89 259.92,147.29 265.21,211.94 270.50,285.06 275.79,273.86 281.08,220.35 286.37,245.10 291.66,282.02 296.95,278.67 302.24,313.00 307.53,262.31 312.83,309.74 318.12,238.06 323.41,344.83 328.70,256.19 333.99,279.15 339.28,332.59 344.57,231.73 349.86,241.08 355.15,341.27 360.44,311.28 365.74,242.23 371.03,258.65 376.32,214.16 381.61,177.87 386.90,150.86 392.19,143.93 397.48,90.52 402.77,121.62 408.06,146.01 413.35,253.56 418.65,204.33 423.94,143.00 429.23,166.67 434.52,194.94 439.81,105.25 445.10,242.61 450.39,215.21 455.68,99.66 460.97,200.81 466.26,169.26 471.56,85.96 476.85,156.30 482.14,137.49 487.43,105.38 492.72,202.45 498.01,207.40 503.30,193.58 508.59,156.71 513.88,165.94 519.17,181.38 524.47,233.23 529.76,246.30 535.05,198.39 540.34,194.94 545.63,237.06 550.92,272.33 556.21,136.75 561.50,93.56 566.79,124.11 572.08,290.82 577.38,217.08 582.67,192.94 587.96,115.64 593.25,144.32 598.54,156.97 603.83,139.88 609.12,241.75 614.41,187.84 619.70,175.45 624.99,213.37 630.29,149.92 635.58,73.17 640.87,210.83 646.16,241.76 651.45,222.86 656.74,211.88 662.03,230.02 667.32,272.60 672.61,162.76 677.90,120.50 683.20,223.13 688.49,284.24 693.78,162.96 699.07,122.95 704.36,81.99 709.65,110.55 714.94,203.28 720.23,191.60 725.52,295.90 730.81,284.08" fill="none" stroke="#245a7a" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<line x1="76.0" y1="136.62" x2="756.0" y2="136.62" stroke="#8a3b26" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="76.0" y1="278.19" x2="756.0" y2="278.19" stroke="#2f6b4f" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="76.0" y1="207.41" x2="756.0" y2="207.41" stroke="#9aa6b2" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="80.0" y="50.0" width="178" height="68" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#245a7a" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">折溢价率</text>
+<line x1="86.0" y1="86.0" x2="104.0" y2="86.0" stroke="#8a3b26" stroke-width="3"/>
+<text x="110.0" y="90.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">套利上界</text>
+<line x1="86.0" y1="106.0" x2="104.0" y2="106.0" stroke="#2f6b4f" stroke-width="3"/>
+<text x="110.0" y="110.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">套利下界</text>
+</svg>

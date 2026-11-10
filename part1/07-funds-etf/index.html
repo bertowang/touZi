@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 07 章 · 公募基金与 ETF：净值、申赎与跟踪 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="07">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第一篇 · 产品地图与市场基础设施 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 07 章</span>公募基金与 ETF：净值、申赎与跟踪</h1>
+<p class="lede">基金不是一只股票，而是一份「按份额比例分配的组合净值」接口。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">产品 · 制度</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 06 章解决「价格序列可比」，本章解决「份额序列可比」；<a href='../../part2/11-index-arbitrage/index.html'>第 11 章 · 指数、折溢价与 ETF 套利机制</a> 把申赎机制写成无套利边界，<a href='../../part2/14-allocation/index.html'>第 14 章 · 资产配置、再平衡与定投</a> 用基金实现资产配置。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">基金份额是一个 <code>view</code>：NAV 是底层组合投影出的只读属性，申赎是对 view 的 insert/delete，折溢价则是两个不一致的数据副本之间的<strong>复制延迟</strong>。套利就是一致性修复进程。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能说明场外基金申赎与 ETF 场内交易的区别。</li>
+<li>能计算 NAV、折溢价率与跟踪误差。</li>
+<li>能解释申赎套利为什么会把 ETF 价格拉回净值附近。</li>
+<li>能指出基金页面常见字段的口径（累计净值、单位净值、复权净值）。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>单位净值与累计净值</td><td><a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a> · <a href="https://en.wikipedia.org/wiki/Tracking_error" target="_blank" rel="noopener">Tracking error</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>未知价申赎</td><td><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a> · <a href="https://en.wikipedia.org/wiki/Mutual_fund" target="_blank" rel="noopener">Mutual fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>份额确认与到账</td><td><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a> · <a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>ETF 一级与二级市场</td><td><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a> · <a href="https://en.wikipedia.org/wiki/Index_fund" target="_blank" rel="noopener">Index fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>折溢价率</td><td><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a> · <a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>申赎清单与套利</td><td><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a> · <a href="https://en.wikipedia.org/wiki/Mutual_fund" target="_blank" rel="noopener">Mutual fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>跟踪误差与跟踪偏离</td><td><a href="https://en.wikipedia.org/wiki/Tracking_error" target="_blank" rel="noopener">Tracking error</a> · <a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>费率与规模</td><td><a href="https://en.wikipedia.org/wiki/Expense_ratio" target="_blank" rel="noopener">Expense ratio</a> · <a href="https://en.wikipedia.org/wiki/Index_fund" target="_blank" rel="noopener">Index fund</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s7-1"><h2><span class="sec-num">§7.1</span>两条交易链路</h2>
+<ul>
+<li><strong>场外开放式基金</strong>：按<strong>未知价</strong>向基金公司申赎，以当日收盘后计算的 NAV 成交；T 日申请、T+1 确认份额、赎回款再等若干日到账。</li>
+<li><strong>ETF</strong>：二级市场像股票一样按盘中价格买卖；同时存在一级市场，授权参与商可用一篮子证券申购份额、或赎回换回一篮子，这是折溢价的收敛机制。</li>
+</ul>
+<p class="eq">NAV = (组合资产市值 − 负债) / 存续份额　|　折溢价率 = 场内价格 / NAV − 1</p>
+<p>净值字段要分清：<code>单位净值</code>是每份价格，<code>累计净值</code>加上历史分红，而做收益分析应该用<strong>复权净值</strong>（把分红再投资）。这与第 06 章的复权价是同一个思想。</p>
+</section>
+<section id="s7-2"><h2><span class="sec-num">§7.2</span>跟踪误差不是「涨得少」</h2>
+<p class="eq">跟踪偏离 = r_基金 − r_指数　|　跟踪误差 = stdev(跟踪偏离)</p>
+<p>跟踪偏离是方向性偏差（费率、现金拖累、抽样复制），跟踪误差是波动。一只基金可以长期跑输指数 1%（偏离为负）但跟踪误差很小，说明它<strong>稳定地</strong>扣了成本；另一只基金平均打平但误差很大，说明复制机制不稳定。评估指数产品时两者都要看。</p>
+</section>
+<section id="s7-3"><h2><span class="sec-num">§7.3</span>套利把溢价压回成本边界</h2>
+<p>当 <code>|折溢价率| &gt; 申赎成本 + 冲击成本</code> 时，一级市场申购→二级卖出（或反向）存在无风险空间，套利资金会迅速把价差压回边界内。因此<strong>折溢价不是免费的择时信号</strong>，它更多反映流动性、停牌成分股与跨境时差。第 11 章会把这条机制写成可计算的边界。</p>
+<div class="card warn"><span class="card-label">别踩的坑</span><p style="margin-bottom:0">跨境 ETF、商品 ETF 与含停牌成分股的 ETF 常出现较大且持续的折溢价，因为申赎受限、净值本身是滞后估计。看到「溢价 8%」先查申赎是否开放。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 7-1 · 净值、折溢价与申赎套利收敛</h3>
+<pre class="code" data-file="code/07-etf.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""合成指数与 ETF 净值，加入均值回复的折溢价与套利阻尼，计算跟踪误差与套利触发次数。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 120             # 交易日
+FEE_DAILY = 0.00002  # 管理费与现金拖累（按日）
+TRACK_NOISE = 0.0004 # 抽样复制噪声
+ARB_COST = 0.003     # 申赎 + 冲击成本边界
+PREM_VOL = 0.002     # 折溢价冲击
+PREM_AR = 0.85       # 折溢价自相关
+ARB_DAMP = 0.55      # 套利发生后的收敛系数
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+idx_ret = [rng.gauss(0.0004, 0.009) for _ in range(N)]
+noise = [rng.gauss(0, TRACK_NOISE) for _ in range(N)]
+noise_mean = statistics.fmean(noise)
+noise = [e - noise_mean for e in noise]   # 去均值：让复制噪声只影响误差、不污染偏离
+nav_ret = [r - FEE_DAILY + e for r, e in zip(idx_ret, noise)]
+
+idx, nav, idx_v, nav_v = [], [], 1.0, 1.0
+for ri, rn in zip(idx_ret, nav_ret):
+    idx_v *= (1 + ri)
+    nav_v *= (1 + rn)
+    idx.append(idx_v)
+    nav.append(nav_v)
+
+prem, prem_series, arb_hits = 0.0, [], 0
+for _ in range(N):
+    if abs(prem) &gt; ARB_COST:
+        prem *= ARB_DAMP
+        arb_hits += 1
+    prem = PREM_AR * prem + rng.gauss(0, PREM_VOL)
+    prem_series.append(prem)
+price = [v * (1 + p) for v, p in zip(nav, prem_series)]
+
+dev = [rn - ri for ri, rn in zip(idx_ret, nav_ret)]
+tracking_error = statistics.pstdev(dev)
+tracking_diff = statistics.fmean(dev)
+
+c = Chart(FIG / "07-premium.svg", "ETF 折溢价率与套利成本边界", xlabel="交易日", ylabel="折溢价率")
+c.line(range(N), prem_series, BLUE, label="折溢价率")
+c.hline(ARB_COST, RED, label="套利上界")
+c.hline(-ARB_COST, GREEN, label="套利下界")
+c.hline(0.0, "#9aa6b2")
+print("折溢价图:", c.save())
+t = Chart(FIG / "07-tracking.svg", "指数与 ETF 净值（归一化）", xlabel="交易日", ylabel="净值")
+t.line(range(N), idx, BLUE, label="标的指数")
+t.line(range(N), nav, GREEN, label="ETF 净值")
+print("跟踪图:", t.save())
+print("年化跟踪误差=%.3f%% 日均跟踪偏离=%.5f%% | 平均|溢价|=%.3f%% 套利触发=%d 次" %
+      (100 * tracking_error * math.sqrt(252), 100 * tracking_diff,
+       100 * statistics.fmean(abs(x) for x in prem_series), arb_hits))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>ARB_DAMP</code> 改成 1.0（套利失效），观察折溢价是否突破边界并持续不回归。　<strong>预期与判读：</strong>套利阻尼让折溢价大多落在 ±成本边界内；跟踪误差主要来自复制噪声，而日均跟踪偏离主要由费率决定。<strong>稳定的负偏离与不稳定的误差是两件事。</strong></p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>FEE_DAILY</code> 提高十倍，跟踪偏离会明显变负，但跟踪误差几乎不变——验证两者的区别。　文件位置：<code>part1/07-funds-etf/code/07-etf.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/07-premium.svg" alt="折溢价率在套利成本边界附近被拉回" loading="lazy"><figcaption>图 1　折溢价率在套利成本边界附近被拉回（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/07-tracking.svg" alt="指数与基金净值的长期分离" loading="lazy"><figcaption>图 2　指数与基金净值的长期分离（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>基金份额净值的计算口径</p>
+<span class="why"><strong>怎么用</strong>：基金份额净值的计算口径</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Net_asset_value</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Tracking_error" target="_blank" rel="noopener">Tracking error</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>组合与基准收益差的标准差</p>
+<span class="why"><strong>怎么用</strong>：跟踪误差的定义与使用</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Tracking_error</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>场内交易、申赎与跟踪指数</p>
+<span class="why"><strong>怎么用</strong>：一级/二级市场与申赎机制</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Exchange-traded_fund</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.amac.org.cn/" target="_blank" rel="noopener">中国证券投资基金业协会</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>基金备案、从业规范与公募数据</p>
+<span class="why"><strong>怎么用</strong>：公募基金备案与行业数据</span>
+<p style="margin:0"><code>https://www.amac.org.cn/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>用单位净值直接算长期收益，漏掉分红。</li>
+<li>把场外基金按盘中价格申赎。</li>
+<li>把 ETF 的高溢价当作看涨信号，忽略申赎受限与净值滞后。</li>
+<li>只看跟踪误差，不看跟踪偏离的方向。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>在示例中加入一次分红，说明单位净值、累计净值与复权净值各自怎么变。</li>
+<li>推导 <code>跟踪误差 × sqrt(252)</code> 年化的前提假设，并说明何时不成立。</li>
+<li>查一只跨境 ETF 的历史折溢价，判断它是否长期超出示例的成本边界。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Exchange-traded fund</strong>（百科）：场内交易、申赎与跟踪指数<br><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a></li>
+<li><strong>Net asset value</strong>（百科）：基金份额净值的计算口径<br><a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></li>
+<li><strong>Tracking error</strong>（百科）：组合与基准收益差的标准差<br><a href="https://en.wikipedia.org/wiki/Tracking_error" target="_blank" rel="noopener">Tracking error</a></li>
+<li><strong>Expense ratio</strong>（百科）：长期复利下最确定的负项<br><a href="https://en.wikipedia.org/wiki/Expense_ratio" target="_blank" rel="noopener">Expense ratio</a></li>
+<li><strong>Mutual fund</strong>（百科）：净值申赎与开放式基金运作<br><a href="https://en.wikipedia.org/wiki/Mutual_fund" target="_blank" rel="noopener">Mutual fund</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=ETF%20creation%20redemption%20NAV%20premium%20discount%20tracking%20error" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=ETF%20creation%20redemption%20NAV%20premium%20discount%20tracking%20error" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=ETF%20creation%20redemption%20NAV%20premium%20discount%20tracking%20error&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part2/11-index-arbitrage/index.html'>第 11 章 · 指数、折溢价与 ETF 套利机制</a> 指数编制与折溢价套利；<a href='../../part2/14-allocation/index.html'>第 14 章 · 资产配置、再平衡与定投</a> 用基金做资产配置；<a href='../../part5/27-performance/index.html'>第 27 章 · 绩效度量与归因：夏普、回撤与 Brinson</a> 相对基准的信息比率。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

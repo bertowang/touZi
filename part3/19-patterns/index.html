@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 19 章 · 形态识别：从主观描述到可判定规则 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="19">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第三篇 · 盘面语言与看图识图 · 第三阶段 · 盘面语言与看图识图</span>
+<h1><span class="ch-num">第 19 章</span>形态识别：从主观描述到可判定规则</h1>
+<p class="lede">「双底」不是一个图形，而是一组带容差、带参数的不等式；写下它们才谈得上检验。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s3">盘面 · 识图</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 18 章是单根 K 线的变换，本章是多根 K 线的组合规则；<a href='../20-chart-pipeline/index.html'>第 20 章 · 用代码画图：SVG 图与看图陷阱</a> 检查这类规则是否偷看了未来数据。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">形态识别是一段带超参的模式匹配；<code>TOL</code>、<code>W</code>、<code>NECK</code> 是它的正则项。<strong>在纯噪声上也能匹配出一堆「信号」</strong>，所以必须配一个独立的前向收益检验。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能把头肩、双底、三角、缺口写成可判定条件。</li>
+<li>能识别形态定义里隐含的自由参数。</li>
+<li>能计算形态后的前向收益并与无条件基准比较。</li>
+<li>能解释「看图很准」为何常来自选择性记忆。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>头肩顶与颈线</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>双底与双顶</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>三角形与突破</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>缺口与回补</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>局部极值判定</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>容差与自由参数</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>前向收益检验</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>选择性记忆</td><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s19-1"><h2><span class="sec-num">§19.1</span>把形态翻译成谓词</h2>
+<p>形态识别的第一步不是找图，而是写 <code>is_double_bottom(prices, params) -&gt; bool</code>：存在两个局部低点 <code>i &lt; j</code>，间隔在给定区间内，两底价格相差小于容差，且中间存在一个明显高于低点的高点（颈线）。</p>
+<table><thead><tr><th style="width:24%">要素</th><th style="width:32%">自由参数</th><th style="width:44%">参数变大时</th></tr></thead><tbody>
+<tr><td>局部低点</td><td>左右窗口 w</td><td>信号变少、更「显著」</td></tr>
+<tr><td>两底相近</td><td>价格容差 ε</td><td>信号变多、更宽松</td></tr>
+<tr><td>间隔合理</td><td>最小/最大间隔</td><td>决定形态的时间尺度</td></tr>
+<tr><td>中间有颈线</td><td>颈线高度阈值</td><td>决定形态是否「像」</td></tr>
+<tr><td>确认突破</td><td>突破幅度与量能</td><td>更晚确认、更少假信号</td></tr>
+</tbody></table>
+<div class="card warn"><span class="card-label">关键</span><p style="margin-bottom:0">五个参数全是人定的。只要允许事后调整，任何一段历史行情里都能找到「完美形态」——这就是第 28 章要处理的数据挖掘问题。</p></div>
+</section>
+<section id="s19-2"><h2><span class="sec-num">§19.2</span>形态必须配一个可证伪的命题</h2>
+<p class="eq">H0: E[r_前向 | 形态出现] = E[r_前向]</p>
+<p>只有把「形态有用」写成关于<strong>前向收益</strong>的命题，才能用样本外数据、成本扣除与显著性检验去否定它。只看图形画得多标准，不构成证据。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 19-1 · 双底的机器判定与前向收益对照</h3>
+<pre class="code" data-file="code/19-pattern.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""把双底写成不等式，自动扫描合成序列，比较形态后收益与无条件基准。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 240
+START, DRIFT, VOL = 50.0, 0.0003, 0.014
+W, TOL = 3, 0.02        # 局部极值半窗口、两底价格容差
+MIN_GAP, MAX_GAP = 8, 45
+NECK, FWD = 0.03, 10    # 颈线幅度、前向收益天数
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+px, prices = START, []
+for _ in range(N):
+    px *= (1 + rng.gauss(DRIFT, VOL))
+    prices.append(px)
+
+lows = [i for i in range(W, N - W)
+        if prices[i] == min(prices[i - W:i + W + 1])]
+signals, marks = [], []
+for a, i in enumerate(lows):
+    for j in lows[a + 1:]:
+        gap = j - i
+        if not (MIN_GAP &lt;= gap &lt;= MAX_GAP):
+            break
+        p1, p2 = prices[i], prices[j]
+        if abs(p1 - p2) / p1 &gt; TOL:
+            continue
+        peak = max(prices[i:j + 1])
+        if peak / min(p1, p2) - 1 &lt; NECK:
+            continue
+        if j + FWD &lt; N:
+            signals.append((j, prices[j + FWD] / prices[j] - 1))
+            marks.append((i, j))
+            break
+
+rets = [prices[t + FWD] / prices[t] - 1 for t in range(N - FWD)]
+base = statistics.fmean(rets)
+hit = statistics.fmean(r for _j, r in signals) if signals else 0.0
+win = statistics.fmean(1.0 if r &gt; 0 else 0.0 for _j, r in signals) if signals else 0.0
+
+c = Chart(FIG / "19-pattern.svg", "机器判定的双底信号（标记第二个底）", xlabel="交易日", ylabel="价格")
+c.line(range(N), prices, BLUE, label="合成收盘价")
+c.scatter([j for _i, j in marks], [prices[j] for _i, j in marks], RED,
+          label="双底确认点", radius=5)
+print("形态图:", c.save())
+b = Chart(FIG / "19-forward.svg", "形态后 10 日收益 vs 无条件基准", xlabel="口径", ylabel="平均收益 %",
+          xticks=[(0, "形态后"), (1, "全样本")])
+b.bars([0, 1], [100 * hit, 100 * base], GREEN, label="平均 10 日收益")
+b.hline(0.0, "#9aa6b2")
+print("收益图:", b.save())
+print("局部低点=%d 双底信号=%d | 形态后均值=%.3f%% 基准=%.3f%% 胜率=%.1f%%" %
+      (len(lows), len(signals), 100 * hit, 100 * base, 100 * win))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>TOL</code> 从 0.02 放宽到 0.08，观察信号数量与形态后收益如何变化。　<strong>预期与判读：</strong>本例的价格是<strong>纯随机游走</strong>，不含任何形态效应，所以形态后收益与基准的差异只是抽样噪声（本例恰好偏高，换一个种子就可能偏低）。但放宽容差后总能找到更多「标准双底」——这就是选择性记忆的算法版本。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>NECK</code> 调到 0.01，形态变松、信号变多，说明结论对参数极敏感。　文件位置：<code>part3/19-patterns/code/19-pattern.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/19-pattern.svg" alt="按不等式自动识别出的双底确认点" loading="lazy"><figcaption>图 1　按不等式自动识别出的双底确认点（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/19-forward.svg" alt="形态后收益与无条件平均收益的对照" loading="lazy"><figcaption>图 2　形态后收益与无条件平均收益的对照（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>头肩、双底、三角等形态</p>
+<span class="why"><strong>怎么用</strong>：常见形态的流派与争议</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Chart_pattern</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>成交密集区与自我实现的价位</p>
+<span class="why"><strong>怎么用</strong>：成交密集区与自我实现价位</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Support_and_resistance</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Technical_analysis" target="_blank" rel="noopener">Technical analysis</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价量研究的假设、流派与争议</p>
+<span class="why"><strong>怎么用</strong>：价量研究的假设与检验现状</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Technical_analysis</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价格是否已反映可用信息</p>
+<span class="why"><strong>怎么用</strong>：价格是否已反映图形信息</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Efficient-market_hypothesis</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>事后在图上画颈线，把任意两个低点解释成双底。</li>
+<li>只展示成功的形态样本，不报告全部信号的前向收益。</li>
+<li>把「形态确认」画在最低点当天，而实际只能在其后才判定。</li>
+<li>忽略突破失败的样本与交易成本。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>给示例补上「突破颈线才确认」的条件，比较信号数量。</li>
+<li>把 <code>FWD</code> 改成 1、10、30，观察结论是否稳定。</li>
+<li>设计一个能自动统计「头肩顶」的谓词，并列出它比双底多几个自由参数。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Chart pattern</strong>（百科）：头肩、双底、三角等形态<br><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a></li>
+<li><strong>Support and resistance</strong>（百科）：成交密集区与自我实现的价位<br><a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></li>
+<li><strong>Technical analysis</strong>（百科）：价量研究的假设、流派与争议<br><a href="https://en.wikipedia.org/wiki/Technical_analysis" target="_blank" rel="noopener">Technical analysis</a></li>
+<li><strong>Efficient-market hypothesis</strong>（百科）：价格是否已反映可用信息<br><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=chart%20patterns%20head%20shoulders%20double%20bottom%20gap%20multi%20timeframe" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=chart%20patterns%20head%20shoulders%20double%20bottom%20gap%20multi%20timeframe" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=chart%20patterns%20head%20shoulders%20double%20bottom%20gap%20multi%20timeframe&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../20-chart-pipeline/index.html'>第 20 章 · 用代码画图：SVG 图与看图陷阱</a> 未来函数；<a href='../../part4/24-read-papers/index.html'>第 24 章 · 怎样读一篇因子论文：从摘要到可复现</a> 读论文时的样本外意识；<a href='../../part5/28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 多重检验。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

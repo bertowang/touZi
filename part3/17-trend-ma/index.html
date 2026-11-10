@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 17 章 · 均线、趋势与支撑阻力 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="17">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第三篇 · 盘面语言与看图识图 · 第三阶段 · 盘面语言与看图识图</span>
+<h1><span class="ch-num">第 17 章</span>均线、趋势与支撑阻力</h1>
+<p class="lede">均线是低通滤波器：它削掉噪声的代价，是必然带来滞后。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s3">盘面 · 识图</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 16 章把 OHLCV 画成图，本章加第一层平滑；<a href='../18-indicators/index.html'>第 18 章 · MACD、RSI、布林带与 KDJ 的数学定义</a> 把平滑扩展成多指标公式，<a href='../19-patterns/index.html'>第 19 章 · 形态识别：从主观描述到可判定规则</a> 把形态写成可判定规则。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">SMA 是长度固定的滑动窗口聚合，EMA 是带衰减因子的递归状态。交叉信号是 <code>sign(fast − slow)</code> 的变号事件；<strong>任何滤波都得在噪声与延迟之间付代价</strong>。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能实现 SMA 与 EMA，并说明二者的权重分布差异。</li>
+<li>能计算交叉信号的滞后，并量化窗口长度与滞后的权衡。</li>
+<li>能把「趋势」「支撑阻力」写成可判定的规则。</li>
+<li>能解释为什么均线在震荡市里会频繁假信号。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>简单移动平均 SMA</td><td><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>指数移动平均 EMA</td><td><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>低通滤波与滞后</td><td><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>金叉与死叉</td><td><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>趋势的定义</td><td><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>支撑与阻力</td><td><a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a> · <a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>成交密集区</td><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>假信号与震荡市</td><td><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a> · <a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s17-1"><h2><span class="sec-num">§17.1</span>两种平滑，两种权重</h2>
+<p class="eq">SMA_n(t) = (1/n) Σ_{i=0}^{n−1} P_(t−i)　|　EMA(t) = αP_t + (1−α)EMA(t−1), α = 2/(n+1)</p>
+<p>SMA 对窗口内每一天等权，窗口滚动时会出现「旧数据掉出」造成的阶跃；EMA 对近端指数加权，反应更快且没有掉出效应，但永远不会完全忘记历史。从信号处理角度，两者都是<strong>低通滤波器</strong>：窗口越长噪声越少，滞后越大。</p>
+</section>
+<section id="s17-2"><h2><span class="sec-num">§17.2</span>把主观词写成判定式</h2>
+<table><thead><tr><th style="width:18%">词</th><th style="width:54%">可判定定义（示例）</th><th style="width:28%">自由度</th></tr></thead><tbody>
+<tr><td>上升趋势</td><td>close > SMA_n 且 SMA_n 较 k 期前上升</td><td>n、k</td></tr>
+<tr><td>金叉</td><td>fast_(t−1) ≤ slow_(t−1) 且 fast_t > slow_t</td><td>fast、slow 窗口</td></tr>
+<tr><td>支撑位</td><td>过去 m 期局部低点的密集价格带</td><td>m、容差、聚类宽度</td></tr>
+<tr><td>突破</td><td>close > 过去 m 期最高价 × (1 + ε)</td><td>m、ε、成交量条件</td></tr>
+</tbody></table>
+<p>注意每个定义都带<strong>自由参数</strong>。参数越多、越容易在历史上调出好看的结果，也就越容易过拟合（第 28 章）。把参数写进代码并固定下来，是让结论可讨论的前提。</p>
+</section>
+<section id="s17-3"><h2><span class="sec-num">§17.3</span>支撑阻力：成交密集区的自我实现</h2>
+<p>支撑与阻力常被解释为「前期成交密集区的记忆」：在某一价格带套牢的持仓者，回到成本附近时倾向卖出，从而形成供给。但这是一种<strong>行为假说</strong>，不是物理定律。第 22 章会从处置效应、锚定等角度给出更基础解释，第 24 章则讨论怎样检验这类假说。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 17-1 · SMA/EMA、交叉滞后与支撑阻力</h3>
+<pre class="code" data-file="code/17-trend.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""在带转折的合成价格上计算均线，检测交叉，量化窗口—滞后权衡。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 160
+TURN = 80           # 真实趋势转折点
+START = 50.0
+UP, DOWN = 0.004, -0.003
+NOISE = 0.010
+FAST, SLOW = 5, 20
+LOOKBACK = 20
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+px, prices = START, []
+for i in range(N):
+    drift = UP if i &lt; TURN else DOWN
+    px *= (1 + drift + rng.gauss(0, NOISE))
+    prices.append(px)
+
+def sma(series, w):
+    return [None if i + 1 &lt; w else statistics.fmean(series[i + 1 - w:i + 1])
+            for i in range(len(series))]
+
+def ema(series, w):
+    a, out, prev = 2.0 / (w + 1), [], series[0]
+    for v in series:
+        prev = a * v + (1 - a) * prev
+        out.append(prev)
+    return out
+
+fast, slow, ema_fast = sma(prices, FAST), sma(prices, SLOW), ema(prices, FAST)
+crosses = []
+for i in range(1, N):
+    if None in (fast[i - 1], slow[i - 1], fast[i], slow[i]):
+        continue
+    if fast[i - 1] &lt;= slow[i - 1] and fast[i] &gt; slow[i]:
+        crosses.append((i, "金叉"))
+    if fast[i - 1] &gt;= slow[i - 1] and fast[i] &lt; slow[i]:
+        crosses.append((i, "死叉"))
+
+support = [min(prices[max(0, i + 1 - LOOKBACK):i + 1]) for i in range(N)]
+resist = [max(prices[max(0, i + 1 - LOOKBACK):i + 1]) for i in range(N)]
+
+def clean(series):
+    xs = [i for i, v in enumerate(series) if v is not None]
+    return xs, [series[i] for i in xs]
+
+xf, yf = clean(fast)
+x_slow, y_slow = clean(slow)
+c = Chart(FIG / "17-trend.svg", "价格、SMA/EMA 与滚动支撑阻力", xlabel="交易日", ylabel="价格")
+c.line(range(N), prices, "#9aa6b2", label="价格", opacity=0.8)
+c.line(xf, yf, BLUE, label="SMA5")
+c.line(x_slow, y_slow, AMBER, label="SMA20")
+c.line(range(N), ema_fast, GREEN, label="EMA5")
+c.line(range(N), support, RED, label="滚动支撑", dash="3 3")
+c.line(range(N), resist, RED, label="滚动阻力", dash="6 3")
+c.vline(TURN, "#8a6316", label="真实转折点")
+print("趋势图:", c.save())
+
+windows = [3, 5, 10, 20, 40]
+lags = []
+for w in windows:
+    f, s = sma(prices, w), sma(prices, w * 2)
+    first = next((i for i in range(TURN, N)
+                  if f[i] and s[i] and f[i - 1] and s[i - 1]
+                  and f[i - 1] &gt;= s[i - 1] and f[i] &lt; s[i]), N)
+    lags.append(first - TURN)
+l = Chart(FIG / "17-lag.svg", "均线窗口与转折信号滞后", xlabel="快线窗口", ylabel="滞后（根）",
+          xticks=[(i, "n=%d" % w) for i, w in enumerate(windows)])
+l.bars(range(len(windows)), lags, BLUE, label="死叉滞后")
+print("滞后图:", l.save())
+post_death = [x for x in crosses if x[0] &gt;= TURN and x[1] == "死叉"]
+print("交叉总数=%d 转折前噪声交叉=%d | 转折后首个死叉=%s | 窗口 %s 对应滞后 %s | 真实转折 T%d" %
+      (len(crosses), len([x for x in crosses if x[0] &lt; TURN]),
+       post_death[0] if post_death else "无", windows, lags, TURN))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>SLOW</code> 从 20 改成 40，数一数交叉次数是否减少；再观察滞后图随窗口增大的趋势。　<strong>预期与判读：</strong>转折后的趋势交叉必然<strong>滞后于真实转折</strong>，窗口越长滞后越大；转折前也可能因噪声出现假交叉。支撑/阻力在这里只是滚动极值，参数一改结论就变——这正是需要样本外检验的原因。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>NOISE</code> 翻倍，短窗口的交叉次数会明显增多，说明噪声被误判成趋势。　文件位置：<code>part3/17-trend-ma/code/17-trend.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/17-trend.svg" alt="价格、SMA/EMA 与滚动支撑阻力通道" loading="lazy"><figcaption>图 1　价格、SMA/EMA 与滚动支撑阻力通道（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/17-lag.svg" alt="窗口长度与信号滞后的权衡" loading="lazy"><figcaption>图 2　窗口长度与信号滞后的权衡（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>均线族与滞后性</p>
+<span class="why"><strong>怎么用</strong>：均线族与滞后性</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Moving_average</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>成交密集区与自我实现的价位</p>
+<span class="why"><strong>怎么用</strong>：支撑阻力的常见解释与争议</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Support_and_resistance</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Technical_analysis" target="_blank" rel="noopener">Technical analysis</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价量研究的假设、流派与争议</p>
+<span class="why"><strong>怎么用</strong>：价量研究的假设、流派与争议</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Technical_analysis</code></p></div>
+<div class="repo-card">
+<h3><a href="https://ta-lib.org/" target="_blank" rel="noopener">TA-Lib</a></h3>
+<span class="tag">工具 · 参考资料</span>
+<p>技术指标的事实标准实现（对照本书手写公式）</p>
+<span class="why"><strong>怎么用</strong>：技术指标的事实标准实现，可对照手写公式</span>
+<p style="margin:0"><code>https://ta-lib.org/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把均线当成有预测能力的模型，忽略它只是过去价格的函数。</li>
+<li>在震荡市里用短窗口频繁交易，成本吞掉全部信号。</li>
+<li>事后在图上画支撑线，把任意价位都能解释成「有效支撑」。</li>
+<li>把交叉点当日收盘当作可成交价（未来函数）。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导 EMA 的等效权重之和为 1，并说明它为何没有 SMA 的掉出效应。</li>
+<li>在示例里统计震荡区间（去掉趋势段）的交叉次数，与趋势段比较。</li>
+<li>把「突破」写成带成交量的判定式，说明新增了哪些自由参数。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Moving average</strong>（百科）：均线族与滞后性<br><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a></li>
+<li><strong>Support and resistance</strong>（百科）：成交密集区与自我实现的价位<br><a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></li>
+<li><strong>Technical analysis</strong>（百科）：价量研究的假设、流派与争议<br><a href="https://en.wikipedia.org/wiki/Technical_analysis" target="_blank" rel="noopener">Technical analysis</a></li>
+<li><strong>TradingView</strong>（行情）：多周期图表、指标脚本与 K 线形态的通用参照<br><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=moving%20average%20trend%20support%20resistance%20crossover" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=moving%20average%20trend%20support%20resistance%20crossover" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=moving%20average%20trend%20support%20resistance%20crossover&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../18-indicators/index.html'>第 18 章 · MACD、RSI、布林带与 KDJ 的数学定义</a> 指标的数学定义；<a href='../20-chart-pipeline/index.html'>第 20 章 · 用代码画图：SVG 图与看图陷阱</a> 未来函数与画图陷阱；<a href='../../part5/28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 参数扫描与过拟合。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

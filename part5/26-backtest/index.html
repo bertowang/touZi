@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 26 章 · 事件驱动回测引擎：从信号到成交 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="26">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第五篇 · 策略工程：从想法到证据 · 第四阶段 · 从直觉到可验证的证据</span>
+<h1><span class="ch-num">第 26 章</span>事件驱动回测引擎：从信号到成交</h1>
+<p class="lede">回测不是向量化的乘法，而是一条有状态、有时序、有成本的事件链。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s4">策略 · 工程</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 25 章保证输入数据可信，本章保证执行时序可信；<a href='../27-performance/index.html'>第 27 章 · 绩效度量与归因：夏普、回撤与 Brinson</a> 用同一条净值曲线计算绩效，<a href='../28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 检验参数是否过拟合。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">回测引擎是一个状态机：<code>bar</code> 是事件，<code>order</code> 是待处理队列，<code>fill</code> 是下一个事件。<strong>把信号与成交放在同一个 tick，等于让请求先于响应返回。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能写出事件驱动回测的主循环与账户状态。</li>
+<li>能说明 t 时刻信号必须在 t+1 成交。</li>
+<li>能把手续费、滑点与资金约束写进每次成交。</li>
+<li>能量化「同根成交」假设带来的虚假收益。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>事件循环与账户状态</td><td><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a> · <a href="https://en.wikipedia.org/wiki/Look-ahead_bias" target="_blank" rel="noopener">Look-ahead bias</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>信号—下单—成交时序</td><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>同根成交的错误</td><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>手续费与滑点</td><td><a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>仓位与资金约束</td><td><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a> · <a href="https://en.wikipedia.org/wiki/Look-ahead_bias" target="_blank" rel="noopener">Look-ahead bias</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>订单状态机</td><td><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a> · <a href="https://en.wikipedia.org/wiki/Look-ahead_bias" target="_blank" rel="noopener">Look-ahead bias</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>基准与对照</td><td><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a> · <a href="https://en.wikipedia.org/wiki/Look-ahead_bias" target="_blank" rel="noopener">Look-ahead bias</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>回测的可复现性</td><td><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a> · <a href="https://en.wikipedia.org/wiki/Walk_forward_optimization" target="_blank" rel="noopener">Walk forward optimization</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s26-1"><h2><span class="sec-num">§26.1</span>最小可用引擎的五个状态</h2>
+<p>一个事件驱动引擎至少要维护：<code>cash</code>、<code>position</code>、<code>pending_orders</code>、<code>last_signal</code>、<code>equity</code>。每根 K 线依次执行：<strong>接收行情 → 更新持仓市值 → 计算信号 → 生成订单 → 按下一根可成交价格撮合 → 计费与交割 → 记录快照</strong>。</p>
+<div class="card warn"><span class="card-label">时序铁律</span><p style="margin-bottom:0">信号在 <code>t</code> 收盘后产生，最早只能在 <code>t+1</code> 成交。任何 <code>equity[t] *= (1 + signal[t] * ret[t])</code> 都在用还没发生的收盘价下已经知道的信号。</p></div>
+</section>
+<section id="s26-2"><h2><span class="sec-num">§26.2</span>成本必须发生在成交那一刻</h2>
+<p class="eq">净收益 = Σ (exposure_t × r_(t+1)) − Σ (fee_t + slippage_t + 借券费_t)</p>
+<p>把成本写成「年底统一减 1%」会掩盖高换手策略的真实衰减：成本与信号频率、成交量、波动同时相关，必须逐笔计提。第 29 章会把滑点从常数升级为订单规模的函数。</p>
+</section>
+<section id="s26-3"><h2><span class="sec-num">§26.3</span>对照实验比漂亮净值更重要</h2>
+<table><thead><tr><th style="width:30%">对照组</th><th style="width:70%">目的</th></tr></thead><tbody>
+<tr><td>始终持有</td><td>检验择时是否真的加了价值</td></tr>
+<tr><td>同根成交（错误版）</td><td>量化前视偏差有多大</td></tr>
+<tr><td>零成本版</td><td>分离信号质量与成本拖累</td></tr>
+<tr><td>随机信号</td><td>给出一个不依赖策略的基线分布</td></tr>
+</tbody></table>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 26-1 · 事件驱动主循环与「同根成交」泄漏</h3>
+<pre class="code" data-file="code/26-backtest.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""实现信号→下一根成交→计费的状态链，并与错误版、零成本版、持有基准对照。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N, W = 400, 10
+START, DRIFT, VOL = 50.0, 0.0004, 0.014
+FEE = 0.0005       # 换仓费率
+SLIP = 0.0003      # 换仓滑点
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+px, prices = START, []
+for _ in range(N):
+    px *= (1 + rng.gauss(DRIFT, VOL))
+    prices.append(px)
+rets = [prices[t] / prices[t - 1] - 1 for t in range(1, N)]
+sig = [0] * N
+for t in range(W, N):
+    sig[t] = 1 if prices[t] &gt; statistics.fmean(prices[t + 1 - W:t + 1]) else 0
+
+def run(mode, with_cost=True):
+    v, eq_curve, prev, trades, cost = 1.0, [1.0], 0, 0, 0.0
+    for t in range(1, N):
+        exposure = sig[t] if mode == "same_bar" else sig[t - 1]
+        r = rets[t - 1]
+        if exposure != prev:
+            trades += 1
+            if with_cost:
+                slip = SLIP
+                v *= (1 - FEE)
+                cost += FEE + slip
+            else:
+                slip = 0.0
+        else:
+            slip = 0.0
+        v *= (1 + exposure * (r - slip))
+        prev = exposure
+        eq_curve.append(v)
+    return eq_curve, trades, cost
+
+naive, naive_trades, _ = run("same_bar", False)
+legal_nc, trades, _ = run("next_bar", False)
+legal, _t2, total_cost = run("next_bar", True)
+hold, v = [1.0], 1.0
+for r in rets:
+    v *= (1 + r)
+    hold.append(v)
+
+c = Chart(FIG / "26-backtest.svg", "四种口径的账户净值", xlabel="交易日", ylabel="净值")
+c.line(range(N), naive, RED, label="同根成交（含前视偏差）")
+c.line(range(N), legal_nc, AMBER, label="下一根成交 · 零成本")
+c.line(range(N), legal, BLUE, label="下一根成交 · 扣费")
+c.line(range(N), hold, GREEN, label="始终持有")
+print("净值图:", c.save())
+b = Chart(FIG / "26-cost.svg", "终值对照", xlabel="口径", ylabel="净值",
+          xticks=[(i, n) for i, n in enumerate(["同根成交", "零成本", "扣费", "持有"])])
+b.bars(range(4), [naive[-1], legal_nc[-1], legal[-1], hold[-1]], BLUE, label="期末净值")
+b.hline(1.0, "#9aa6b2")
+print("对照图:", b.save())
+print("同根成交=%.3f 零成本=%.3f 扣费=%.3f 持有=%.3f | 换仓 %d 次 累计成本=%.4f | 泄漏=%.3f" %
+      (naive[-1], legal_nc[-1], legal[-1], hold[-1], trades, total_cost,
+       naive[-1] - legal_nc[-1]))</code></pre>
+<p class="code-hint"><strong>操作：</strong>对照 <code>泄漏</code> 数值；把 <code>FEE</code> 与 <code>SLIP</code> 同时设为 0，两条合法曲线应重合。　<strong>预期与判读：</strong>同根成交版把「收盘后才知道的信号」用于同一根收益，净值被系统性抬高；下一根成交 + 逐笔计费才是可执行的口径。<strong>差额就是泄漏量。</strong></p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>W</code> 改成 3，换仓次数增加，观察成本项如何放大。　文件位置：<code>part5/26-backtest/code/26-backtest.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/26-backtest.svg" alt="四种口径的净值曲线" loading="lazy"><figcaption>图 1　四种口径的净值曲线（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/26-cost.svg" alt="期末净值对照柱状图" loading="lazy"><figcaption>图 2　期末净值对照柱状图（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>用历史数据检验策略的流程与陷阱</p>
+<span class="why"><strong>怎么用</strong>：回测流程与常见陷阱</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Backtesting</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Look-ahead_bias" target="_blank" rel="noopener">Look-ahead bias</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>用到未来信息的隐形数据泄漏</p>
+<span class="why"><strong>怎么用</strong>：前视偏差的标准定义</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Look-ahead_bias</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>下单价格与实际成交价的差</p>
+<span class="why"><strong>怎么用</strong>：成交价与预期价的差额</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Slippage_(finance)</code></p></div>
+<div class="repo-card">
+<h3><a href="https://github.com/mementum/backtrader" target="_blank" rel="noopener">Backtrader</a></h3>
+<span class="tag">工具 · 参考资料</span>
+<p>事件驱动回测框架的参考实现</p>
+<span class="why"><strong>怎么用</strong>：事件驱动回测框架的参考实现</span>
+<p style="margin:0"><code>https://github.com/mementum/backtrader</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>信号与成交同根，制造前视偏差。</li>
+<li>成本年底一次性扣除，忽略换手与成交时点的耦合。</li>
+<li>不检查资金是否足够、是否可做空、是否涨跌停不可成交。</li>
+<li>只报一条净值曲线，不给基准与对照组。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>给示例加入「最多 80% 仓位」约束，说明引擎状态需要新增哪些字段。</li>
+<li>在涨跌停日让订单无法成交，观察净值与换仓次数的变化。</li>
+<li>写出随机信号对照组，重复 100 次得到终值分布，与策略结果比较。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Backtesting</strong>（百科）：用历史数据检验策略的流程与陷阱<br><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a></li>
+<li><strong>Look-ahead bias</strong>（百科）：用到未来信息的隐形数据泄漏<br><a href="https://en.wikipedia.org/wiki/Look-ahead_bias" target="_blank" rel="noopener">Look-ahead bias</a></li>
+<li><strong>Slippage (finance)</strong>（百科）：下单价格与实际成交价的差<br><a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></li>
+<li><strong>Backtrader</strong>（工具）：事件驱动回测框架的参考实现<br><a href="https://github.com/mementum/backtrader" target="_blank" rel="noopener">Backtrader</a></li>
+<li><strong>vectorbt</strong>（工具）：向量化回测与参数扫描框架<br><a href="https://vectorbt.dev/" target="_blank" rel="noopener">vectorbt</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=event%20driven%20backtest%20engine%20transaction%20cost%20slippage" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=event%20driven%20backtest%20engine%20transaction%20cost%20slippage" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=event%20driven%20backtest%20engine%20transaction%20cost%20slippage&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../27-performance/index.html'>第 27 章 · 绩效度量与归因：夏普、回撤与 Brinson</a> 绩效与归因；<a href='../../part6/29-execution/index.html'>第 29 章 · 订单执行、滑点与市场冲击</a> 执行算法；<a href='../../part1/04-market-rules/index.html'>第 04 章 · 交易所制度：竞价、涨跌停、T+1 与交收</a> 制度约束。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

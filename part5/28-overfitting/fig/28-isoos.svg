@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>样本内 vs 样本外夏普（每点一组参数）</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">样本内 vs 样本外夏普（每点一组参数）</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">-0.159</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.223</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.605</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">0.987</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.37</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">1.75</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-0.042</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">0.173</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">0.389</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">0.604</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">0.820</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">1.04</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">样本内夏普</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">样本外夏普</text>
+<circle cx="302.32" cy="73.17" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="404.47" cy="184.20" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="711.12" cy="218.98" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="718.30" cy="251.42" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="101.19" cy="101.06" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="523.71" cy="234.75" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="730.81" cy="235.98" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="602.08" cy="247.00" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="376.53" cy="116.07" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="730.38" cy="124.94" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="553.89" cy="218.04" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="523.65" cy="212.39" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="102.47" cy="344.83" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="555.73" cy="230.23" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="470.41" cy="301.39" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="446.05" cy="253.65" r="4.00" fill="#245a7a" opacity="0.9"/>
+<circle cx="730.81" cy="235.98" r="6.00" fill="#8a3b26" opacity="0.9"/>
+<line x1="76.0" y1="344.83" x2="756.0" y2="344.83" stroke="#9aa6b2" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="80.0" y="50.0" width="178" height="48" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#245a7a" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">参数组合</text>
+<line x1="86.0" y1="86.0" x2="104.0" y2="86.0" stroke="#8a3b26" stroke-width="3"/>
+<text x="110.0" y="90.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">IS 最优</text>
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>拆股日前后：不复权价 vs 前复权价</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">拆股日前后：不复权价 vs 前复权价</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">8.59</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">11.29</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">13.99</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">16.70</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">19.40</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">22.10</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-2.36</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">10.38</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">23.13</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">35.87</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">48.62</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">61.36</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">交易日</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">价格</text>
+<polyline points="101.19,98.04 111.86,93.87 122.53,95.03 133.20,96.83 143.87,103.08 154.54,104.13 165.22,95.73 175.89,92.17 186.56,84.11 197.23,81.76 207.90,78.32 218.57,76.42 229.25,88.49 239.92,81.70 250.59,77.42 261.26,73.17 271.93,85.50 282.60,97.93 293.28,103.87 303.95,106.73 314.62,104.09 325.29,103.95 335.96,99.76 346.63,103.90 357.31,101.22 367.98,97.91 378.65,102.21 389.32,89.44 399.99,84.86 410.66,75.49 421.34,329.50 432.01,332.02 442.68,333.05 453.35,333.19 464.02,330.61 474.69,329.44 485.37,330.86 496.04,334.18 506.71,335.85 517.38,331.15 528.05,333.91 538.72,332.76 549.40,330.94 560.07,336.24 570.74,335.82 581.41,330.81 592.08,338.07 602.75,338.99 613.43,339.13 624.10,341.84 634.77,339.83 645.44,339.81 656.11,344.83 666.78,341.69 677.46,339.06 688.13,335.41 698.80,329.90 709.47,328.30 720.14,327.60 730.81,332.25" fill="none" stroke="#8a3b26" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<polyline points="101.19,338.68 111.86,336.60 122.53,337.18 133.20,338.08 143.87,341.20 154.54,341.73 165.22,337.53 175.89,335.75 186.56,331.71 197.23,330.54 207.90,328.82 218.57,327.87 229.25,333.91 239.92,330.51 250.59,328.37 261.26,326.24 271.93,332.41 282.60,338.62 293.28,341.60 303.95,343.03 314.62,341.71 325.29,341.63 335.96,339.54 346.63,341.61 357.31,340.27 367.98,338.62 378.65,340.76 389.32,334.38 399.99,332.09 410.66,327.40 421.34,329.50 432.01,332.02 442.68,333.05 453.35,333.19 464.02,330.61 474.69,329.44 485.37,330.86 496.04,334.18 506.71,335.85 517.38,331.15 528.05,333.91 538.72,332.76 549.40,330.94 560.07,336.24 570.74,335.82 581.41,330.81 592.08,338.07 602.75,338.99 613.43,339.13 624.10,341.84 634.77,339.83 645.44,339.81 656.11,344.83 666.78,341.69 677.46,339.06 688.13,335.41 698.80,329.90 709.47,328.30 720.14,327.60 730.81,332.25" fill="none" stroke="#245a7a" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<line x1="421.34" y1="46.0" x2="421.34" y2="372.0" stroke="#9aa6b2" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="80.0" y="50.0" width="178" height="48" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#8a3b26" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">不复权收盘价</text>
+<line x1="86.0" y1="86.0" x2="104.0" y2="86.0" stroke="#245a7a" stroke-width="3"/>
+<text x="110.0" y="90.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">前复权收盘价</text>
+</svg>

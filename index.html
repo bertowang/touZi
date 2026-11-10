@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>投资理财：从产品到证据 · 总目录</title>
+<link rel="stylesheet" href="./assets/style.css">
+<script src="./assets/toc.js" defer></script>
+<script src="./assets/app.js" defer></script>
+</head>
+<body data-root="./" data-page="index">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">Undergraduate → Graduate · Products / Pricing / Charts / Evidence / Practice</span>
+<h1>投资理财：从产品到证据</h1>
+<p class="lede">面向<strong>爱好买股票、基金、ETF 的计算机专业学生</strong>的一本投资理财教材。全书不按「入门技巧」拼盘，而沿<strong>现金 → 产品 → 定价 → 组合 → 盘面 → 证据 → 执行 → 风险 → 复盘</strong>一条主线展开：交易 App 上的每个入口都被还原成现金流权利、数据字段与可检验的假设。每章给出原理、公式、可运行的 Python 分析脚本与自绘 SVG 图。</p>
+<div class="meta">
+<span class="badge done">全部 32 章已完稿</span>
+<span class="badge done">每章配 Python 分析 + SVG 图</span>
+<span>共 32 章 · 5 个学习阶段 · 1 附录 · 32 个 Python 实例 · 59 张 SVG 图 · 166 条参考链接</span>
+<span>版本 v0.1 · 2026-11</span>
+</div></header>
+<div class="card note"><span class="card-label">本书的主张</span><p><strong>投资是一套可验证的工程系统</strong>：目标是规格说明书，产品是接口，定价是折现算子，组合是带协方差正则的优化，盘面是事件流的可视化，策略是对历史数据的假设检验，实盘是带成本与延迟的部署。</p><p style="margin-bottom:0">每章学习闭环固定为四步：<strong>读模型 → 跑代码 → 改参数 → 写结论</strong>；脚本用固定随机种子生成合成数据，打印可手算核对的数值，并画出可提交的 SVG 图。</p></div>
+<div class="disclaimer"><p><strong>风险提示与免责声明</strong>：本书为教学材料，所有行情、净值、回测与图表均为合成数据或模型示意，<strong>不构成任何投资建议、产品推荐或收益承诺</strong>。历史表现与回测结果不代表未来收益；杠杆、衍生品、跨境与场外产品可能导致本金全部损失。真实投资须遵守所在市场的法律法规、投资者适当性管理、券商与基金销售机构的风险揭示，并自行承担决策后果。</p></div>
+<h2 id="howto">如何使用这本教材</h2>
+<table><thead><tr><th style="width:24%">栏目</th><th>作用</th></tr></thead><tbody><tr><td>本章位置 / 给程序员的翻译</td><td>说明承接什么、引出什么，并把概念映射到计算概念</td></tr><tr><td>学习目标</td><td>学完应能做什么，用可检验的动词描述</td></tr><tr><td>知识点地图</td><td>逐条列出知识点，每条挂 1～2 个直达参考链接</td></tr><tr><td>原理小节 §x.y</td><td>概念、公式、对照表、边界条件与常见误区</td></tr><tr><td>Python 分析实例</td><td>完整脚本 + 操作步骤 + 预期数值 + 自绘 SVG 图</td></tr><tr><td>本章参考资料 / 扩展学习</td><td>按知识点挑选的机构、课程、数据与工具链接</td></tr><tr><td>常见误区 / 习题</td><td>典型错误与可动手验证的思考题</td></tr></tbody></table>
+<h2 id="python">运行 Python 示例（30 秒）</h2>
+<ol><li>需要 Python 3.8+，<strong>不需要安装任何第三方包</strong>：示例只用 <code>math</code>、<code>random</code>、<code>statistics</code> 等标准库，以及仓库内的 <code>tools/chart.py</code>（纯标准库 SVG 绘图）。</li><li>直接运行某一章脚本：<code>python3 part1/03-product-map/code/03-products.py</code>；或从页面代码块右上角「复制」。</li><li>批量运行并生成全书插图：<code>./tools/run_python.sh</code>；只跑某几个：<code>./tools/run_python.sh part3/16-candlestick/code/16-candle.py</code>。</li><li>页面代码块与磁盘 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 自动同步，永远一致。</li></ol>
+<div class="card contract"><span class="card-label">给程序员的代码契约</span><ul style="margin-bottom:0"><li><strong>零依赖</strong>：OLS、二叉树定价、回测引擎、绩效归因全部手写展开，方便对照公式。</li><li><strong>自包含</strong>：行情与净值由代码里的模型合成，不下载、不读外部数据文件。</li><li><strong>可复现</strong>：固定 <code>random.seed(7)</code>；参数集中在 <code># ---- 参数区 ----</code>。</li><li><strong>有图有真相</strong>：每章脚本打印数值并写出 <code>fig/*.svg</code>，浏览器直接查看。</li><li><strong>可批量验证</strong>：<code>./tools/run_python.sh</code> 跑完全部脚本；<code>python3 tools/check_book.py --run</code> 把实跑纳入自检。</li></ul></div>
+<p class="code-hint">为什么不用 <code>numpy</code> / <code>matplotlib</code>？教材要展示的是算法本身与「图是怎么画出来的」。附录 A.6 给出手写实现与工业库的对照表，学完之后应能无缝切换。</p>
+<h2 id="roadmap">学习路线（建议两个学期）</h2>
+<ol class="roadmap"><li><strong>第一阶段 · 共同语言与产品地图</strong>（00～08）：复利与实际收益、风险度量、可交易产品分类、交易规则、账户费用、OHLCV 数据模型、基金 ETF、固收与现金管理。</li><li><strong>第二阶段 · 定价、组合与资产配置</strong>（09～14）：债券久期、DCF 估值、指数与套利、期权 payoff、均值-方差、再平衡与生命周期。</li><li><strong>第三阶段 · 盘面语言与看图识图</strong>（15～20）：订单簿、K 线与复权、均线趋势、指标公式、形态判定、SVG 画图与未来函数。</li><li><strong>第四阶段 · 从直觉到可验证的证据</strong>（21～28）：因子模型、行为偏差、资金拥挤、论文复现、数据管道、回测引擎、绩效归因与多重检验。</li><li><strong>第五阶段 · 实盘、风险与长期主义</strong>（29～31、附录）：执行成本、仓位与杠杆上界、IPS 与年度复盘。</li></ol>
+<p>时间有限时的最短路径：<a href="part0/00-orientation/index.html">00</a> → <a href="part0/01-time-value/index.html">01</a> → <a href="part1/03-product-map/index.html">03</a> → <a href="part2/13-mean-variance/index.html">13</a> → <a href="part3/16-candlestick/index.html">16</a> → <a href="part3/20-chart-pipeline/index.html">20</a> → <a href="part4/21-factors/index.html">21</a> → <a href="part5/26-backtest/index.html">26</a> → <a href="part5/28-overfitting/index.html">28</a> → <a href="part6/30-risk-sizing/index.html">30</a> → <a href="part6/31-ips-review/index.html">31</a>。</p>
+<h2 id="toc">全书目录</h2>
+<p class="lede">每一章一个文件夹，内含 <code>index.html</code>（知识讲解）、<code>code/*.py</code>（可直接运行的分析脚本）与 <code>fig/*.svg</code>（脚本生成的矢量图）。状态徽章：<span class="badge done">已完稿</span> 表示正文、知识点地图、参考链接、实例与插图齐备。</p>
+<div class="stage-banner"><h2>第一阶段 · 共同语言与产品地图</h2><p>第 00～08 章。先定义收益与风险，再打开交易 App 把可交易产品、交易规则、账户费用与行情数据模型整理成一张地图。</p></div>
+<section class="toc-part"><h2><span class="part-id">卷首</span>共同语言</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">00</span><a class="toc-title" href="part0/00-orientation/index.html">投资是一套可验证的工程系统</a> <a class="toc-extra" href="part0/00-orientation/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把「买什么」改写成「定义目标 → 建立约束 → 构造假设 → 用数据检验 → 执行并复盘」的可复现流程。</p>
+<ul class="toc-points"><li>投资收益的工程分解</li><li>可证伪假设与对照组</li><li>风险溢价与成本</li><li>复利与费用</li><li>回测与实盘的差别</li><li>交易 App 的界面字段</li><li>合成数据与固定随机种子</li><li>长期主义</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">01</span><a class="toc-title" href="part0/01-time-value/index.html">货币时间价值：复利、通胀与实际收益</a> <a class="toc-extra" href="part0/01-time-value/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">先把「赚钱」定义清楚：名义金额、购买力、扣费后金额，是三个不同的数。</p>
+<ul class="toc-points"><li>复利与终值</li><li>名义与实际收益</li><li>通胀与购买力</li><li>费率与复利侵蚀</li><li>算术均值与几何均值</li><li>波动拖累</li><li>年化与 CAGR</li><li>对数收益</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">02</span><a class="toc-title" href="part0/02-return-risk/index.html">收益与风险的可计算定义</a> <a class="toc-extra" href="part0/02-return-risk/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">波动、回撤、VaR、CVaR 与厚尾：把「感觉很险」换成一组能写进代码的量。</p>
+<ul class="toc-points"><li>简单收益与对数收益</li><li>年化与波动</li><li>标准差与正态分布</li><li>偏度与峰度</li><li>厚尾与极端行情</li><li>最大回撤</li><li>VaR 与 CVaR</li><li>风险度量</li></ul>
+</li>
+</ul></section>
+<section class="toc-part"><h2><span class="part-id">第一篇</span>产品地图与市场基础设施</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">03</span><a class="toc-title" href="part1/03-product-map/index.html">交易 App 里的产品全景图</a> <a class="toc-extra" href="part1/03-product-map/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把富途、东方财富一类零售界面里的几十个入口，抽象成一张按「现金流权利」分类的产品表。</p>
+<ul class="toc-points"><li>交易 App 的产品分类</li><li>股票与股权</li><li>公募基金与净值</li><li>ETF 与场内交易</li><li>债券与可转债</li><li>期权与期货</li><li>REIT 与货币基金</li><li>适当性与风险等级</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">04</span><a class="toc-title" href="part1/04-market-rules/index.html">交易所制度：竞价、涨跌停、T+1 与交收</a> <a class="toc-extra" href="part1/04-market-rules/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">价格不是连续曲线，而是规则约束下撮合出来的离散事件流。</p>
+<ul class="toc-points"><li>集合竞价与连续竞价</li><li>订单簿与撮合</li><li>涨跌停与价格笼子</li><li>最小报价单位</li><li>T+1 与交收</li><li>结算与登记</li><li>港股美股规则差异</li><li>停牌与公司行动</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">05</span><a class="toc-title" href="part1/05-account-cost/index.html">账户、费用、税与适当性</a> <a class="toc-extra" href="part1/05-account-cost/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">毛收益是模型的输出，净收益才是账户的结果；中间隔着一张长长的成本表。</p>
+<ul class="toc-points"><li>证券账户与资金账户</li><li>佣金与印花税</li><li>买卖价差与冲击成本</li><li>基金管理费与申赎费</li><li>换手率与年化拖累</li><li>份额确认与赎回到账</li><li>红利税与跨境税务</li><li>投资者适当性</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">06</span><a class="toc-title" href="part1/06-data-model/index.html">行情数据模型：OHLCV、复权与时间戳</a> <a class="toc-extra" href="part1/06-data-model/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">先校准数据，再谈策略：一根 K 线里最危险的不是价格，而是口径。</p>
+<ul class="toc-points"><li>OHLCV 数据结构</li><li>成交量与成交额</li><li>前复权与后复权</li><li>拆股与公司行动</li><li>除息与分红</li><li>交易日历与时间戳</li><li>时间序列对齐</li><li>缺失值与停牌</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">07</span><a class="toc-title" href="part1/07-funds-etf/index.html">公募基金与 ETF：净值、申赎与跟踪</a> <a class="toc-extra" href="part1/07-funds-etf/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">基金不是一只股票，而是一份「按份额比例分配的组合净值」接口。</p>
+<ul class="toc-points"><li>单位净值与累计净值</li><li>未知价申赎</li><li>份额确认与到账</li><li>ETF 一级与二级市场</li><li>折溢价率</li><li>申赎清单与套利</li><li>跟踪误差与跟踪偏离</li><li>费率与规模</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">08</span><a class="toc-title" href="part1/08-fixed-income/index.html">债券、货币基金与逆回购：现金这一端</a> <a class="toc-extra" href="part1/08-fixed-income/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">组合里最不性感的一端，决定了你能不能活到策略生效的那一天。</p>
+<ul class="toc-points"><li>票息与面值</li><li>到期收益率 YTM</li><li>价格与利率反向</li><li>货币基金与万份收益</li><li>国债逆回购</li><li>七日年化</li><li>信用风险与流动性</li><li>现金管理分层</li></ul>
+</li>
+</ul></section>
+<div class="stage-banner"><h2>第二阶段 · 定价、组合与资产配置</h2><p>第 09～14 章。把「值多少钱」写成折现与无套利关系，再用协方差矩阵、有效前沿与再平衡规则管理一组资产。</p></div>
+<section class="toc-part"><h2><span class="part-id">第二篇</span>估值定价与组合理论</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">09</span><a class="toc-title" href="part2/09-bond-pricing/index.html">债券定价、久期与期限结构</a> <a class="toc-extra" href="part2/09-bond-pricing/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把价格对利率的敏感度写成一阶导与二阶导，是全书最干净的一次「导数即风险」。</p>
+<ul class="toc-points"><li>现金流折现</li><li>麦考利久期</li><li>修正久期</li><li>凸性</li><li>一阶与二阶近似</li><li>收益率曲线</li><li>期限利差与倒挂</li><li>久期匹配与免疫</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">10</span><a class="toc-title" href="part2/10-equity-valuation/index.html">股票估值：从 DCF 到相对倍数</a> <a class="toc-extra" href="part2/10-equity-valuation/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">估值不是算出一个「正确价格」，而是把一组假设显式地写成可审计的模型。</p>
+<ul class="toc-points"><li>自由现金流 FCF</li><li>折现率与 WACC</li><li>两阶段 DCF</li><li>永续增长率</li><li>终值占比</li><li>PE 与 PB</li><li>ROE 与杜邦分解</li><li>隐含增长与敏感性</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">11</span><a class="toc-title" href="part2/11-index-arbitrage/index.html">指数、折溢价与 ETF 套利机制</a> <a class="toc-extra" href="part2/11-index-arbitrage/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">指数不是资产，而是一份公开的、可复现的计算规则。</p>
+<ul class="toc-points"><li>价格加权指数</li><li>市值加权指数</li><li>等权指数</li><li>除数与公司行动</li><li>定期调样与再平衡</li><li>折溢价与套利边界</li><li>申赎清单 PCF</li><li>跟踪误差来源</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">12</span><a class="toc-title" href="part2/12-option-payoff/index.html">期权 payoff、平价关系与希腊字母</a> <a class="toc-extra" href="part2/12-option-payoff/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">或有权益把「折现」升级成「无套利」：价格不由预测决定，而由可复制关系约束。</p>
+<ul class="toc-points"><li>看涨与看跌 payoff</li><li>多头与空头</li><li>内在价值与时间价值</li><li>看跌-看涨平价</li><li>二叉树与风险中性概率</li><li>delta 与 gamma</li><li>theta 与 vega</li><li>保证金与非线性风险</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">13</span><a class="toc-title" href="part2/13-mean-variance/index.html">均值-方差、有效前沿与夏普比率</a> <a class="toc-extra" href="part2/13-mean-variance/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把「分散投资」写成协方差矩阵的二次型，风险就从形容词变成可算的数。</p>
+<ul class="toc-points"><li>协方差矩阵</li><li>相关系数与分散化</li><li>组合期望收益</li><li>组合波动二次型</li><li>最小方差组合</li><li>有效前沿</li><li>夏普比率与切点组合</li><li>资本市场线</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">14</span><a class="toc-title" href="part2/14-allocation/index.html">资产配置、再平衡与定投</a> <a class="toc-extra" href="part2/14-allocation/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">与其预测未来收益，不如先约定一条遇到任何行情都能执行的规则。</p>
+<ul class="toc-points"><li>战略与战术配置</li><li>目标权重与权重漂移</li><li>定期再平衡与阈值再平衡</li><li>再平衡换手与成本</li><li>定投与一次性投入</li><li>生命周期与人力资本</li><li>风险承受力</li><li>现金缓冲</li></ul>
+</li>
+</ul></section>
+<div class="stage-banner later"><h2>第三阶段 · 盘面语言与看图识图</h2><p>第 15～20 章。从订单簿到 K 线、均线、指标、形态，全部先写公式与判定条件，再用代码画图验证。</p></div>
+<section class="toc-part"><h2><span class="part-id">第三篇</span>盘面语言与看图识图</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">15</span><a class="toc-title" href="part3/15-order-book/index.html">盘口、分时与逐笔：价格是怎样形成的</a> <a class="toc-extra" href="part3/15-order-book/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">看盘之前先理解数据流：你看到的五档，是订单簿的一个有损快照。</p>
+<ul class="toc-points"><li>限价订单簿</li><li>买卖五档与价差</li><li>深度与失衡</li><li>市价单逐档成交</li><li>VWAP 与滑点</li><li>市场冲击</li><li>逐笔成交与分时</li><li>幌骗与冰山单</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">16</span><a class="toc-title" href="part3/16-candlestick/index.html">K 线、坐标与复权：看图前先校准数据</a> <a class="toc-extra" href="part3/16-candlestick/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">一根蜡烛只是 OHLC 四价的一种编码，颜色与坐标约定比形态本身更容易骗人。</p>
+<ul class="toc-points"><li>K 线实体与影线</li><li>颜色约定与涨跌</li><li>开高低收的不变式</li><li>线性坐标与对数坐标</li><li>周期与聚合</li><li>复权与拆股</li><li>成交量与换手率</li><li>缺口</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">17</span><a class="toc-title" href="part3/17-trend-ma/index.html">均线、趋势与支撑阻力</a> <a class="toc-extra" href="part3/17-trend-ma/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">均线是低通滤波器：它削掉噪声的代价，是必然带来滞后。</p>
+<ul class="toc-points"><li>简单移动平均 SMA</li><li>指数移动平均 EMA</li><li>低通滤波与滞后</li><li>金叉与死叉</li><li>趋势的定义</li><li>支撑与阻力</li><li>成交密集区</li><li>假信号与震荡市</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">18</span><a class="toc-title" href="part3/18-indicators/index.html">MACD、RSI、布林带与 KDJ 的数学定义</a> <a class="toc-extra" href="part3/18-indicators/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">每个指标都是价格序列上的一个确定性变换；先写公式，再谈用法。</p>
+<ul class="toc-points"><li>EMA 与 MACD</li><li>DIF / DEA / 柱状图</li><li>RSI 与 Wilder 平滑</li><li>布林带与 %B</li><li>KDJ 与 RSV</li><li>指标滞后</li><li>参数与自相关</li><li>指标不是独立证据</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">19</span><a class="toc-title" href="part3/19-patterns/index.html">形态识别：从主观描述到可判定规则</a> <a class="toc-extra" href="part3/19-patterns/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">「双底」不是一个图形，而是一组带容差、带参数的不等式；写下它们才谈得上检验。</p>
+<ul class="toc-points"><li>头肩顶与颈线</li><li>双底与双顶</li><li>三角形与突破</li><li>缺口与回补</li><li>局部极值判定</li><li>容差与自由参数</li><li>前向收益检验</li><li>选择性记忆</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">20</span><a class="toc-title" href="part3/20-chart-pipeline/index.html">用代码画图：SVG 图与看图陷阱</a> <a class="toc-extra" href="part3/20-chart-pipeline/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把「一张图」变成可复现的产物，同时堵住最常见的数据泄漏。</p>
+<ul class="toc-points"><li>SVG 与文本矢量图</li><li>零依赖绘图</li><li>图层与坐标</li><li>全样本均值泄漏</li><li>滚动窗口与因果性</li><li>信号与下一根成交</li><li>未来函数</li><li>可复现的实验记录</li></ul>
+</li>
+</ul></section>
+<div class="stage-banner later"><h2>第四阶段 · 从直觉到可验证的证据</h2><p>第 21～28 章。因子、行为偏差、资金拥挤、论文复现、数据管道、回测引擎、绩效归因与多重检验。</p></div>
+<section class="toc-part"><h2><span class="part-id">第四篇</span>因子、行为与市场证据</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">21</span><a class="toc-title" href="part4/21-factors/index.html">因子、CAPM 与 Fama-French</a> <a class="toc-extra" href="part4/21-factors/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把「为什么这只股票涨得多」拆成可估计的暴露与不可解释的残差。</p>
+<ul class="toc-points"><li>CAPM 与 beta</li><li>市场因子</li><li>规模与价值因子 SMB/HML</li><li>三因子回归</li><li>alpha 与 t 值</li><li>R² 与残差</li><li>遗漏变量偏差</li><li>因子与 Smart Beta</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">22</span><a class="toc-title" href="part4/22-behavior/index.html">有效市场、行为偏差与处置效应</a> <a class="toc-extra" href="part4/22-behavior/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">价格不一定「正确」，但想稳定套利，你得先证明错误是可重复、可执行的。</p>
+<ul class="toc-points"><li>有效市场假说</li><li>弱式/半强式/强式检验</li><li>前景理论与损失厌恶</li><li>参照点与锚定</li><li>处置效应与 PGR/PLR</li><li>羊群与反馈环</li><li>套利限制</li><li>偏差不等于策略</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">23</span><a class="toc-title" href="part4/23-flow-crowding/index.html">资金流、情绪与拥挤交易</a> <a class="toc-extra" href="part4/23-flow-crowding/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">当很多人用同一套信号时，因子暴露会变成流动性风险。</p>
+<ul class="toc-points"><li>资金流与净申购</li><li>换手率与拥挤度</li><li>情绪代理变量</li><li>分箱与前向收益</li><li>同步性与相关性上升</li><li>反转效应</li><li>另类数据</li><li>容量与衰减</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">24</span><a class="toc-title" href="part4/24-read-papers/index.html">怎样读一篇因子论文：从摘要到可复现</a> <a class="toc-extra" href="part4/24-read-papers/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">论文的结论是一个条件命题：先读条件，再读结论。</p>
+<ul class="toc-points"><li>样本期与样本外</li><li>组合构建口径</li><li>成本与容量假设</li><li>数据来源与 point-in-time</li><li>t 值与多重检验</li><li>选择性剔除与幸存者</li><li>夏普比率的敏感性</li><li>复现协议</li></ul>
+</li>
+</ul></section>
+<section class="toc-part"><h2><span class="part-id">第五篇</span>策略工程：从想法到证据</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">25</span><a class="toc-title" href="part5/25-data-pipeline/index.html">数据管道：对齐、公司行动与幸存者偏差</a> <a class="toc-extra" href="part5/25-data-pipeline/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">回测里最贵的 bug 不在策略，而在数据：看不见的样本已经替你把收益抬高了。</p>
+<ul class="toc-points"><li>point-in-time 快照</li><li>数据版本与可用时刻</li><li>公司行动对齐</li><li>停牌与退市处理</li><li>成分股历史</li><li>幸存者偏差</li><li>前视偏差</li><li>可复现的数据契约</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">26</span><a class="toc-title" href="part5/26-backtest/index.html">事件驱动回测引擎：从信号到成交</a> <a class="toc-extra" href="part5/26-backtest/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">回测不是向量化的乘法，而是一条有状态、有时序、有成本的事件链。</p>
+<ul class="toc-points"><li>事件循环与账户状态</li><li>信号—下单—成交时序</li><li>同根成交的错误</li><li>手续费与滑点</li><li>仓位与资金约束</li><li>订单状态机</li><li>基准与对照</li><li>回测的可复现性</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">27</span><a class="toc-title" href="part5/27-performance/index.html">绩效度量与归因：夏普、回撤与 Brinson</a> <a class="toc-extra" href="part5/27-performance/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">同一个组合，用不同指标可以讲出不同故事；先约定度量，再讨论好坏。</p>
+<ul class="toc-points"><li>年化收益与波动</li><li>夏普与索提诺</li><li>最大回撤与 Calmar</li><li>跟踪误差与信息比率</li><li>TWR 与 MWR</li><li>内部收益率 IRR</li><li>Brinson 归因</li><li>月度收益表</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">28</span><a class="toc-title" href="part5/28-overfitting/index.html">过拟合、多重检验与滚动样本外</a> <a class="toc-extra" href="part5/28-overfitting/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">试了 20 组参数再挑最好的那一组，等于做了 20 次实验却只报告一次 p 值。</p>
+<ul class="toc-points"><li>样本内与样本外</li><li>参数网格搜索</li><li>多重检验与 Bonferroni</li><li>数据窥探</li><li>IS/OOS 夏普落差</li><li>walk-forward</li><li>冻结评估协议</li><li>Deflated Sharpe 思想</li></ul>
+</li>
+</ul></section>
+<div class="stage-banner later"><h2>第五阶段 · 实盘、风险与长期主义</h2><p>第 29～31 章与附录。执行成本、仓位与杠杆上界、投资政策说明书与长期复盘，最后收束成速查表。</p></div>
+<section class="toc-part"><h2><span class="part-id">第六篇</span>实盘、风险与长期主义</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">29</span><a class="toc-title" href="part6/29-execution/index.html">订单执行、滑点与市场冲击</a> <a class="toc-extra" href="part6/29-execution/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">信号再好，也要经过「下单」这个有摩擦的物理过程才能变成账户里的钱。</p>
+<ul class="toc-points"><li>到达价与成交均价</li><li>买卖价差</li><li>临时与永久冲击</li><li>市场冲击模型</li><li>TWAP 与 VWAP</li><li>限价单与成交不确定性</li><li>拆单与时机风险</li><li>容量评估</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">30</span><a class="toc-title" href="part6/30-risk-sizing/index.html">仓位、杠杆、VaR/CVaR 与凯利上界</a> <a class="toc-extra" href="part6/30-risk-sizing/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">风险管理不是预测下跌，而是保证「预测错了也还活着」。</p>
+<ul class="toc-points"><li>仓位与风险预算</li><li>杠杆与逐日盯市</li><li>维持保证金与强平</li><li>蒙特卡洛模拟</li><li>VaR 与 CVaR</li><li>凯利准则</li><li>分数凯利与参数不确定性</li><li>尾部风险与压力测试</li></ul>
+</li>
+<li>
+<div class="toc-head"><span class="num">31</span><a class="toc-title" href="part6/31-ips-review/index.html">投资政策说明书与长期复盘</a> <a class="toc-extra" href="part6/31-ips-review/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把目标、约束、流程与例外写下来，才轮得到讨论今年赚了多少。</p>
+<ul class="toc-points"><li>投资政策说明书 IPS</li><li>目标与约束</li><li>再平衡规则与例外</li><li>决策日志</li><li>TWR / MWR 复盘</li><li>费用与税</li><li>行为约束与冷却期</li><li>年度回顾清单</li></ul>
+</li>
+</ul></section>
+<section class="toc-part"><h2><span class="part-id">附录</span>速查与资源总表</h2>
+<ul class="toc-list">
+<li>
+<div class="toc-head"><span class="num">A</span><a class="toc-title" href="appendix/index.html">公式速查、术语表与工具索引</a> <a class="toc-extra" href="appendix/index.html#extra-links">扩展阅读 →</a><span class="badge done">已完稿</span></div>
+<p class="toc-desc">把全书的可查内容收在一页：公式、术语、界面字段、常见坑与全部实例索引。</p>
+<ul class="toc-points"><li>收益与风险公式</li><li>定价与组合公式</li><li>指标公式</li><li>绩效与风险公式</li><li>中英术语对照</li><li>交易界面字段</li><li>上线检查清单</li><li>示例与资源索引</li></ul>
+</li>
+</ul></section>
+<h2 id="resources">参考资源</h2>
+<p class="lede">以下为全书高频引用的机构、课程、数据与工具；完整清单（含百科条目与检索入口）见<a href="appendix/index.html">附录 A.7 扩展学习链接总表</a>。书中提及的券商 App 与行情网站仅用于抽象「零售交易界面的共同字段」，不构成推荐或从属关系。</p>
+<div class="repo-grid">
+<div class="repo-card"><h3><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></h3><span class="tag">课程</span><p>投资学、资产定价与衍生品的免费课程材料</p><p style="margin:0"><code>https://ocw.mit.edu/search/?q=finance</code></p></div>
+<div class="repo-card"><h3><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a></h3><span class="tag">机构</span><p>投资组合管理、道德准则与从业者教育</p><p style="margin:0"><code>https://www.cfainstitute.org/</code></p></div>
+<div class="repo-card"><h3><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></h3><span class="tag">机构</span><p>复利、费用、风险与常见投资骗局的官方说明</p><p style="margin:0"><code>https://www.investor.gov/</code></p></div>
+<div class="repo-card"><h3><a href="https://www.csrc.gov.cn/" target="_blank" rel="noopener">中国证监会 CSRC</a></h3><span class="tag">机构</span><p>监管规则、投资者保护与行政处罚的权威来源</p><p style="margin:0"><code>https://www.csrc.gov.cn/</code></p></div>
+<div class="repo-card"><h3><a href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html" target="_blank" rel="noopener">Ken French Data Library</a></h3><span class="tag">数据</span><p>Fama-French 因子与组合收益的原始数据</p><p style="margin:0"><code>https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html</code></p></div>
+<div class="repo-card"><h3><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener">FRED</a></h3><span class="tag">数据</span><p>利率、通胀、信用利差等免费时间序列</p><p style="margin:0"><code>https://fred.stlouisfed.org/</code></p></div>
+<div class="repo-card"><h3><a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></h3><span class="tag">教材</span><p>产品、账户、订单与指标的术语速查</p><p style="margin:0"><code>https://www.investopedia.com/</code></p></div>
+<div class="repo-card"><h3><a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></h3><span class="tag">课程</span><p>长期指数投资、再平衡与税费的实践型百科</p><p style="margin:0"><code>https://www.bogleheads.org/wiki/Main_Page</code></p></div>
+<div class="repo-card"><h3><a href="https://www.csindex.com.cn/" target="_blank" rel="noopener">中证指数</a></h3><span class="tag">机构</span><p>指数编制方案、成分股与估值数据</p><p style="margin:0"><code>https://www.csindex.com.cn/</code></p></div>
+<div class="repo-card"><h3><a href="https://docs.python.org/3/" target="_blank" rel="noopener">Python 3 文档</a></h3><span class="tag">工具</span><p>本书脚本的语言与标准库权威参考</p><p style="margin:0"><code>https://docs.python.org/3/</code></p></div>
+<div class="repo-card"><h3><a href="https://github.com/akfamily/akshare" target="_blank" rel="noopener">AKShare</a></h3><span class="tag">数据</span><p>开源中文金融数据接口（A 股/基金/宏观）</p><p style="margin:0"><code>https://github.com/akfamily/akshare</code></p></div>
+<div class="repo-card"><h3><a href="https://github.com/mementum/backtrader" target="_blank" rel="noopener">Backtrader</a></h3><span class="tag">工具</span><p>事件驱动回测框架的参考实现</p><p style="margin:0"><code>https://github.com/mementum/backtrader</code></p></div>
+</div>
+<h2 id="contribute">维护约定</h2>
+<p>全书由结构化数据生成，<strong>不要直接编辑章节 HTML</strong>，否则下次重建会被覆盖。改完数据后依次运行：<code>python3 tools/build_book.py --force</code> → <code>python3 tools/extract_code.py</code> → <code>./tools/run_python.sh</code> → <code>python3 tools/check_book.py --run</code>。</p>
+<table><thead><tr><th style="width:28%">想改什么</th><th>编辑哪里</th></tr></thead><tbody><tr><td>细化某章正文或 Python 示例</td><td><code>tools/chapters_*.py</code> 中对应的 <code>C(...)</code> / <code>mk_demo(...)</code></td></tr><tr><td>加参考资料链接</td><td><code>tools/book_resources.py</code> 的 <code>R</code>、<code>TOPIC_RULES</code>、<code>CHAPTER_RESOURCES</code>，以及章节的 <code>highlights</code></td></tr><tr><td>调整页面结构与总目录</td><td><code>tools/build_book.py</code> 的 <code>render()</code> / <code>render_index()</code></td></tr><tr><td>样式与交互</td><td><code>assets/style.css</code>、<code>assets/app.js</code></td></tr><tr><td>新增章节或分篇</td><td><code>tools/book_schema.py</code> 的 <code>PARTS</code> + 对应 <code>chapters_*.py</code>，再重建</td></tr><tr><td>新增图表类型</td><td><code>tools/chart.py</code>（纯标准库 SVG 绘图）</td></tr></tbody></table>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

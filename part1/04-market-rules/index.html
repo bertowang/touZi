@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 04 章 · 交易所制度：竞价、涨跌停、T+1 与交收 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="04">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第一篇 · 产品地图与市场基础设施 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 04 章</span>交易所制度：竞价、涨跌停、T+1 与交收</h1>
+<p class="lede">价格不是连续曲线，而是规则约束下撮合出来的离散事件流。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">产品 · 制度</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 1 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 03 章列出可交易产品，本章给出它们的调用规则；<a href='../05-account-cost/index.html'>第 05 章 · 账户、费用、税与适当性</a> 继续讲账户、费用与适当性，<a href='../06-data-model/index.html'>第 06 章 · 行情数据模型：OHLCV、复权与时间戳</a> 则把规则产出的行情写成数据模型。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">撮合引擎是一段确定性的 <code>reduce</code>：输入是按价格排序的订单事件，输出是成交序列。涨跌停是 <code>clamp</code>，T+1 是状态机里的 <code>locked_until</code> 字段。<strong>规则不是注释，是控制流。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能解释集合竞价如何决定开盘价与成交量。</li>
+<li>能说明涨跌停、最小报价单位、T+1 与交收对策略的硬约束。</li>
+<li>能区分「成交」与「交收」，理解资金/证券可用与可取的时间差。</li>
+<li>能用一个限价单簿手算最大可成交量。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>集合竞价与连续竞价</td><td><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a> · <a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>订单簿与撮合</td><td><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>涨跌停与价格笼子</td><td><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a> · <a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>最小报价单位</td><td><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a> · <a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>T+1 与交收</td><td><a href="https://en.wikipedia.org/wiki/Settlement_(finance)" target="_blank" rel="noopener">Settlement (finance)</a> · <a href="https://www.chinaclear.cn/" target="_blank" rel="noopener">中国证券登记结算</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>结算与登记</td><td><a href="https://en.wikipedia.org/wiki/Settlement_(finance)" target="_blank" rel="noopener">Settlement (finance)</a> · <a href="https://www.chinaclear.cn/" target="_blank" rel="noopener">中国证券登记结算</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>港股美股规则差异</td><td><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a> · <a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>停牌与公司行动</td><td><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a> · <a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s4-1"><h2><span class="sec-num">§4.1</span>开盘价是怎样被算出来的</h2>
+<p>集合竞价把所有限价单按「价格优先、时间优先」累积：对每个候选价 p，可买量 = 所有买价 ≥ p 的委托量，可卖量 = 所有卖价 ≤ p 的委托量，成交量 = min(可买量, 可卖量)。取成交量最大的价格（并列时按交易所规则取中间价/最近价）为开盘价。</p>
+<p class="eq">V(p) = min( Σ q_bid · 1{price_bid ≥ p}, Σ q_ask · 1{price_ask ≤ p} )</p>
+<p>这是一道纯算法题：排序 + 前缀和 + 取最大值。第 15 章会把同一份订单簿结构用于盘口深度分析。</p>
+</section>
+<section id="s4-2"><h2><span class="sec-num">§4.2</span>制度是策略的硬约束</h2>
+<table><thead><tr><th style="width:22%">规则</th><th style="width:34%">含义</th><th style="width:44%">对策略的影响</th></tr></thead><tbody>
+<tr><td>涨跌停 / 价格笼子</td><td>单日价格只能在区间内变动</td><td>信号可能连续多日无法成交；回测必须建模「不可成交」</td></tr>
+<tr><td>最小报价单位 tick</td><td>价格只能是 tick 的整数倍</td><td>高频与做市策略的利润上限由 tick 决定</td></tr>
+<tr><td>T+1 / T+0</td><td>当日买入的证券何时可卖</td><td>日内策略的可行性、资金占用</td></tr>
+<tr><td>交收（结算）</td><td>成交后资金与证券的所有权转移</td><td>「可用」不等于「可取」；股息、红利税的登记日口径</td></tr>
+<tr><td>交易时段</td><td>开盘集合竞价、连续竞价、收盘集合竞价</td><td>同一天的不同时段流动性与价差差异极大</td></tr>
+<tr><td>停牌 / 公司行动</td><td>暂停交易、拆股、分红、配股</td><td>价格序列出现非交易性跳变（见第 06、25 章）</td></tr>
+</tbody></table>
+<p>A 股普遍有 ±10%（部分板块 ±20%）涨跌幅与 T+1 交收安排；港股、美股无统一涨跌停、可 T+0，但有不同的结算周期（美股已缩短至 T+1）。<strong>跨境比较时必须把规则差异写进回测引擎</strong>，否则同一段代码在两个市场给出不同含义的「成交」。</p>
+</section>
+<section id="s4-3"><h2><span class="sec-num">§4.3</span>把规则写进回测，而不是写进注释</h2>
+<p>回测里最常见的制度性错误：假设任意价格都能成交、假设当天买当天能卖、假设分红不产生价格跳变。第 26 章的事件驱动引擎会显式维护「信号 → 下一根可成交 K 线 → 费用 → 交割」这条状态链；本章先建立规则的词汇表。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 4-1 · 集合竞价撮合与涨跌停约束下的日内路径</h3>
+<pre class="code" data-file="code/04-auction.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""用限价单簿求最大成交量开盘价，再模拟受涨跌停约束的 240 分钟分时价格。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+BIDS = [(10.02, 300), (10.01, 200), (10.00, 500), (9.99, 400), (9.98, 600)]
+ASKS = [(9.98, 200), (9.99, 300), (10.00, 400), (10.01, 200), (10.02, 500)]
+PREV_CLOSE = 10.00
+LIMIT = 0.10        # ±10% 涨跌停
+MINUTES = 240
+VOL_MIN = 0.0012    # 每分钟价格波动尺度
+
+# ---- 计算与作图 ----
+prices = sorted({p for p, _q in BIDS} | {p for p, _q in ASKS})
+best_px, best_vol = None, -1
+for p in prices:
+    demand = sum(q for pb, q in BIDS if pb &gt;= p)
+    supply = sum(q for pa, q in ASKS if pa &lt;= p)
+    vol = min(demand, supply)
+    if vol &gt; best_vol or (vol == best_vol and best_px is not None and abs(p - PREV_CLOSE) &lt; abs(best_px - PREV_CLOSE)):
+        best_px, best_vol = p, vol
+
+rng = random.Random(7)
+up, down = PREV_CLOSE * (1 + LIMIT), PREV_CLOSE * (1 - LIMIT)
+px, path_ = best_px, []
+touches = 0
+for _ in range(MINUTES):
+    raw = px * (1 + rng.gauss(0, VOL_MIN))
+    new = min(up, max(down, raw))
+    if new == up or new == down:
+        touches += 1
+    px = new
+    path_.append(px)
+
+c = Chart(FIG / "04-intraday.svg", "涨跌停约束下的合成分时价格", xlabel="分钟", ylabel="价格")
+c.line(range(MINUTES), path_, BLUE, label="分时价")
+c.hline(up, RED, label="涨停")
+c.hline(down, GREEN, label="跌停")
+c.hline(PREV_CLOSE, "#9aa6b2", label="昨收")
+print("图:", c.save())
+print("集合竞价开盘价=%.2f 成交量=%d | 收盘=%.2f 涨跌幅=%.2f%% | 触及涨跌停分钟数=%d" %
+      (best_px, best_vol, px, 100 * (px / PREV_CLOSE - 1), touches))</code></pre>
+<p class="code-hint"><strong>操作：</strong>手工列出每个候选价的 <code>demand/supply</code>，核对 <code>best_px</code>；再把 <code>LIMIT</code> 改成 0.02 观察触及次数。　<strong>预期与判读：</strong>开盘价由<strong>最大可成交量</strong>决定，与「买卖双方报价的中点」不是一回事。涨跌停是硬边界：一旦触及，价格被截断而委托继续堆积，回测若不建模就会高估成交能力。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>VOL_MIN</code> 提高十倍，看路径如何贴着边界走——这对应真实市场里的流动性枯竭。　文件位置：<code>part1/04-market-rules/code/04-auction.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/04-intraday.svg" alt="集合竞价开盘价与涨跌停边界内的分时路径" loading="lazy"><figcaption>图 1　集合竞价开盘价与涨跌停边界内的分时路径（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>交易规则、集合竞价、ETF 与债券业务规则</p>
+<span class="why"><strong>怎么用</strong>：A 股集合竞价与交易规则原文</span>
+<p style="margin:0"><code>https://www.sse.com.cn/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>港股、ETF、牛熊证与衍生品规则</p>
+<span class="why"><strong>怎么用</strong>：港股交易机制与衍生品规则</span>
+<p style="margin:0"><code>https://www.hkex.com.hk/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Settlement_(finance)" target="_blank" rel="noopener">Settlement (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>成交与交收分离、T+1 与货银对付</p>
+<span class="why"><strong>怎么用</strong>：成交与交收分离的一般定义</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Settlement_(finance)</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>买卖档位、深度与逐笔撮合</p>
+<span class="why"><strong>怎么用</strong>：限价单簿与撮合的数据结构</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Order_book</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把「成交日」当「交收日」，导致股息与红利税口径错误。</li>
+<li>在涨跌停日假设可以任意价格平仓。</li>
+<li>用港股/美股的规则回测 A 股标的（或反过来）。</li>
+<li>忽略最小报价单位，让回测出现不可能存在的成交价。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>给 BIDS/ASKS 增加一档，使最大成交量出现并列，讨论交易所的并列取价规则。</li>
+<li>在示例里加入「涨停时买单无法成交」的计数，说明它如何改变可执行成交量。</li>
+<li>查你所在市场 ETF 的交收周期，与股票比较并说明对资金占用的影响。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>上海证券交易所</strong>（机构）：交易规则、集合竞价、ETF 与债券业务规则<br><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a></li>
+<li><strong>香港交易所 HKEX</strong>（机构）：港股、ETF、牛熊证与衍生品规则<br><a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></li>
+<li><strong>美国 SEC</strong>（机构）：披露文件、基金监管与执法信息<br><a href="https://www.sec.gov/" target="_blank" rel="noopener">美国 SEC</a></li>
+<li><strong>Settlement (finance)</strong>（百科）：成交与交收分离、T+1 与货银对付<br><a href="https://en.wikipedia.org/wiki/Settlement_(finance)" target="_blank" rel="noopener">Settlement (finance)</a></li>
+<li><strong>中国证监会 CSRC</strong>（机构）：监管规则、投资者保护与行政处罚的权威来源<br><a href="https://www.csrc.gov.cn/" target="_blank" rel="noopener">中国证监会 CSRC</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=trading%20rules%20T%2B1%20price%20limit%20auction%20settlement%20A%20share%20HK%20US" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=trading%20rules%20T%2B1%20price%20limit%20auction%20settlement%20A%20share%20HK%20US" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=trading%20rules%20T%2B1%20price%20limit%20auction%20settlement%20A%20share%20HK%20US&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part3/15-order-book/index.html'>第 15 章 · 盘口、分时与逐笔：价格是怎样形成的</a> 把订单簿展开成盘口与深度分析；<a href='../../part5/26-backtest/index.html'>第 26 章 · 事件驱动回测引擎：从信号到成交</a> 在回测里实现可成交判定。</li>
+<li><a href='../../part6/29-execution/index.html'>第 29 章 · 订单执行、滑点与市场冲击</a> 讨论限价单与市价单在不同制度下的滑点。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

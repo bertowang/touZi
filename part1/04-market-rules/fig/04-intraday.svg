@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>涨跌停约束下的合成分时价格</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">涨跌停约束下的合成分时价格</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">8.80</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">9.28</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">9.76</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">10.24</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">10.72</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">11.20</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-9.56</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">42.06</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">93.69</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">145.3</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">196.9</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">248.6</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">分钟</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">价格</text>
+<polyline points="101.19,209.42 103.82,208.58 106.45,208.95 109.09,209.47 111.72,210.98 114.36,211.33 116.99,209.52 119.63,208.83 122.26,207.14 124.90,206.73 127.53,206.09 130.16,205.78 132.80,208.51 135.43,207.11 138.07,206.29 140.70,205.47 143.34,208.23 145.97,211.08 148.60,212.53 151.24,213.29 153.87,212.79 156.51,212.87 159.14,212.02 161.78,213.06 164.41,212.56 167.05,211.92 169.68,213.00 172.31,210.21 174.95,209.30 177.58,207.35 180.22,208.36 182.85,209.57 185.49,210.13 188.12,210.30 190.76,209.27 193.39,208.87 196.02,209.60 198.66,211.15 201.29,212.00 203.93,210.02 206.56,211.33 209.20,210.93 211.83,210.24 214.47,212.67 217.10,212.59 219.73,210.46 222.37,213.74 225.00,214.27 227.64,214.44 230.27,215.76 232.91,214.96 235.54,215.06 238.18,217.44 240.81,216.09 243.44,215.01 246.08,213.47 248.71,211.13 251.35,210.54 253.98,210.35 256.62,212.47 259.25,211.47 261.89,212.46 264.52,213.20 267.15,215.25 269.79,216.82 272.42,217.68 275.06,215.60 277.69,218.89 280.33,221.25 282.96,220.86 285.60,218.53 288.23,217.59 290.86,220.67 293.50,224.74 296.13,224.17 298.77,225.35 301.40,227.16 304.04,225.58 306.67,223.81 309.31,223.56 311.94,223.16 314.57,222.46 317.21,219.89 319.84,218.89 322.48,218.05 325.11,217.16 327.75,219.70 330.38,217.63 333.02,216.08 335.65,215.22 338.28,218.43 340.92,219.45 343.55,218.09 346.19,221.02 348.82,221.32 351.46,219.67 354.09,221.79 356.73,219.19 359.36,218.30 361.99,218.54 364.63,218.02 367.26,216.96 369.90,216.77 372.53,214.91 375.17,215.99 377.80,216.66 380.44,214.97 383.07,214.93 385.70,216.36 388.34,214.82 390.97,212.44 393.61,213.17 396.24,215.41 398.88,215.63 401.51,215.87 404.15,216.35 406.78,214.07 409.41,215.74 412.05,213.70 414.68,215.76 417.32,217.03 419.95,216.01 422.59,214.18 425.22,212.79 427.85,212.22 430.49,211.99 433.12,211.75 435.76,210.81 438.39,211.10 441.03,210.64 443.66,209.71 446.30,209.71 448.93,208.47 451.56,207.54 454.20,204.26 456.83,203.73 459.47,204.43 462.10,205.04 464.74,205.06 467.37,203.55 470.01,204.10 472.64,203.47 475.27,200.46 477.91,204.67 480.54,206.51 483.18,206.11 485.81,205.46 488.45,205.07 491.08,205.77 493.72,204.70 496.35,204.24 498.98,205.10 501.62,201.12 504.25,200.54 506.89,201.45 509.52,201.61 512.16,201.98 514.79,202.09 517.43,206.56 520.06,207.35 522.69,205.71 525.33,207.61 527.96,207.72 530.60,206.17 533.23,204.77 535.87,202.33 538.50,205.12 541.14,205.70 543.77,206.25 546.40,205.24 549.04,203.45 551.67,207.84 554.31,206.07 556.94,208.43 559.58,207.32 562.21,209.75 564.85,209.46 567.48,207.52 570.11,207.76 572.75,207.45 575.38,206.15 578.02,205.92 580.65,206.06 583.29,203.56 585.92,201.84 588.56,202.32 591.19,197.83 593.82,199.71 596.46,198.21 599.09,198.65 601.73,198.43 604.36,197.27 607.00,196.91 609.63,195.86 612.27,198.37 614.90,200.85 617.53,199.84 620.17,201.42 622.80,203.10 625.44,205.51 628.07,203.44 630.71,202.22 633.34,199.81 635.98,201.35 638.61,201.34 641.24,203.21 643.88,201.96 646.51,199.35 649.15,200.82 651.78,198.26 654.42,196.63 657.05,196.93 659.69,200.17 662.32,197.86 664.95,198.02 667.59,199.01 670.22,198.35 672.86,197.68 675.49,195.22 678.13,196.90 680.76,195.03 683.40,192.58 686.03,190.18 688.66,190.48 691.30,191.71 693.93,190.03 696.57,189.84 699.20,189.64 701.84,187.28 704.47,187.72 707.10,191.52 709.74,192.16 712.37,195.22 715.01,193.87 717.64,193.35 720.28,194.36 722.91,194.37 725.55,193.00 728.18,192.87 730.81,190.68" fill="none" stroke="#245a7a" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<line x1="76.0" y1="73.17" x2="756.0" y2="73.17" stroke="#8a3b26" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="76.0" y1="344.83" x2="756.0" y2="344.83" stroke="#2f6b4f" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="76.0" y1="209.00" x2="756.0" y2="209.00" stroke="#9aa6b2" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="80.0" y="50.0" width="178" height="88" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#245a7a" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">分时价</text>
+<line x1="86.0" y1="86.0" x2="104.0" y2="86.0" stroke="#8a3b26" stroke-width="3"/>
+<text x="110.0" y="90.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">涨停</text>
+<line x1="86.0" y1="106.0" x2="104.0" y2="106.0" stroke="#2f6b4f" stroke-width="3"/>
+<text x="110.0" y="110.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">跌停</text>
+<line x1="86.0" y1="126.0" x2="104.0" y2="126.0" stroke="#9aa6b2" stroke-width="3"/>
+<text x="110.0" y="130.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">昨收</text>
+</svg>

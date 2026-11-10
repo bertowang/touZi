@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 14 章 · 资产配置、再平衡与定投 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="14">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第二篇 · 估值定价与组合理论 · 第二阶段 · 定价、组合与资产配置</span>
+<h1><span class="ch-num">第 14 章</span>资产配置、再平衡与定投</h1>
+<p class="lede">与其预测未来收益，不如先约定一条遇到任何行情都能执行的规则。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s2">定价 · 组合</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 13 章求「最优权重」，本章给出「稳健规则」；至此第二阶段结束，<a href='../../part3/15-order-book/index.html'>第 15 章 · 盘口、分时与逐笔：价格是怎样形成的</a> 起转入屏幕上的价格形成过程。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">配置策略是一个 <code>controller</code>：目标权重是 setpoint，实际权重是 process variable，再平衡是周期性的负反馈，成本是控制动作的代价。<strong>没有反馈的系统，暴露会随行情漂移。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能解释战略配置与战术配置的分工。</li>
+<li>能模拟「买入持有」与「定期再平衡」的权重漂移与净值差异。</li>
+<li>能计算再平衡换手与成本，理解「再平衡溢价」的成立条件。</li>
+<li>能把生命周期、风险承受力与现金缓冲写进配置规则。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>战略与战术配置</td><td><a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a> · <a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>目标权重与权重漂移</td><td><a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a> · <a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>定期再平衡与阈值再平衡</td><td><a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a> · <a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>再平衡换手与成本</td><td><a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a> · <a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>定投与一次性投入</td><td><a href="https://en.wikipedia.org/wiki/Dollar_cost_averaging" target="_blank" rel="noopener">Dollar cost averaging</a> · <a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>生命周期与人力资本</td><td><a href="https://en.wikipedia.org/wiki/Lifecycle_investing" target="_blank" rel="noopener">Lifecycle investing</a> · <a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>风险承受力</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>现金缓冲</td><td><a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a> · <a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s14-1"><h2><span class="sec-num">§14.1</span>配置是一个策略，不是一次购买</h2>
+<p>第 13 章的最优组合依赖 μ 与 Σ 的估计，而这两个量在现实中极不稳定。实践中更稳健的做法是<strong>先固定一组目标权重</strong>（如股 60 / 债 40），再约定偏离到什么程度、多久把它拉回去。这样决策从「预测」变成<strong>状态机</strong>：</p>
+<p class="eq">若 max_i |w_i,t − w_i*| &gt; 阈值 → 卖出超配、买入低配 → w = w*</p>
+<p>定期再平衡与阈值再平衡的区别，等同于定时任务与事件触发：前者成本可预期，后者响应更快但交易次数不确定。</p>
+</section>
+<section id="s14-2"><h2><span class="sec-num">§14.2</span>再平衡为什么会改善风险调整收益</h2>
+<p>两类资产负相关或低相关、且都均值回复时，再平衡会系统性地「高抛低吸」，带来所谓<strong>再平衡溢价</strong>。但在单边趋势市里，它会不断卖出赢家、买入输家，跑输买入持有；而权重漂移会让组合的实际风险暴露悄悄偏离目标。所以正确的比较不是「谁收益高」，而是<strong>谁的暴露更接近你声明的风险预算</strong>。</p>
+</section>
+<section id="s14-3"><h2><span class="sec-num">§14.3</span>生命周期：把人力资本算进资产负债表</h2>
+<table><thead><tr><th style="width:22%">阶段</th><th style="width:26%">人力资本</th><th style="width:22%">合理风险暴露</th><th style="width:30%">重点</th></tr></thead><tbody>
+<tr><td>在校 / 初入职场</td><td>高（未来收入现值大）</td><td>可偏高</td><td>积累本金、建立应急金与纪律</td></tr>
+<tr><td>家庭形成期</td><td>中高</td><td>中高</td><td>负债、保险、流动性需求上升</td></tr>
+<tr><td>临近退休</td><td>低</td><td>下降</td><td>回撤承受力下降、提取顺序风险</td></tr>
+<tr><td>退休后</td><td>接近 0</td><td>低</td><td>现金流匹配、提取率与费用</td></tr>
+</tbody></table>
+<p>定投（DCA）本质上不是提高收益的技巧，而是<strong>把择时风险摊到时间上、把储蓄纪律自动化</strong>。在长期上行市场里一次性投入的期望终值通常更高，但定投的回撤体验与行为可持续性是它的真实价值（回顾第 00 章实验）。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 14-1 · 买入持有 vs 年度再平衡</h3>
+<pre class="code" data-file="code/14-allocation.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""合成 20 年月度股债收益，比较三种规则的风险、收益、回撤与权重漂移。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+YEARS = 20
+MONTHS = YEARS * 12
+TARGET = (0.60, 0.40)   # 股 / 债目标权重
+REBAL_EVERY = 12        # 每 12 个月再平衡
+V0 = 100000.0
+COST = 0.001            # 单次调仓成本率
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+rs, rb = [], []
+for _ in range(MONTHS):
+    z, z2 = rng.gauss(0, 1), rng.gauss(0, 1)
+    rs.append(0.007 + 0.045 * z)
+    rb.append(0.002 + 0.012 * (-0.2 * z + math.sqrt(1 - 0.04) * z2))
+
+all_stock = [V0]
+bh_series, rb_series = [V0], [V0]
+bh_s, bh_b = V0 * TARGET[0], V0 * TARGET[1]   # 买入持有：份额固定
+rb_s, rb_b = V0 * TARGET[0], V0 * TARGET[1]   # 再平衡：份额可调
+turnover, w_bh, w_rb = 0.0, [], []
+for i in range(MONTHS):
+    all_stock.append(all_stock[-1] * (1 + rs[i]))
+    bh_s *= (1 + rs[i]); bh_b *= (1 + rb[i])
+    bh_value = bh_s + bh_b
+    bh_series.append(bh_value)
+    w_bh.append(bh_s / bh_value)
+
+    if (i + 1) % REBAL_EVERY == 0:
+        rb_value = rb_s + rb_b
+        trade = abs(TARGET[0] - rb_s / rb_value) * rb_value
+        turnover += trade
+        rb_value -= trade * COST
+        rb_s, rb_b = rb_value * TARGET[0], rb_value * TARGET[1]
+    rb_s *= (1 + rs[i]); rb_b *= (1 + rb[i])
+    rb_value = rb_s + rb_b
+    rb_series.append(rb_value)
+    w_rb.append(rb_s / rb_value)
+
+def metrics(xs):
+    rr = [xs[i] / xs[i - 1] - 1 for i in range(1, len(xs))]
+    peak, mdd = xs[0], 0.0
+    for v in xs:
+        peak = max(peak, v)
+        mdd = min(mdd, v / peak - 1)
+    cagr = (xs[-1] / xs[0]) ** (1 / YEARS) - 1
+    return cagr, statistics.pstdev(rr) * math.sqrt(12), mdd
+
+c = Chart(FIG / "14-equity.svg", "三种配置规则的账户净值", xlabel="月", ylabel="账户价值")
+c.line(range(MONTHS + 1), all_stock, RED, label="100% 股票")
+c.line(range(MONTHS + 1), bh_series, AMBER, label="60/40 买入持有")
+c.line(range(MONTHS + 1), rb_series, BLUE, label="60/40 年度再平衡")
+print("净值图:", c.save())
+w = Chart(FIG / "14-weights.svg", "股票权重的漂移与拉回", xlabel="月", ylabel="股票权重")
+w.line(range(MONTHS), w_bh, AMBER, label="买入持有（漂移）")
+w.line(range(MONTHS), w_rb, BLUE, label="年度再平衡")
+w.hline(TARGET[0], "#9aa6b2", label="目标 60%")
+print("权重图:", w.save())
+m1, m2, m3 = metrics(all_stock), metrics(bh_series), metrics(rb_series)
+print("再平衡累计调仓金额=%.0f 元 | 期末权重 买入持有=%.1f%% 再平衡=%.1f%%" %
+      (turnover, 100 * w_bh[-1], 100 * w_rb[-1]))
+print("全股 CAGR=%.2f%% σ=%.2f%% MDD=%.1f%% | 买入持有 %.2f%% / %.2f%% / %.1f%% | 再平衡 %.2f%% / %.2f%% / %.1f%%" %
+      (100 * m1[0], 100 * m1[1], 100 * m1[2], 100 * m2[0], 100 * m2[1], 100 * m2[2],
+       100 * m3[0], 100 * m3[1], 100 * m3[2]))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>REBAL_EVERY</code> 改成 1（每月）与 120（几乎不调），比较波动、回撤与累计调仓金额。　<strong>预期与判读：</strong>再平衡把权重拉回目标，牺牲一部分趋势收益换取<strong>风险暴露可控</strong>；买入持有的股票权重会随行情漂移，组合悄悄变得更激进。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把股票月收益均值从 0.007 改为负数，观察再平衡在长期下跌市里的表现。　文件位置：<code>part2/14-allocation/code/14-allocation.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/14-equity.svg" alt="三种配置规则的净值路径" loading="lazy"><figcaption>图 1　三种配置规则的净值路径（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/14-weights.svg" alt="股票权重漂移与再平衡拉回" loading="lazy"><figcaption>图 2　股票权重漂移与再平衡拉回（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>战略/战术配置与长期风险预算</p>
+<span class="why"><strong>怎么用</strong>：战略/战术配置的框架</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Asset_allocation</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>定期回归目标权重与再平衡溢价</p>
+<span class="why"><strong>怎么用</strong>：再平衡规则与再平衡溢价</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Rebalancing_investments</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Dollar_cost_averaging" target="_blank" rel="noopener">Dollar cost averaging</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>定投与一次性投入的现金流差异</p>
+<span class="why"><strong>怎么用</strong>：定投与一次性投入的现金流差异</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Dollar_cost_averaging</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Lifecycle_investing" target="_blank" rel="noopener">Lifecycle investing</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>人力资本与年龄下的风险承受力</p>
+<span class="why"><strong>怎么用</strong>：生命周期与人力资本视角</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Lifecycle_investing</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把再平衡当作提高收益的技巧，忽略它在单边市中的劣势。</li>
+<li>只看收益比较，不看权重漂移造成的风险暴露变化。</li>
+<li>再平衡频率过高导致成本吞掉溢价。</li>
+<li>把生命周期规则写成固定年龄数字，忽略负债与收入稳定性。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>实现阈值再平衡（偏离 5 个百分点才触发），与年度再平衡比较交易次数。</li>
+<li>解释为什么「定投更适合波动大的市场」不等于「定投期望收益更高」。</li>
+<li>在自己的 IPS 里写出目标权重、阈值、频率与暂停条件。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Asset allocation</strong>（百科）：战略/战术配置与长期风险预算<br><a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></li>
+<li><strong>Rebalancing investments</strong>（百科）：定期回归目标权重与再平衡溢价<br><a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a></li>
+<li><strong>Dollar cost averaging</strong>（百科）：定投与一次性投入的现金流差异<br><a href="https://en.wikipedia.org/wiki/Dollar_cost_averaging" target="_blank" rel="noopener">Dollar cost averaging</a></li>
+<li><strong>Risk parity</strong>（百科）：按风险贡献而非资金额分配<br><a href="https://en.wikipedia.org/wiki/Risk_parity" target="_blank" rel="noopener">Risk parity</a></li>
+<li><strong>Bogleheads Wiki</strong>（课程）：长期指数投资、再平衡与税费的实践型百科<br><a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=strategic%20asset%20allocation%20rebalancing%20dollar%20cost%20averaging%20lifecycle" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=strategic%20asset%20allocation%20rebalancing%20dollar%20cost%20averaging%20lifecycle" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=strategic%20asset%20allocation%20rebalancing%20dollar%20cost%20averaging%20lifecycle&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part5/27-performance/index.html'>第 27 章 · 绩效度量与归因：夏普、回撤与 Brinson</a> 绩效归因；<a href='../../part6/31-ips-review/index.html'>第 31 章 · 投资政策说明书与长期复盘</a> 把配置规则写进投资政策说明书。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 13 章 · 均值-方差、有效前沿与夏普比率 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="13">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第二篇 · 估值定价与组合理论 · 第二阶段 · 定价、组合与资产配置</span>
+<h1><span class="ch-num">第 13 章</span>均值-方差、有效前沿与夏普比率</h1>
+<p class="lede">把「分散投资」写成协方差矩阵的二次型，风险就从形容词变成可算的数。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s2">定价 · 组合</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 12 章处理单一标的的非线性 payoff，本章处理多标的的线性权重；<a href='../14-allocation/index.html'>第 14 章 · 资产配置、再平衡与定投</a> 把最优权重问题退化成稳健的固定比例与再平衡规则。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">组合优化就是在一个带 <code>wᵀΣw</code> 正则项的二次规划里搜参。网格扫描是最朴素的超参搜索；<strong>切点组合对 μ 的敏感</strong>与深度学习里对验证集过拟合是同一种病。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能从收益率序列估计协方差矩阵与相关系数。</li>
+<li>能计算组合期望收益、波动与夏普比率。</li>
+<li>能扫描权重得到有效前沿、最小方差组合与切点组合。</li>
+<li>能解释相关系数小于 1 时风险为何可以被分散。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>协方差矩阵</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>相关系数与分散化</td><td><a href="https://en.wikipedia.org/wiki/Diversification_(finance)" target="_blank" rel="noopener">Diversification (finance)</a> · <a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>组合期望收益</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>组合波动二次型</td><td><a href="https://en.wikipedia.org/wiki/Normal_distribution" target="_blank" rel="noopener">Normal distribution</a> · <a href="https://en.wikipedia.org/wiki/Volatility_tax" target="_blank" rel="noopener">Volatility drag</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>最小方差组合</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>有效前沿</td><td><a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a> · <a href="https://en.wikipedia.org/wiki/Sharpe_ratio" target="_blank" rel="noopener">Sharpe ratio</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>夏普比率与切点组合</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>资本市场线</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s13-1"><h2><span class="sec-num">§13.1</span>组合风险是二次型</h2>
+<p class="eq">E[r_p] = wᵀμ　|　σ_p² = wᵀΣw = Σ_i Σ_j w_i w_j σ_i σ_j ρ_ij</p>
+<p>关键是 <strong>ρ_ij</strong>：若两资产完全正相关（ρ=1），组合波动就是加权平均，没有分散效果；只要 ρ &lt; 1，就有 σ_p &lt; Σ w_i σ_i，差额就是分散化收益。这就是「不要把鸡蛋放在一个篮子里」的数学版本，也是全书第一次把风险写成矩阵运算。</p>
+<p>注意σ_p² 是<strong>非线性的</strong>：权重翻倍，方差变四倍；资产数量增加时，个体风险被平均掉，剩下的共同部分无法分散——这个残差正是第 21 章因子与市场 beta 的起点。</p>
+</section>
+<section id="s13-2"><h2><span class="sec-num">§13.2</span>三个特征组合</h2>
+<table><thead><tr><th style="width:20%">组合</th><th style="width:30%">优化目标</th><th style="width:32%">用途</th><th style="width:18%">对输入敏感吗</th></tr></thead><tbody>
+<tr><td>最小方差 GMV</td><td>min σ_p²</td><td>风险预算的起点</td><td>对协方差敏感</td></tr>
+<tr><td>切点组合</td><td>max (E[r_p] − r_f)/σ_p</td><td>与无风险资产搭配的最优风险组合</td><td>对 μ 极其敏感</td></tr>
+<tr><td>等权 1/n</td><td>不优化</td><td>稳健基线（常被用作对照组）</td><td>几乎不敏感</td></tr>
+</tbody></table>
+<p>均值-方差优化在工程上有个著名毛病：<strong>μ 的估计误差会被放大</strong>，最优权重常出现极端多空。教材里用网格扫描而非解析解，是为了让你直观看到「最优」对参数有多敏感。实践中常用约束、收缩估计或第 14 章的固定比例配置。</p>
+</section>
+<section id="s13-3"><h2><span class="sec-num">§13.3</span>夏普比率衡量的是单位总风险</h2>
+<p class="eq">Sharpe = (E[r_p] − r_f) / σ_p</p>
+<p>它假设投资者只关心均值与方差，且收益可自由借贷。厚尾、路径依赖与杠杆成本都会让它失真，因此第 27 章会补上索提诺、Calmar 与信息比率，第 30 章补上尾部约束。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 13-1 · 权重扫描、有效前沿与切点组合</h3>
+<pre class="code" data-file="code/13-frontier.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""三资产、给定 μ/Σ，穷举权重网格，画风险—收益散点与有效前沿。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+MU = (0.08, 0.05, 0.12)      # 年化期望收益
+SIG = (0.18, 0.08, 0.25)     # 年化波动
+CORR = ((1.0, 0.20, 0.60),
+        (0.20, 1.0, 0.10),
+        (0.60, 0.10, 1.0))
+RF = 0.02                    # 无风险利率
+STEP = 0.02                  # 权重网格步长
+
+# ---- 计算与作图 ----
+COV = [[SIG[i] * SIG[j] * CORR[i][j] for j in range(3)] for i in range(3)]
+
+def stats(w):
+    er = sum(w[i] * MU[i] for i in range(3))
+    var = sum(w[i] * w[j] * COV[i][j] for i in range(3) for j in range(3))
+    return er, math.sqrt(max(var, 0.0))
+
+points, grid = [], int(round(1.0 / STEP))
+for a in range(grid + 1):
+    for b in range(grid + 1 - a):
+        w = (a * STEP, b * STEP, 1.0 - (a + b) * STEP)
+        er, vol = stats(w)
+        points.append((vol, er, w, (er - RF) / vol if vol &gt; 0 else 0.0))
+
+best = max(points, key=lambda x: x[3])
+gmv = min(points, key=lambda x: x[0])
+lo = min(er for _v, er, _w, _s in points)
+hi = max(er for _v, er, _w, _s in points)
+frontier = []
+for k in range(41):
+    target = lo + (hi - lo) * k / 40
+    near = [x for x in points if target - 0.002 &lt;= x[1] &lt;= target + 0.002]
+    if near:
+        frontier.append(min(near, key=lambda x: x[0]))
+
+c = Chart(FIG / "13-frontier.svg", "三资产组合的风险—收益可行集", xlabel="年化波动", ylabel="年化期望收益")
+c.scatter([x[0] for x in points], [x[1] for x in points], "#9aa6b2", label="可行组合", radius=1.8)
+c.line([x[0] for x in frontier], [x[1] for x in frontier], BLUE, label="有效前沿", width=2.6)
+c.scatter([best[0]], [best[1]], RED, label="切点组合", radius=6)
+c.scatter([gmv[0]], [gmv[1]], GREEN, label="最小方差", radius=6)
+c.line([0.0, best[0] * 1.6], [RF, RF + (best[1] - RF) * 1.6], AMBER,
+       label="资本市场线", dash="5 4")
+print("前沿图:", c.save())
+
+heatmap(FIG / "13-corr.svg", CORR, ["股票A", "债券B", "成长C"], ["A", "B", "C"],
+        title="三资产相关系数矩阵")
+print("相关图:", str(FIG / "13-corr.svg"))
+print("最小方差 w=(%.2f,%.2f,%.2f) σ=%.2f%% | 切点 w=(%.2f,%.2f,%.2f) E=%.2f%% σ=%.2f%% Sharpe=%.3f" %
+      (*gmv[2], 100 * gmv[0], *best[2], 100 * best[1], 100 * best[0], best[3]))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>CORR[0][1]</code> 与 <code>CORR[1][0]</code> 一起改成 −0.6，观察前沿如何向左移动；再只改其中一个，看看为什么协方差矩阵必须对称。　<strong>预期与判读：</strong>前沿上的每一点都是「给定收益下波动最小」的组合；切点组合是夏普最大的那一点。相关系数越接近 −1，前沿越往左凸，分散化收益越大。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>MU[2]</code> 提高 2 个百分点，切点权重会大幅挪向资产 C——这就是均值估计误差被放大的演示。　文件位置：<code>part2/13-mean-variance/code/13-frontier.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/13-frontier.svg" alt="可行集、有效前沿、最小方差与切点组合" loading="lazy"><figcaption>图 1　可行集、有效前沿、最小方差与切点组合（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/13-corr.svg" alt="三资产相关系数热力图" loading="lazy"><figcaption>图 2　三资产相关系数热力图（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>均值-方差框架与分散化</p>
+<span class="why"><strong>怎么用</strong>：均值-方差框架的标准表述</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Modern_portfolio_theory</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>给定风险下最高期望收益的组合集合</p>
+<span class="why"><strong>怎么用</strong>：有效前沿的定义与性质</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Efficient_frontier</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Sharpe_ratio" target="_blank" rel="noopener">Sharpe ratio</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>单位总风险的超额收益</p>
+<span class="why"><strong>怎么用</strong>：夏普比率的适用条件</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Sharpe_ratio</code></p></div>
+<div class="repo-card">
+<h3><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></h3>
+<span class="tag">课程 · 参考资料</span>
+<p>投资学、资产定价与衍生品的免费课程材料</p>
+<span class="why"><strong>怎么用</strong>：配套的投资组合理论课程与讲义</span>
+<p style="margin:0"><code>https://ocw.mit.edu/search/?q=finance</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把相关系数矩阵写得不对称，导致方差出现负数。</li>
+<li>用短期样本估计 μ 后直接求「最优」权重，得到极端解。</li>
+<li>忽略无杠杆约束，让权重出现负值却未建模借券成本。</li>
+<li>把夏普比率当成唯一目标，忽略厚尾与回撤。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>证明两资产 ρ=1 时组合波动等于加权平均。</li>
+<li>在示例里加入 w_i ≥ 0 与 w_i ≤ 0.6 的约束，比较切点组合变化。</li>
+<li>推导 wᵀΣw 对 w 的梯度，说明为什么解析最优解对 Σ 的误差敏感。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Modern portfolio theory</strong>（百科）：均值-方差框架与分散化<br><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a></li>
+<li><strong>Efficient frontier</strong>（百科）：给定风险下最高期望收益的组合集合<br><a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></li>
+<li><strong>Diversification (finance)</strong>（百科）：相关系数小于 1 时的风险削减<br><a href="https://en.wikipedia.org/wiki/Diversification_(finance)" target="_blank" rel="noopener">Diversification (finance)</a></li>
+<li><strong>Sharpe ratio</strong>（百科）：单位总风险的超额收益<br><a href="https://en.wikipedia.org/wiki/Sharpe_ratio" target="_blank" rel="noopener">Sharpe ratio</a></li>
+<li><strong>MIT OpenCourseWare · Finance</strong>（课程）：投资学、资产定价与衍生品的免费课程材料<br><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=mean%20variance%20optimization%20efficient%20frontier%20diversification" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=mean%20variance%20optimization%20efficient%20frontier%20diversification" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=mean%20variance%20optimization%20efficient%20frontier%20diversification&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../14-allocation/index.html'>第 14 章 · 资产配置、再平衡与定投</a> 资产配置与再平衡；<a href='../../part4/21-factors/index.html'>第 21 章 · 因子、CAPM 与 Fama-French</a> 无法分散的共同部分如何变成因子；<a href='../../part5/27-performance/index.html'>第 27 章 · 绩效度量与归因：夏普、回撤与 Brinson</a> 绩效指标族。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

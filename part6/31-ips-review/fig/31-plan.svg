@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>账户价值与累计投入</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">账户价值与累计投入</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">-24745</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">46644</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">118032</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">189421</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">260810</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">332199</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-2.36</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">10.38</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">23.13</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">35.87</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">48.62</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">61.36</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">月</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">金额</text>
+<polyline points="101.19,344.82 111.86,340.25 122.53,335.96 133.20,330.60 143.87,325.05 154.54,319.85 165.22,316.73 175.89,311.20 186.56,308.70 197.23,305.03 207.90,299.58 218.57,293.74 229.25,288.00 239.92,283.96 250.59,277.36 261.26,273.73 271.93,269.34 282.60,262.30 293.28,258.41 303.95,254.29 314.62,251.30 325.29,244.83 335.96,238.80 346.63,240.58 357.31,235.62 367.98,228.22 378.65,228.02 389.32,219.49 399.99,207.66 410.66,201.68 421.34,194.72 432.01,193.30 442.68,194.25 453.35,184.38 464.02,188.03 474.69,176.16 485.37,183.76 496.04,178.00 506.71,179.58 517.38,169.48 528.05,163.75 538.72,149.95 549.40,142.27 560.07,148.12 570.74,137.70 581.41,147.26 592.08,138.85 602.75,135.45 613.43,139.25 624.10,131.57 634.77,124.93 645.44,119.43 656.11,120.50 666.78,108.93 677.46,111.17 688.13,96.46 698.80,103.76 709.47,101.10 720.14,86.85 730.81,73.17" fill="none" stroke="#245a7a" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<polyline points="101.19,344.83 111.86,340.27 122.53,335.70 133.20,331.13 143.87,326.57 154.54,322.00 165.22,317.43 175.89,312.87 186.56,308.30 197.23,303.73 207.90,299.17 218.57,294.60 229.25,290.03 239.92,285.47 250.59,280.90 261.26,276.34 271.93,271.77 282.60,267.20 293.28,262.64 303.95,258.07 314.62,253.50 325.29,248.94 335.96,244.37 346.63,239.80 357.31,235.24 367.98,230.67 378.65,226.10 389.32,221.54 399.99,216.97 410.66,212.40 421.34,207.84 432.01,203.27 442.68,198.70 453.35,194.14 464.02,189.57 474.69,185.00 485.37,180.44 496.04,175.87 506.71,171.30 517.38,166.74 528.05,162.17 538.72,157.61 549.40,153.04 560.07,148.47 570.74,143.91 581.41,139.34 592.08,134.77 602.75,130.21 613.43,125.64 624.10,121.07 634.77,116.51 645.44,111.94 656.11,107.37 666.78,102.81 677.46,98.24 688.13,93.67 698.80,89.11 709.47,84.54 720.14,79.97 730.81,75.41" fill="none" stroke="#2f6b4f" stroke-width="2" stroke-linejoin="round" opacity="1.0"/>
+<rect x="80.0" y="50.0" width="178" height="48" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#245a7a" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">账户价值</text>
+<line x1="86.0" y1="86.0" x2="104.0" y2="86.0" stroke="#2f6b4f" stroke-width="3"/>
+<text x="110.0" y="90.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">累计投入</text>
+</svg>

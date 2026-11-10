@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 01 章 · 货币时间价值：复利、通胀与实际收益 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="01">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">卷首 · 共同语言 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 01 章</span>货币时间价值：复利、通胀与实际收益</h1>
+<p class="lede">先把「赚钱」定义清楚：名义金额、购买力、扣费后金额，是三个不同的数。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">共同语言</span>
+<span>建议 2 学时</span>
+<span>1 个 Python 实例 · 1 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>承接第 00 章的「收益分解」，把其中最容易确定的负项量化；下一章 <a href='../02-return-risk/index.html'>第 02 章 · 收益与风险的可计算定义</a> 给「风险」一个同样可计算的定义。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">复利是 <code>reduce(lambda v, r: v * (1+r), returns, V0)</code>；通胀和费率是同一条折叠链上的负项。<strong>把它们写成逐期算子，而不是年底一次性减法</strong>，口径就不会错。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能区分名义收益、实际收益、税后收益与几何收益，并互相换算。</li>
+<li>能解释波动拖累为何让算术均值高于长期几何收益。</li>
+<li>能量化 1% 年费在 30 年里的复利侵蚀。</li>
+<li>能用几行 Python 画出四种终值曲线并核对数值。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>复利与终值</td><td><a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a> · <a href="https://en.wikipedia.org/wiki/Volatility_tax" target="_blank" rel="noopener">Volatility drag</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>名义与实际收益</td><td><a href="https://en.wikipedia.org/wiki/Real_interest_rate" target="_blank" rel="noopener">Real interest rate</a> · <a href="https://en.wikipedia.org/wiki/Inflation" target="_blank" rel="noopener">Inflation</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>通胀与购买力</td><td><a href="https://en.wikipedia.org/wiki/Inflation" target="_blank" rel="noopener">Inflation</a> · <a href="https://en.wikipedia.org/wiki/Real_interest_rate" target="_blank" rel="noopener">Real interest rate</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>费率与复利侵蚀</td><td><a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a> · <a href="https://en.wikipedia.org/wiki/Volatility_tax" target="_blank" rel="noopener">Volatility drag</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>算术均值与几何均值</td><td><a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a> · <a href="https://en.wikipedia.org/wiki/Real_interest_rate" target="_blank" rel="noopener">Real interest rate</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>波动拖累</td><td><a href="https://en.wikipedia.org/wiki/Normal_distribution" target="_blank" rel="noopener">Normal distribution</a> · <a href="https://en.wikipedia.org/wiki/Volatility_tax" target="_blank" rel="noopener">Volatility drag</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>年化与 CAGR</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>对数收益</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s1-1"><h2><span class="sec-num">§1.1</span>四个口径，少一个就会误判</h2>
+<p class="eq">V_T = V_0 · ∏(1 + r_t)　|　CAGR = (V_T / V_0)^(1/T) − 1</p>
+<p class="eq">1 + r_实际 = (1 + r_名义) / (1 + π) − 1 ≈ r_名义 − π</p>
+<p>交易 App 首页显示的通常是<strong>名义金额变动</strong>。若名义涨 7%、通胀 2.5%，实际购买力只涨约 4.4%；再扣 1% 管理费与申赎费，落到手里的又少一截。把口径写成一张表，是避免「赚了指数没赚钱」的第一步。</p>
+<table><thead><tr><th style="width:20%">口径</th><th style="width:40%">定义</th><th style="width:40%">典型陷阱</th></tr></thead><tbody>
+<tr><td>简单收益 r</td><td>P_t / P_(t−1) − 1</td><td>多期不能相加</td></tr>
+<tr><td>对数收益</td><td>ln(P_t / P_(t−1))</td><td>跨期可加，但不能直接当账户收益率</td></tr>
+<tr><td>CAGR</td><td>几何平均后的年化</td><td>与算术平均的差额随波动增大</td></tr>
+<tr><td>实际收益</td><td>剔除通胀后的购买力变化</td><td>用减法只是近似，正确写法是除法</td></tr>
+<tr><td>净收益</td><td>再扣管理费、交易成本与税</td><td>费率按资产规模逐期计提，是复利级损耗</td></tr>
+</tbody></table>
+</section>
+<section id="s1-2"><h2><span class="sec-num">§1.2</span>波动拖累：算术均值不是你能拿到的收益</h2>
+<p>若单期收益独立且方差为 σ²，几何增长率的近似为</p>
+<p class="eq">g ≈ μ − σ² / 2</p>
+<p>其中 μ 是算术均值。<strong>波动本身会吃掉长期复利</strong>：同样 8% 的算术均值，σ=10% 时几何收益约 7.5%，σ=30% 时只剩约 3.5%。这解释了为什么「先翻倍再腰斩」回到原点，也解释了杠杆产品长期持有的衰减。第 30 章会把它写成仓位约束。</p>
+</section>
+<section id="s1-3"><h2><span class="sec-num">§1.3</span>费率是唯一确定为正的「负 Alpha」</h2>
+<p class="eq">净值比 = [(1 + r − f) / (1 + r)]^T</p>
+<p>费率 f 每期计提，作用方式与负复利完全相同。f=1.5%、r=7%、T=30 年时，终值大约只剩无费率情形的 65%——这不是省下一点小钱，而是<strong>把三分之一以上的终值让渡出去</strong>。评估基金时，费率、跟踪误差与换手成本应和收益一起看。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 1-1 · 四种终值口径与费率侵蚀</h3>
+<pre class="code" data-file="code/01-compound.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""名义复利、扣通胀、扣费率、波动拖累四条曲线的对照，全部可手算核对。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+YEARS = 30          # 投资年限
+R_NOM = 0.07        # 名义年收益
+INFL = 0.025        # 年通胀
+FEE = 0.010         # 年管理费
+SIGMA = 0.18        # 年化波动，用于波动拖累近似
+V0 = 100000.0       # 初始本金
+
+# ---- 计算与作图 ----
+xs = list(range(YEARS + 1))
+nominal = [V0 * (1 + R_NOM) ** t for t in xs]
+real = [V0 * ((1 + R_NOM) / (1 + INFL)) ** t for t in xs]
+after_fee = [V0 * (1 + R_NOM - FEE) ** t for t in xs]
+drag = [V0 * (1 + R_NOM - SIGMA ** 2 / 2) ** t for t in xs]
+
+r_real = (1 + R_NOM) / (1 + INFL) - 1
+fee_loss = 1 - after_fee[-1] / nominal[-1]
+
+c = Chart(FIG / "01-compound.svg", "10 万元在 30 年里的四种终值口径",
+          xlabel="年", ylabel="金额（元）")
+c.line(xs, nominal, BLUE, label="名义复利 7%")
+c.line(xs, real, GREEN, label="扣通胀后的购买力")
+c.line(xs, after_fee, AMBER, label="再扣 1% 管理费")
+c.line(xs, drag, RED, label="含波动拖累近似")
+print("图:", c.save())
+print("实际年收益=%.3f%% | 30年名义=%.0f 实际=%.0f 扣费=%.0f | 费率吞掉=%.1f%% | 波动拖累=%.2f%%/年" %
+      (100 * r_real, nominal[-1], real[-1], after_fee[-1],
+       100 * fee_loss, 100 * SIGMA ** 2 / 2))</code></pre>
+<p class="code-hint"><strong>操作：</strong>先手算 <code>(1.07/1.025)^30</code> 与代码的实际终值对照；再把 <code>FEE</code> 改成 0.015 看比例变化。　<strong>预期与判读：</strong>实际收益用<strong>除法</strong>而非减法：7%−2.5%=4.5% 只是近似，精确值约 4.39%。1% 费率在 30 年里的侵蚀通常在四分之一以上，这是本书反复强调「先看成本」的原因。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>SIGMA</code> 调到 0.40，观察波动拖累曲线如何快速下坠——这正是杠杆 ETF 长期衰减的直觉来源。　文件位置：<code>part0/01-time-value/code/01-compound.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/01-compound.svg" alt="名义、实际、扣费与波动拖累四条终值曲线" loading="lazy"><figcaption>图 1　名义、实际、扣费与波动拖累四条终值曲线（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>复利、计息频率与终值公式</p>
+<span class="why"><strong>怎么用</strong>：复利与计息频率的标准定义</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Compound_interest</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Real_interest_rate" target="_blank" rel="noopener">Real interest rate</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>名义收益扣除通胀后的购买力收益</p>
+<span class="why"><strong>怎么用</strong>：实际利率与购买力口径</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Real_interest_rate</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>复利、费用、风险与常见投资骗局的官方说明</p>
+<span class="why"><strong>怎么用</strong>：SEC 投资者教育里的复利与费用计算器说明</span>
+<p style="margin:0"><code>https://www.investor.gov/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.khanacademy.org/economics-finance-domain/core-finance" target="_blank" rel="noopener">Khan Academy · Finance</a></h3>
+<span class="tag">课程 · 参考资料</span>
+<p>复利、估值与账户基础的入门讲解</p>
+<span class="why"><strong>怎么用</strong>：适合补齐货币时间价值的入门推导</span>
+<p style="margin:0"><code>https://www.khanacademy.org/economics-finance-domain/core-finance</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>用 7%−2.5% 直接当实际收益，长期误差被复利放大。</li>
+<li>把算术平均年收益当 CAGR，忽略 σ²/2 的拖累。</li>
+<li>只看基金页面上的「近一年涨幅」，不换算成年化与净收益。</li>
+<li>把分红、拆股造成的份额变化误认为收益（见第 06 章复权）。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导 <code>g ≈ μ − σ²/2</code> 的一阶来源（提示：对 ln(1+r) 做二阶泰勒展开）。</li>
+<li>若管理费从 0.15% 涨到 1.5%，30 年终值差多少？用示例参数算一遍。</li>
+<li>把 <code>INFL</code> 设为 0.07，解释「名义赚钱、实际不赚」在图上如何表现。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Compound interest</strong>（百科）：复利、计息频率与终值公式<br><a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a></li>
+<li><strong>Real interest rate</strong>（百科）：名义收益扣除通胀后的购买力收益<br><a href="https://en.wikipedia.org/wiki/Real_interest_rate" target="_blank" rel="noopener">Real interest rate</a></li>
+<li><strong>Inflation</strong>（百科）：通胀对长期实际财富的侵蚀<br><a href="https://en.wikipedia.org/wiki/Inflation" target="_blank" rel="noopener">Inflation</a></li>
+<li><strong>Investor.gov（SEC 投资者教育）</strong>（机构）：复利、费用、风险与常见投资骗局的官方说明<br><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></li>
+<li><strong>Khan Academy · Finance</strong>（课程）：复利、估值与账户基础的入门讲解<br><a href="https://www.khanacademy.org/economics-finance-domain/core-finance" target="_blank" rel="noopener">Khan Academy · Finance</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=compound%20interest%20inflation%20real%20return%20long%20term%20wealth" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=compound%20interest%20inflation%20real%20return%20long%20term%20wealth" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=compound%20interest%20inflation%20real%20return%20long%20term%20wealth&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../02-return-risk/index.html'>第 02 章 · 收益与风险的可计算定义</a> 定义波动、回撤与尾部风险；<a href='../../part1/05-account-cost/index.html'>第 05 章 · 账户、费用、税与适当性</a> 把费率与换手成本写进账户模型。</li>
+<li>长期成本视角可参考 <a href='../../index.html#resources'>参考资源</a> 里的 SPIVA 与 Bogleheads。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 08 章 · 债券、货币基金与逆回购：现金这一端 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="08">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第一篇 · 产品地图与市场基础设施 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 08 章</span>债券、货币基金与逆回购：现金这一端</h1>
+<p class="lede">组合里最不性感的一端，决定了你能不能活到策略生效的那一天。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">产品 · 制度</span>
+<span>建议 2 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第一阶段以「现金这一端」收尾；<a href='../../part2/09-bond-pricing/index.html'>第 09 章 · 债券定价、久期与期限结构</a> 把价格—利率关系升级为久期与凸性，正式进入第二阶段的定价。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">债券是一段确定的 <code>cashflow[]</code> 被 <code>discount()</code> 映射成现在的值；利率就是折现率参数。现金工具则是不同的 <code>settle()</code> 实现，计息天数与手续费藏在实现细节里。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能写出债券价格与到期收益率的折现关系。</li>
+<li>能解释利率上升为何使存量债券价格下跌。</li>
+<li>能计算逆回购的占款收益与货币基金的七日年化。</li>
+<li>能为「应急资金 / 短期资金 / 长期资金」选择不同的现金工具。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>票息与面值</td><td><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a> · <a href="https://en.wikipedia.org/wiki/Money_market_fund" target="_blank" rel="noopener">Money market fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>到期收益率 YTM</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>价格与利率反向</td><td><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a> · <a href="https://en.wikipedia.org/wiki/Money_market_fund" target="_blank" rel="noopener">Money market fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>货币基金与万份收益</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>国债逆回购</td><td><a href="https://en.wikipedia.org/wiki/Repurchase_agreement" target="_blank" rel="noopener">Repurchase agreement</a> · <a href="https://en.wikipedia.org/wiki/Money_market_fund" target="_blank" rel="noopener">Money market fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>七日年化</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>信用风险与流动性</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>现金管理分层</td><td><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a> · <a href="https://en.wikipedia.org/wiki/Money_market_fund" target="_blank" rel="noopener">Money market fund</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s8-1"><h2><span class="sec-num">§8.1</span>债券是一组确定的现金流</h2>
+<p class="eq">P(y) = Σ_{t=1}^{T} C / (1+y)^t + F / (1+y)^T</p>
+<p>C 是票息、F 是面值、y 是到期收益率。价格与 y 单调递减，且曲线是<strong>凸的</strong>：利率下降带来的涨幅大于同等幅度上升带来的跌幅。第 09 章会把这一阶、二阶敏感度写成久期与凸性。</p>
+<p>信用利差是 y 相对无风险利率的额外部分：同样的票息，信用资质越差，要求的 y 越高、价格越低。所以「高收益债」不是更聪明的选择，而是<strong>把违约风险换成了票息</strong>。</p>
+</section>
+<section id="s8-2"><h2><span class="sec-num">§8.2</span>现金工具的三个口径</h2>
+<table><thead><tr><th style="width:26%">工具</th><th style="width:26%">收益口径</th><th style="width:20%">流动性</th><th style="width:28%">要注意什么</th></tr></thead><tbody>
+<tr><td>活期 / 通知存款</td><td>年利率按日计息</td><td>极高</td><td>利率最低，通常有存款保险上限</td></tr>
+<tr><td>货币基金</td><td>万份收益 / 七日年化</td><td>高（常有快赎额度）</td><td>七日年化是短期年化，不代表长期收益</td></tr>
+<tr><td>国债逆回购</td><td>年化报价 × 占款天数 / 365</td><td>到期自动回款</td><td>计息天数、手续费、跨节假日占款</td></tr>
+<tr><td>短债 / 同业存单指数基金</td><td>净值波动 + 票息</td><td>较高</td><td>存在净值回撤，不是保本</td></tr>
+</tbody></table>
+<p>逆回购收益有个容易错的细节：<code>利息 = 本金 × 年化利率 × 计息天数 / 365 − 手续费</code>，而资金<strong>实际占用天数</strong>可能与名义期限不同（跨周末、跨长假）。把「报价利率」直接当「到手收益率」会高估。</p>
+</section>
+<section id="s8-3"><h2><span class="sec-num">§8.3</span>现金是仓位，不是空仓</h2>
+<p>在资产配置里，现金同时承担三种角色：<strong>流动性缓冲</strong>（应急支出不迫使你在低点卖出）、<strong>期权价值</strong>（有机会时可调仓）、<strong>波动稀释</strong>。第 14 章的再平衡、第 30 章的保证金管理都依赖这一端有足够厚度。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 8-1 · 债券价格—收益率曲线与现金工具收益换算</h3>
+<pre class="code" data-file="code/08-cash.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""计算 5 年期债券在不同 YTM 下的价格，并把逆回购与货币基金换算到同一口径。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+FACE = 100.0       # 面值
+COUPON = 0.03      # 年票息率
+MATURITY = 5       # 年数
+REPO_CAP = 100000.0
+REPO_RATE = 0.018  # 逆回购年化报价
+REPO_DAYS = 7      # 名义期限
+REAL_DAYS = 9      # 跨周末的实际占款天数
+REPO_FEE = 0.00001 # 手续费率
+MM_DAILY = (0.000048, 0.000051, 0.000049, 0.000050, 0.000052, 0.000047, 0.000050)
+
+# ---- 计算与作图 ----
+def bond_price(y):
+    cf = [COUPON * FACE] * MATURITY
+    cf[-1] += FACE
+    return sum(c / (1 + y) ** t for t, c in enumerate(cf, 1))
+
+ys = [0.01 + i * 0.0025 for i in range(21)]
+ps = [bond_price(y) for y in ys]
+
+c = Chart(FIG / "08-bond-curve.svg", "5 年期 3% 票息债券：价格—到期收益率", xlabel="YTM", ylabel="价格")
+c.line(ys, ps, BLUE, label="债券价格")
+c.hline(FACE, RED, label="面值 100")
+c.vline(COUPON, "#9aa6b2", label="票息率 3%")
+print("债券图:", c.save())
+
+repo_interest = REPO_CAP * REPO_RATE * REPO_DAYS / 365 - REPO_CAP * REPO_FEE
+repo_effective = repo_interest / REPO_CAP * 365 / REAL_DAYS
+mm_annual = statistics.fmean(MM_DAILY) * 365
+mm_7d = (1 + statistics.fmean(MM_DAILY)) ** 7 - 1
+
+labels = ["逆回购报价", "逆回购实际", "货币基金7日年化"]
+vals = [100 * REPO_RATE, 100 * repo_effective, 100 * mm_annual]
+b = Chart(FIG / "08-cash.svg", "现金工具收益口径对照（年化 %，合成示意）",
+          xlabel="口径", ylabel="年化 %", xticks=[(i, n) for i, n in enumerate(labels)])
+b.bars(range(3), vals, GREEN, label="年化收益")
+print("现金图:", b.save())
+print("YTM=票息时价格=%.3f | YTM 5%% 时价格=%.3f（跌 %.2f%%）" %
+      (bond_price(COUPON), bond_price(0.05), 100 * (bond_price(0.05) / FACE - 1)))
+print("逆回购利息=%.2f 元 报价=%.2f%% 按实际占款折算=%.2f%% | 货基7日累计=%.4f%% 年化=%.2f%%" %
+      (repo_interest, 100 * REPO_RATE, 100 * repo_effective, 100 * mm_7d, 100 * mm_annual))</code></pre>
+<p class="code-hint"><strong>操作：</strong>核对 <code>YTM=票息率</code> 时价格恰为 100；把 <code>REAL_DAYS</code> 改成 7 看折算收益如何回到报价。　<strong>预期与判读：</strong>票息率等于 YTM 时债券平价；YTM 上升到 5% 后价格低于面值。逆回购因实际占款 9 天而非 7 天，<strong>真实年化低于报价</strong>——这是最典型的现金管理口径误差。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>MATURITY</code> 改成 20，观察同一 YTM 变化带来的价格跌幅显著放大（引出第 09 章久期）。　文件位置：<code>part1/08-fixed-income/code/08-cash.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/08-bond-curve.svg" alt="债券价格随 YTM 单调下降且呈凸性" loading="lazy"><figcaption>图 1　债券价格随 YTM 单调下降且呈凸性（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/08-cash.svg" alt="逆回购报价与按实际占款天数折算后的收益差异" loading="lazy"><figcaption>图 2　逆回购报价与按实际占款天数折算后的收益差异（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>票息、面值、到期与信用风险</p>
+<span class="why"><strong>怎么用</strong>：票息、面值、到期与信用风险</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Bond_(finance)</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Money_market_fund" target="_blank" rel="noopener">Money market fund</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>现金管理的低波动工具与风险边界</p>
+<span class="why"><strong>怎么用</strong>：货币基金的运作与风险边界</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Money_market_fund</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Repurchase_agreement" target="_blank" rel="noopener">Repurchase agreement</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>逆回购的抵押与期限结构</p>
+<span class="why"><strong>怎么用</strong>：逆回购的抵押与期限结构</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Repurchase_agreement</code></p></div>
+<div class="repo-card">
+<h3><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener">FRED</a></h3>
+<span class="tag">数据 · 参考资料</span>
+<p>利率、通胀、信用利差等免费时间序列</p>
+<span class="why"><strong>怎么用</strong>：免费利率与宏观时间序列，用于课后替换合成参数</span>
+<p style="margin:0"><code>https://fred.stlouisfed.org/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把逆回购报价年化直接当到手收益，忽略实际占款天数。</li>
+<li>把货币基金当保本存款，忽略极端赎回与利率风险。</li>
+<li>用「七日年化」推断未来一年收益。</li>
+<li>只看票息不看信用利差，把高风险债当高息存款。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导为什么票息率等于 YTM 时债券价格等于面值。</li>
+<li>把示例的 <code>REAL_DAYS</code> 设为 14，计算实际年化并解释跨长假报价为何常升高。</li>
+<li>为「3 个月内要用的钱」和「3 年不用的钱」各选一种现金工具，写出理由与失效条件。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Bond (finance)</strong>（百科）：票息、面值、到期与信用风险<br><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a></li>
+<li><strong>Money market fund</strong>（百科）：现金管理的低波动工具与风险边界<br><a href="https://en.wikipedia.org/wiki/Money_market_fund" target="_blank" rel="noopener">Money market fund</a></li>
+<li><strong>Repurchase agreement</strong>（百科）：逆回购的抵押与期限结构<br><a href="https://en.wikipedia.org/wiki/Repurchase_agreement" target="_blank" rel="noopener">Repurchase agreement</a></li>
+<li><strong>Yield curve</strong>（百科）：期限结构、倒挂与远期利率<br><a href="https://en.wikipedia.org/wiki/Yield_curve" target="_blank" rel="noopener">Yield curve</a></li>
+<li><strong>FRED</strong>（数据）：利率、通胀、信用利差等免费时间序列<br><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener">FRED</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=fixed%20income%20money%20market%20fund%20reverse%20repo%20cash%20management" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=fixed%20income%20money%20market%20fund%20reverse%20repo%20cash%20management" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=fixed%20income%20money%20market%20fund%20reverse%20repo%20cash%20management&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part2/09-bond-pricing/index.html'>第 09 章 · 债券定价、久期与期限结构</a> 久期、凸性与期限结构；<a href='../../part2/14-allocation/index.html'>第 14 章 · 资产配置、再平衡与定投</a> 现金在资产配置中的角色。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 30 章 · 仓位、杠杆、VaR/CVaR 与凯利上界 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="30">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第六篇 · 实盘、风险与长期主义 · 第五阶段 · 实盘、风险与长期主义</span>
+<h1><span class="ch-num">第 30 章</span>仓位、杠杆、VaR/CVaR 与凯利上界</h1>
+<p class="lede">风险管理不是预测下跌，而是保证「预测错了也还活着」。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s5">实盘 · 风险</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 29 章决定「怎么下单」，本章决定「下多大」；<a href='../31-ips-review/index.html'>第 31 章 · 投资政策说明书与长期复盘</a> 把这些约束写成一份可长期执行的契约。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">杠杆是给随机过程加了一条<strong>吸收壁</strong>：没有壁时只看期望，有壁时必须看路径。风控规则就是给系统加 circuit breaker，让一次尾部事件不至于终止整个进程。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能用蒙特卡洛估计不同杠杆下的强平概率与尾部损失。</li>
+<li>能计算历史 VaR / CVaR 并说明其边界。</li>
+<li>能写出凯利公式并解释为什么实盘常用其分数。</li>
+<li>能把仓位上界写成可执行、可监控的硬约束。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>仓位与风险预算</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>杠杆与逐日盯市</td><td><a href="https://en.wikipedia.org/wiki/Margin_(finance)" target="_blank" rel="noopener">Margin (finance)</a> · <a href="https://en.wikipedia.org/wiki/Kelly_criterion" target="_blank" rel="noopener">Kelly criterion</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>维持保证金与强平</td><td><a href="https://en.wikipedia.org/wiki/Margin_(finance)" target="_blank" rel="noopener">Margin (finance)</a> · <a href="https://en.wikipedia.org/wiki/Futures_contract" target="_blank" rel="noopener">Futures contract</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>蒙特卡洛模拟</td><td><a href="https://en.wikipedia.org/wiki/Monte_Carlo_method" target="_blank" rel="noopener">Monte Carlo method</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>VaR 与 CVaR</td><td><a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a> · <a href="https://en.wikipedia.org/wiki/Expected_shortfall" target="_blank" rel="noopener">Expected shortfall (CVaR)</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>凯利准则</td><td><a href="https://en.wikipedia.org/wiki/Kelly_criterion" target="_blank" rel="noopener">Kelly criterion</a> · <a href="https://en.wikipedia.org/wiki/Drawdown_(economics)" target="_blank" rel="noopener">Drawdown (economics)</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>分数凯利与参数不确定性</td><td><a href="https://en.wikipedia.org/wiki/Kelly_criterion" target="_blank" rel="noopener">Kelly criterion</a> · <a href="https://en.wikipedia.org/wiki/Drawdown_(economics)" target="_blank" rel="noopener">Drawdown (economics)</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>尾部风险与压力测试</td><td><a href="https://en.wikipedia.org/wiki/Expected_shortfall" target="_blank" rel="noopener">Expected shortfall (CVaR)</a> · <a href="https://en.wikipedia.org/wiki/Heavy-tailed_distribution" target="_blank" rel="noopener">Heavy-tailed distribution</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s30-1"><h2><span class="sec-num">§30.1</span>杠杆把分布整体拉伸，也把尾部拉断</h2>
+<p class="eq">r_杠杆 ≈ L · r − (L − 1) · 融资成本　|　净值 = 1 + Σ L·r_t（逐日盯市）</p>
+<p>杠杆不仅放大波动，还引入了<strong>路径依赖</strong>：一次足够大的回撤会触发维持保证金与强平，之后即使标的反弹，账户也无法复原。因此杠杆策略不能用终值期望评估，必须看<strong>吸收壁（ruin barrier）</strong>与尾部。</p>
+</section>
+<section id="s30-2"><h2><span class="sec-num">§30.2</span>凯利是一个上界，不是一个目标</h2>
+<p class="eq">f* ≈ μ / σ²（连续近似）　|　实盘常用 f = c · f*，c ∈ [0.25, 0.5]</p>
+<p>凯利最大化长期几何增长率，但它假设 μ、σ 已知且分布稳定。现实中参数估计误差、厚尾与融资约束都会让全凯利过于激进；更严重的是，<strong>几何增长率最优并不意味着回撤可承受</strong>。把凯利值当上界、再用最大回撤与保证金约束往下压，是更稳健的顺序。</p>
+</section>
+<section id="s30-3"><h2><span class="sec-num">§30.3</span>把风险写成监控规则</h2>
+<table><thead><tr><th style="width:30%">约束</th><th style="width:34%">可监控的量</th><th style="width:36%">触发动作</th></tr></thead><tbody>
+<tr><td>单一标的 ≤ 10%</td><td>每日收盘权重</td><td>超限次日减仓</td></tr>
+<tr><td>组合杠杆 ≤ 1.5</td><td>总敞口 / 净值</td><td>禁止新开仓</td></tr>
+<tr><td>回撤 ≤ 15%</td><td>相对历史峰值</td><td>降杠杆并复核假设</td></tr>
+<tr><td>CVaR_95 ≤ 3%</td><td>滚动模拟尾部均值</td><td>暂停策略、检查厚尾</td></tr>
+</tbody></table>
+<div class="card warn"><span class="card-label">顺序很重要</span><p style="margin-bottom:0">先定「最大可承受损失」，再定仓位；不要先看到预期收益，再倒推一个能解释它的杠杆。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 30-1 · 杠杆、强平概率与 CVaR 的蒙特卡洛</h3>
+<pre class="code" data-file="code/30-risk.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""模拟含厚尾的日收益，扫描杠杆，估计强平概率、终值分位数与 CVaR。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N_PATHS, N_DAYS = 2000, 250
+LEVERAGES = (0.5, 1.0, 1.5, 2.0, 3.0)
+MU, SIG = 0.0004, 0.012
+P_STRESS, STRESS_MULT = 0.02, 4.0
+RUIN_BARRIER = 0.25     # 净值低于初始的 25% 视为触发强平
+ANN = 252
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+kelly = MU / (SIG ** 2)
+rows = []
+for lev in LEVERAGES:
+    finals, ruins = [], 0
+    for _ in range(N_PATHS):
+        eq = 1.0
+        ruined = False
+        for _d in range(N_DAYS):
+            sig = SIG * STRESS_MULT if rng.random() &lt; P_STRESS else SIG
+            r = rng.gauss(MU, sig)
+            eq *= (1 + lev * r)
+            if eq &lt;= RUIN_BARRIER:
+                ruined = True
+                break
+        finals.append(eq)
+        ruins += 1 if ruined else 0
+    finals.sort()
+    k = max(1, int(0.05 * len(finals)))
+    cvar = statistics.fmean(finals[:k])
+    rows.append((lev, ruins / N_PATHS, statistics.median(finals), finals[k - 1], cvar))
+
+c = Chart(FIG / "30-ruin.svg", "杠杆与强平概率（合成厚尾收益）", xlabel="杠杆 L", ylabel="概率")
+c.bars([x[0] for x in rows], [100 * x[1] for x in rows], RED, label="强平概率 %")
+print("强平图:", c.save())
+t = Chart(FIG / "30-terminal.svg", "终值中位数与 5% 分位数", xlabel="杠杆 L", ylabel="期末净值")
+t.line([x[0] for x in rows], [x[2] for x in rows], BLUE, label="中位数")
+t.line([x[0] for x in rows], [x[3] for x in rows], AMBER, label="5% 分位")
+t.hline(1.0, "#9aa6b2", label="本金")
+print("终值图:", t.save())
+print("凯利 f*=%.2f（上界）| 强平概率 L=1: %.1f%% L=3: %.1f%%" %
+      (kelly, 100 * rows[1][1], 100 * rows[-1][1]))
+print("L=3 终值中位=%.3f 5%%分位=%.3f CVaR95=%.3f | 年化波动=%.1f%%" %
+      (rows[-1][2], rows[-1][3], rows[-1][4], 100 * SIG * math.sqrt(ANN)))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>P_STRESS</code> 设为 0（正态分布），比较 L=3 的强平概率；再调到 0.05 看尾部恶化。　<strong>预期与判读：</strong>厚尾 + 杠杆会显著提高触及吸收壁的概率；终值中位数可能随杠杆上升，但 5% 分位与 CVaR 明显恶化。凯利值是<strong>上界</strong>，实盘还要被回撤与保证金约束继续压低。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>RUIN_BARRIER</code> 提高到 0.5（更严格的保证金），强平概率会成倍上升。　文件位置：<code>part6/30-risk-sizing/code/30-risk.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/30-ruin.svg" alt="不同杠杆下的强平概率" loading="lazy"><figcaption>图 1　不同杠杆下的强平概率（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/30-terminal.svg" alt="终值中位数与 5% 分位数随杠杆的变化" loading="lazy"><figcaption>图 2　终值中位数与 5% 分位数随杠杆的变化（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>分位数意义下的潜在损失</p>
+<span class="why"><strong>怎么用</strong>：分位数意义下的潜在损失</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Value_at_risk</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Expected_shortfall" target="_blank" rel="noopener">Expected shortfall (CVaR)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>尾部超过 VaR 的平均损失</p>
+<span class="why"><strong>怎么用</strong>：尾部平均损失，相对 VaR 更保守</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Expected_shortfall</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Kelly_criterion" target="_blank" rel="noopener">Kelly criterion</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>长期增长率最优的仓位上界</p>
+<span class="why"><strong>怎么用</strong>：长期增长率最优仓位与其实用限制</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Kelly_criterion</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Margin_(finance)" target="_blank" rel="noopener">Margin (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>融资杠杆、维持保证金与强平</p>
+<span class="why"><strong>怎么用</strong>：融资杠杆、维持保证金与强平规则</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Margin_(finance)</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>用正态假设估计杠杆产品的尾部风险。</li>
+<li>把凯利值当成推荐仓位，忽略参数估计误差。</li>
+<li>只看终值期望，不看强平概率与路径。</li>
+<li>把风险阈值写成事后解释，而不是事前触发动作。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导 <code>f* ≈ μ/σ²</code> 的来源（对几何增长率求导）。</li>
+<li>在示例里加入融资成本，观察高杠杆的终值中位数如何变化。</li>
+<li>写出一份包含四条硬约束的监控配置，并说明各自的触发动作。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Value at risk</strong>（百科）：分位数意义下的潜在损失<br><a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></li>
+<li><strong>Expected shortfall (CVaR)</strong>（百科）：尾部超过 VaR 的平均损失<br><a href="https://en.wikipedia.org/wiki/Expected_shortfall" target="_blank" rel="noopener">Expected shortfall (CVaR)</a></li>
+<li><strong>Kelly criterion</strong>（百科）：长期增长率最优的仓位上界<br><a href="https://en.wikipedia.org/wiki/Kelly_criterion" target="_blank" rel="noopener">Kelly criterion</a></li>
+<li><strong>Margin (finance)</strong>（百科）：融资杠杆、维持保证金与强平<br><a href="https://en.wikipedia.org/wiki/Margin_(finance)" target="_blank" rel="noopener">Margin (finance)</a></li>
+<li><strong>Monte Carlo method</strong>（百科）：用模拟逼近分布与尾部风险<br><a href="https://en.wikipedia.org/wiki/Monte_Carlo_method" target="_blank" rel="noopener">Monte Carlo method</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=position%20sizing%20leverage%20margin%20call%20value%20at%20risk%20CVaR" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=position%20sizing%20leverage%20margin%20call%20value%20at%20risk%20CVaR" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=position%20sizing%20leverage%20margin%20call%20value%20at%20risk%20CVaR&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part0/02-return-risk/index.html'>第 02 章 · 收益与风险的可计算定义</a> 尾部度量；<a href='../../part2/12-option-payoff/index.html'>第 12 章 · 期权 payoff、平价关系与希腊字母</a> 期权卖方风险；<a href='../31-ips-review/index.html'>第 31 章 · 投资政策说明书与长期复盘</a> 投资政策说明书。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 09 章 · 债券定价、久期与期限结构 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="09">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第二篇 · 估值定价与组合理论 · 第二阶段 · 定价、组合与资产配置</span>
+<h1><span class="ch-num">第 09 章</span>债券定价、久期与期限结构</h1>
+<p class="lede">把价格对利率的敏感度写成一阶导与二阶导，是全书最干净的一次「导数即风险」。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s2">定价 · 组合</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 08 章给出价格—利率的定性关系，本章把它量化；<a href='../10-equity-valuation/index.html'>第 10 章 · 股票估值：从 DCF 到相对倍数</a> 换成股票现金流，<a href='../12-option-payoff/index.html'>第 12 章 · 期权 payoff、平价关系与希腊字母</a> 换成或有现金流，三者共用同一套折现思想。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">久期是 <code>dP/dy</code>，凸性是 <code>d²P/dy²</code>。把债券当成一个黑箱函数，用中心差分求敏感度，比记闭式解更容易推广到含权与结构化产品。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能计算麦考利久期、修正久期与凸性。</li>
+<li>能用一阶、二阶近似估计利率变动后的价格，并量化近似误差。</li>
+<li>能读收益率曲线并解释期限利差与倒挂。</li>
+<li>能说明久期匹配为什么不能完全免疫利率风险。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>现金流折现</td><td><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a> · <a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>麦考利久期</td><td><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a> · <a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>修正久期</td><td><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a> · <a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>凸性</td><td><a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a> · <a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>一阶与二阶近似</td><td><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a> · <a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>收益率曲线</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>期限利差与倒挂</td><td><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a> · <a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>久期匹配与免疫</td><td><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a> · <a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s9-1"><h2><span class="sec-num">§9.1</span>一阶：修正久期</h2>
+<p class="eq">D_mod = − (1/P) · dP/dy　|　ΔP/P ≈ − D_mod · Δy</p>
+<p>久期的量纲是<strong>年</strong>，直观含义是「收回全部现金流现值的加权平均时间」。零息债的麦考利久期等于到期期限；票息越高、到期越短，久期越短。组合层面久期可按市值加权，因此它是<strong>可加的风险预算单位</strong>——这一点会在第 30 章复用。</p>
+</section>
+<section id="s9-2"><h2><span class="sec-num">§9.2</span>二阶：凸性修正近似误差</h2>
+<p class="eq">ΔP/P ≈ − D_mod · Δy + (1/2) · C · (Δy)^2　，C = (1/P) · d²P/dy²</p>
+<p>价格—收益率曲线是凸的，切线（久期）在利率大幅变动时会低估涨幅、高估跌幅。凸性项修正这个偏差。用数值微分可以直接算出 dP/dy 与 d²P/dy²，不必背闭式公式——这也是程序员最舒服的推导方式。</p>
+</section>
+<section id="s9-3"><h2><span class="sec-num">§9.3</span>期限结构：一条曲线里的宏观信息</h2>
+<table><thead><tr><th style="width:22%">曲线形态</th><th style="width:36%">典型含义</th><th style="width:42%">对持仓的影响</th></tr></thead><tbody>
+<tr><td>向上倾斜</td><td>长期要求期限溢价</td><td>拉长久期可得额外票息，但承担更大价格敏感</td></tr>
+<tr><td>平坦</td><td>长短端预期接近</td><td>久期性价比下降</td></tr>
+<tr><td>倒挂</td><td>短端高于长端</td><td>常被视为衰退预期信号，但不可单独作为择时依据</td></tr>
+<tr><td>陡峭化 / 平坦化</td><td>长短期利差变化</td><td>曲线策略赚的是斜率变化，不是方向</td></tr>
+</tbody></table>
+<div class="card note"><span class="card-label">边界</span><p style="margin-bottom:0">久期免疫只在一阶、平行移动、且现金流确定的条件下成立。真实曲线会扭转，含权债券（可转债、可赎回债）的现金流本身随利率变化，此时需要有效久期与情景分析。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 9-1 · 久期、凸性与近似误差的数值验证</h3>
+<pre class="code" data-file="code/09-duration.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""用中心差分求一阶/二阶导数，比较三种价格估计，并画收益率曲线。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+FACE = 100.0
+COUPON = 0.04      # 年票息率
+MATURITY = 8       # 年
+Y0 = 0.035         # 当前 YTM
+H = 0.0001         # 数值微分步长
+SHOCKS = (-0.020, -0.010, 0.0, 0.010, 0.020)
+CURVE = [(1, 0.021), (2, 0.023), (3, 0.025), (5, 0.028),
+         (10, 0.032), (20, 0.035)]
+
+# ---- 计算与作图 ----
+def bond_price(y):
+    cf = [COUPON * FACE] * MATURITY
+    cf[-1] += FACE
+    return sum(c / (1 + y) ** t for t, c in enumerate(cf, 1))
+
+p0 = bond_price(Y0)
+d1 = (bond_price(Y0 + H) - bond_price(Y0 - H)) / (2 * H)
+d2 = (bond_price(Y0 + H) - 2 * p0 + bond_price(Y0 - H)) / (H * H)
+mod_dur, convexity = -d1 / p0, d2 / p0
+macaulay = mod_dur * (1 + Y0)
+
+ys = [0.005 + i * 0.0025 for i in range(25)]
+actual = [bond_price(Y0 + dy) for dy in ys]
+linear = [p0 + d1 * dy for dy in ys]
+quad = [p0 + d1 * dy + 0.5 * d2 * dy * dy for dy in ys]
+dys = [Y0 + dy for dy in ys]
+
+c = Chart(FIG / "09-convexity.svg", "价格—收益率曲线与一阶/二阶近似", xlabel="YTM", ylabel="价格")
+c.line(dys, actual, BLUE, label="精确价格")
+c.line(dys, linear, RED, label="久期（切线）近似", dash="5 4")
+c.line(dys, quad, GREEN, label="久期+凸性近似", dash="2 3")
+c.vline(Y0, "#9aa6b2", label="当前 YTM")
+print("近似图:", c.save())
+cu = Chart(FIG / "09-curve.svg", "合成收益率曲线（期限结构）", xlabel="期限（年）", ylabel="YTM")
+cu.line([t for t, _y in CURVE], [y for _t, y in CURVE], AMBER, label="收益率曲线")
+print("曲线图:", cu.save())
+
+rows = []
+for dy in SHOCKS:
+    px = bond_price(Y0 + dy) - p0
+    e1 = d1 * dy - px
+    e2 = d1 * dy + 0.5 * d2 * dy * dy - px
+    rows.append((dy, px, e1, e2))
+print("麦考利久期=%.3f 年 修正久期=%.3f 凸性=%.2f | 当前价格=%.3f" %
+      (macaulay, mod_dur, convexity, p0))
+print("期限利差 10Y-1Y=%.2f%% | Δy=+2%% 时 实际=%.3f 一阶误差=%.3f 二阶误差=%.3f" %
+      (100 * (CURVE[4][1] - CURVE[0][1]), rows[-1][1], rows[-1][2], rows[-1][3]))</code></pre>
+<p class="code-hint"><strong>操作：</strong>对照 <code>Δy=+2%</code> 与 <code>Δy=−2%</code> 的一阶误差符号，理解「凸性总是帮忙」。　<strong>预期与判读：</strong>二阶近似的误差比切线近似小一到两个数量级，且利率变动越大差距越明显。久期与凸性都是用<strong>数值微分</strong>算出来的，不需要背公式。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>MATURITY</code> 改成 20，久期与凸性同时增大，观察近似误差与价格敏感度如何变化。　文件位置：<code>part2/09-bond-pricing/code/09-duration.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/09-convexity.svg" alt="精确价格、切线近似与含凸性的二次近似" loading="lazy"><figcaption>图 1　精确价格、切线近似与含凸性的二次近似（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/09-curve.svg" alt="按期限排列的收益率曲线" loading="lazy"><figcaption>图 2　按期限排列的收益率曲线（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价格对利率的一阶敏感度</p>
+<span class="why"><strong>怎么用</strong>：久期的一阶敏感度定义</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Bond_duration</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>久期之外的二阶价格修正</p>
+<span class="why"><strong>怎么用</strong>：凸性与二阶修正</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Bond_convexity</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Yield_curve" target="_blank" rel="noopener">Yield curve</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>期限结构、倒挂与远期利率</p>
+<span class="why"><strong>怎么用</strong>：期限结构与倒挂</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Yield_curve</code></p></div>
+<div class="repo-card">
+<h3><a href="http://www.pbc.gov.cn/" target="_blank" rel="noopener">中国人民银行</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>利率、货币政策与金融市场统计</p>
+<span class="why"><strong>怎么用</strong>：利率与金融市场统计的官方来源</span>
+<p style="margin:0"><code>http://www.pbc.gov.cn/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把麦考利久期与修正久期混用（相差一个 1+y 因子）。</li>
+<li>假设收益率曲线总是平行移动。</li>
+<li>对含权债券直接套用普通久期。</li>
+<li>把倒挂曲线当成可靠的择时信号，忽略期限溢价与政策因素。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导零息债的麦考利久期等于期限。</li>
+<li>在示例里比较 <code>Δy=−2%</code> 与 <code>+2%</code> 的一阶误差，解释符号。</li>
+<li>用两种期限债券构造久期匹配的组合，说明为什么曲线扭转时仍会亏。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Bond duration</strong>（百科）：价格对利率的一阶敏感度<br><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a></li>
+<li><strong>Bond convexity</strong>（百科）：久期之外的二阶价格修正<br><a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></li>
+<li><strong>Yield curve</strong>（百科）：期限结构、倒挂与远期利率<br><a href="https://en.wikipedia.org/wiki/Yield_curve" target="_blank" rel="noopener">Yield curve</a></li>
+<li><strong>Credit spread (bond)</strong>（百科）：信用风险的额外补偿<br><a href="https://en.wikipedia.org/wiki/Credit_spread_(bond)" target="_blank" rel="noopener">Credit spread (bond)</a></li>
+<li><strong>Discounted cash flow</strong>（百科）：把未来现金流折成现值<br><a href="https://en.wikipedia.org/wiki/Discounted_cash_flow" target="_blank" rel="noopener">Discounted cash flow</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=bond%20pricing%20yield%20duration%20convexity%20term%20structure" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=bond%20pricing%20yield%20duration%20convexity%20term%20structure" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=bond%20pricing%20yield%20duration%20convexity%20term%20structure&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../10-equity-valuation/index.html'>第 10 章 · 股票估值：从 DCF 到相对倍数</a> 股权现金流折现；<a href='../12-option-payoff/index.html'>第 12 章 · 期权 payoff、平价关系与希腊字母</a> 无套利定价；<a href='../../part6/30-risk-sizing/index.html'>第 30 章 · 仓位、杠杆、VaR/CVaR 与凯利上界</a> 用久期做风险预算。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

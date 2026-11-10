@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 03 章 · 交易 App 里的产品全景图 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="03">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第一篇 · 产品地图与市场基础设施 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 03 章</span>交易 App 里的产品全景图</h1>
+<p class="lede">把富途、东方财富一类零售界面里的几十个入口，抽象成一张按「现金流权利」分类的产品表。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">产品 · 制度</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>从本章起进入第一阶段的产品地图。<a href='../04-market-rules/index.html'>第 04 章 · 交易所制度：竞价、涨跌停、T+1 与交收</a> 讲这些接口在什么规则下被调用，<a href='../06-data-model/index.html'>第 06 章 · 行情数据模型：OHLCV、复权与时间戳</a> 讲它们返回的数据长什么样。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">产品是一组<strong>接口</strong>：股票暴露 <code>dividend()</code> 与投票权，债券暴露 <code>coupon()</code> 与到期日，基金暴露 <code>nav()</code>，期权暴露 <code>payoff(S_T)</code>。App 只是同一批接口的不同前端皮肤。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能按「索取权」而非按 App 栏目给可交易产品分类。</li>
+<li>能说清股票、基金、ETF、债券、可转债、期权、期货、REIT 的收益来源与主要风险。</li>
+<li>能读懂交易界面的共同字段：代码、最小单位、报价币种、交易时段、费用、风险等级。</li>
+<li>能用一张热力图比较产品属性并给出适合新手的顺序。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>交易 App 的产品分类</td><td><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> · <a href="https://www.futunn.com/" target="_blank" rel="noopener">富途牛牛 / 富途证券</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>股票与股权</td><td><a href="https://en.wikipedia.org/wiki/Stock" target="_blank" rel="noopener">Stock</a> · <a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>公募基金与净值</td><td><a href="https://en.wikipedia.org/wiki/Mutual_fund" target="_blank" rel="noopener">Mutual fund</a> · <a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>ETF 与场内交易</td><td><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a> · <a href="https://en.wikipedia.org/wiki/Index_fund" target="_blank" rel="noopener">Index fund</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>债券与可转债</td><td><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a> · <a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>期权与期货</td><td><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a> · <a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>REIT 与货币基金</td><td><a href="https://en.wikipedia.org/wiki/Mutual_fund" target="_blank" rel="noopener">Mutual fund</a> · <a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>适当性与风险等级</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s3-1"><h2><span class="sec-num">§3.1</span>按索取权分类，而不是按入口分类</h2>
+<p>零售 App 的栏目是<strong>运营视角</strong>：港股、美股、A 股、基金、理财、衍生品。教材需要<strong>权利视角</strong>：你买到的是剩余索取权、债权、基金份额、还是一份或有合约。同一个权利可以挂在不同市场、不同币种、不同 App 入口下，但风险结构不变。</p>
+<table><thead><tr><th style="width:16%">索取权</th><th style="width:30%">代表产品</th><th style="width:28%">收益来源</th><th style="width:26%">最主要的风险</th></tr></thead><tbody>
+<tr><td>剩余索取权</td><td>普通股、存托凭证、股票型 ETF</td><td>盈利增长 + 估值变化 + 分红</td><td>经营与估值波动</td></tr>
+<tr><td>债权</td><td>国债、公司债、债券 ETF、可转债债底</td><td>票息 + 利率变化</td><td>利率风险、信用风险</td></tr>
+<tr><td>基金份额</td><td>场外公募、ETF、货币基金</td><td>组合净值的按比例分配</td><td>底层资产 + 费率 + 跟踪误差</td></tr>
+<tr><td>或有权益</td><td>期权、权证、牛熊证</td><td>非线性 payoff</td><td>时间价值衰减、杠杆、可能归零</td></tr>
+<tr><td>保证金合约</td><td>股指期货、商品期货</td><td>标的涨跌 × 杠杆</td><td>逐日盯市、强平、无限损失</td></tr>
+<tr><td>不动产份额</td><td>REIT</td><td>租金分派 + 资产重估</td><td>利率敏感、流动性</td></tr>
+</tbody></table>
+<p>富途牛牛一类跨境券商常见「港股 / 美股 / ETF / 期权 / 期货 / 牛熊证」入口；东方赢家、东方财富一类境内券商常见「A 股 / 场内基金 / 债券 / 逆回购 / 理财 / 融资融券」。两者字段结构高度相似：<code>代码 · 名称 · 现价 · 涨跌幅 · 买卖档位 · 最小单位 · 币种 · 交易时段 · 费用 · 风险等级</code>。本书只使用这些<strong>抽象字段</strong>，不评价任何具体平台或产品。</p>
+</section>
+<section id="s3-2"><h2><span class="sec-num">§3.2</span>三层封装：底层资产 → 组合 → 合约</h2>
+<ul>
+<li><strong>第一层</strong>：股票、债券、商品、存款等基础资产，有可观测的现金流。</li>
+<li><strong>第二层</strong>：基金 / ETF 把一篮子基础资产封装成一份可申赎或可交易的份额，引入净值、费率、跟踪误差（第 07 章）。</li>
+<li><strong>第三层</strong>：期权、期货、结构性产品把第一/二层再封装成带杠杆、到期日与非线性 payoff 的合约，引入保证金、时间价值与强平（第 12、30 章）。</li>
+</ul>
+<div class="card note"><span class="card-label">给程序员的抽象</span><p style="margin-bottom:0">每多一层封装，就多一组<strong>状态与失效模式</strong>：第二层多了申赎清单与折溢价，第三层多了 Greek 与保证金。新手应先把第一、二层跑通，再碰第三层。</p></div>
+</section>
+<section id="s3-3"><h2><span class="sec-num">§3.3</span>适当性：不是限制，而是输入校验</h2>
+<p>监管与券商的风险等级、资产门槛、知识测评，本质上是<strong>对策略参数的输入校验</strong>：杠杆产品要求更高的保证金与更强的抗压能力，跨境产品还有汇率与结算差异。把「能不能买」与「该不该买」分开，是第 31 章 IPS 的前置条件。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 3-1 · 产品属性矩阵与上手顺序打分</h3>
+<pre class="code" data-file="code/03-products.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""把八类产品按五个维度归一化，用线性打分给出教学建议顺序，并画属性热力图。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+PRODUCTS = ["货币基金", "国债/债券ETF", "宽基ETF", "主动股票基金",
+           "个股", "可转债", "REIT", "期权/期货"]
+DIMS = ["收益潜力", "风险", "流动性", "门槛", "复杂度"]
+# 每行 0~1 的归一化评分；数据为教学示意打分，非真实测评
+M = [
+    [0.10, 0.05, 0.95, 0.95, 0.05],
+    [0.30, 0.25, 0.85, 0.85, 0.25],
+    [0.60, 0.55, 0.95, 0.90, 0.30],
+    [0.65, 0.60, 0.60, 0.90, 0.40],
+    [0.90, 0.90, 0.85, 0.70, 0.60],
+    [0.55, 0.55, 0.60, 0.60, 0.75],
+    [0.50, 0.60, 0.65, 0.70, 0.55],
+    [0.95, 1.00, 0.70, 0.30, 1.00],
+]
+W = (0.30, -0.30, 0.20, 0.10, -0.10)  # 收益/风险/流动性/易得性/复杂度
+
+# ---- 计算与作图 ----
+scored = []
+for name, row in zip(PRODUCTS, M):
+    s = sum(w * x for w, x in zip(W, row))
+    scored.append((s, name))
+scored.sort(reverse=True)
+
+heatmap(FIG / "03-product-map.svg", M, PRODUCTS, DIMS,
+        title="八类可交易产品的属性矩阵（0~1，教学打分）", vmin=0.0, vmax=1.0)
+print("热力图:", str(FIG / "03-product-map.svg"))
+c = Chart(FIG / "03-ranking.svg", "按「收益−风险+流动性−复杂度」的教学建议顺序",
+          xlabel="产品", ylabel="综合得分",
+          xticks=[(i, n) for i, (_s, n) in enumerate(scored)])
+c.bars(range(len(PRODUCTS)), [s for s, _ in scored], BLUE, label="综合得分")
+c.hline(0.0, "#9aa6b2")
+print("排序图:", c.save())
+print("建议顺序: " + " &gt; ".join(n for _s, n in scored))
+print("最高=%.3f 最低=%.3f | 打分仅用于演示「先定维度再排序」的方法" %
+      (scored[0][0], scored[-1][0]))</code></pre>
+<p class="code-hint"><strong>操作：</strong>改动 <code>W</code> 中的风险权重，观察排序如何变化；再把 M 里「期权/期货」的门槛调高试一次。　<strong>预期与判读：</strong>排序完全由<strong>你显式写下的权重</strong>决定，不含任何真实测评结论。重点是把「适合新手」这种模糊判断拆成可审计的维度与权重，而不是记住某个排序。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>W</code> 改成全 0，所有得分归零——说明任何「推荐」都必须先声明目标函数。　文件位置：<code>part1/03-product-map/code/03-products.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/03-product-map.svg" alt="产品 × 属性的归一化热力图" loading="lazy"><figcaption>图 1　产品 × 属性的归一化热力图（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/03-ranking.svg" alt="按显式权重得到的上手顺序" loading="lazy"><figcaption>图 2　按显式权重得到的上手顺序（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Stock" target="_blank" rel="noopener">Stock</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>股权、投票权与剩余索取权</p>
+<span class="why"><strong>怎么用</strong>：股权与剩余索取权的定义</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Stock</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>场内交易、申赎与跟踪指数</p>
+<span class="why"><strong>怎么用</strong>：场内交易、申赎与跟踪指数的机制</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Exchange-traded_fund</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></h3>
+<span class="tag">教材 · 参考资料</span>
+<p>产品、账户、订单与指标的术语速查</p>
+<span class="why"><strong>怎么用</strong>：按术语速查各产品的合约要素</span>
+<p style="margin:0"><code>https://www.investopedia.com/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.futunn.com/" target="_blank" rel="noopener">富途牛牛 / 富途证券</a></h3>
+<span class="tag">行情 · 参考资料</span>
+<p>港股/美股零售交易界面的产品分类与行情模块示例</p>
+<span class="why"><strong>怎么用</strong>：跨境零售界面的产品分类示例（仅作字段抽象）</span>
+<p style="margin:0"><code>https://www.futunn.com/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>按 App 栏目记忆产品，遇到同一产品在不同市场挂牌就认不出来。</li>
+<li>把 ETF 当成「一只便宜的股票」，忽略申赎机制与折溢价。</li>
+<li>把期权、牛熊证的低单价误认为低风险。</li>
+<li>把示例的打分当成产品推荐：权重是教学假设，不是测评结果。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>给「可转债」补一行属性打分，解释它为什么同时像债券和期权。</li>
+<li>列出你所在市场三种产品的<strong>最小交易单位</strong>与<strong>结算周期</strong>，说明它们如何影响仓位粒度。</li>
+<li>把 W 改为只保留流动性与复杂度两项，重新排序并说明谁被显著改变。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Stock</strong>（百科）：股权、投票权与剩余索取权<br><a href="https://en.wikipedia.org/wiki/Stock" target="_blank" rel="noopener">Stock</a></li>
+<li><strong>Bond (finance)</strong>（百科）：票息、面值、到期与信用风险<br><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a></li>
+<li><strong>Exchange-traded fund</strong>（百科）：场内交易、申赎与跟踪指数<br><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a></li>
+<li><strong>富途牛牛 / 富途证券</strong>（行情）：港股/美股零售交易界面的产品分类与行情模块示例<br><a href="https://www.futunn.com/" target="_blank" rel="noopener">富途牛牛 / 富途证券</a></li>
+<li><strong>东方财富</strong>（行情）：A 股行情、基金与资讯模块的界面示例<br><a href="https://www.eastmoney.com/" target="_blank" rel="noopener">东方财富</a></li>
+<li><strong>Investopedia</strong>（教材）：产品、账户、订单与指标的术语速查<br><a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=tradable%20products%20stocks%20bonds%20ETF%20options%20retail%20broker%20app" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=tradable%20products%20stocks%20bonds%20ETF%20options%20retail%20broker%20app" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=tradable%20products%20stocks%20bonds%20ETF%20options%20retail%20broker%20app&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../04-market-rules/index.html'>第 04 章 · 交易所制度：竞价、涨跌停、T+1 与交收</a> 交易规则与结算；<a href='../07-funds-etf/index.html'>第 07 章 · 公募基金与 ETF：净值、申赎与跟踪</a> 基金与 ETF 的净值机制；<a href='../../part2/12-option-payoff/index.html'>第 12 章 · 期权 payoff、平价关系与希腊字母</a> 期权 payoff。</li>
+<li>机构规则入口见 <a href='../../index.html#resources'>参考资源</a> 的交易所与监管部分。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

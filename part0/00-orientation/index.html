@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 00 章 · 投资是一套可验证的工程系统 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="00">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">卷首 · 共同语言 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 00 章</span>投资是一套可验证的工程系统</h1>
+<p class="lede">把「买什么」改写成「定义目标 → 建立约束 → 构造假设 → 用数据检验 → 执行并复盘」的可复现流程。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">共同语言</span>
+<span>建议 2 学时</span>
+<span>1 个 Python 实例 · 1 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>全书起点。第 01～02 章先定义「收益」和「风险」这两个最容易被误用的量，第 03 章才打开交易 App 看能买什么。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">把投资当成分布式系统：行情是有延迟和丢包的事件流，策略是消费端逻辑，回测是回放，实盘是灰度，风控是熔断。<strong>没有监控的确定性结论，等价于没有测试的线上代码。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能把一次投资决策拆成<strong>目标、约束、数据、假设、检验、执行、复盘</strong>七层，并指出每层最容易出错的地方。</li>
+<li>能说清全书主线：现金 → 产品 → 定价 → 组合 → 盘面 → 证据 → 执行 → 风险 → 复盘。</li>
+<li>能区分「收益观点」与「可证伪的假设」，并用合成数据跑通第一个对照实验。</li>
+<li>理解本书全部示例的零依赖契约与合规边界。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>投资收益的工程分解</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>可证伪假设与对照组</td><td><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a> · <a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>风险溢价与成本</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>复利与费用</td><td><a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a> · <a href="https://en.wikipedia.org/wiki/Volatility_tax" target="_blank" rel="noopener">Volatility drag</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>回测与实盘的差别</td><td><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a> · <a href="https://en.wikipedia.org/wiki/Walk_forward_optimization" target="_blank" rel="noopener">Walk forward optimization</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>交易 App 的界面字段</td><td><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> · <a href="https://www.futunn.com/" target="_blank" rel="noopener">富途牛牛 / 富途证券</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>合成数据与固定随机种子</td><td><a href="https://docs.python.org/3/library/random.html" target="_blank" rel="noopener">Python random</a> · <a href="https://en.wikipedia.org/wiki/Monte_Carlo_method" target="_blank" rel="noopener">Monte Carlo method</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>长期主义</td><td><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a> · <a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s0-1"><h2><span class="sec-num">§0.1</span>把投资问题翻译成工程问题</h2>
+<p>零售交易 App 把投资压缩成几个按钮：搜索代码、看 K 线、下单。程序员容易把这件事误读为「找到一个正确的输入」。但投资真正的难点不是输入，而是<strong>在信息不完备、反馈有噪声、且每次试验都不可重复</strong>的条件下做决策——这更像线上系统的容量规划，而不像单元测试。</p>
+<table><thead><tr><th style="width:26%">软件工程</th><th style="width:34%">投资系统</th><th style="width:40%">共同要回答的问题</th></tr></thead><tbody>
+<tr><td>需求文档 / SLA</td><td>投资政策说明书（IPS）</td><td>目标函数与硬性约束是什么</td></tr>
+<tr><td>输入数据与 ETL</td><td>行情、净值、财报、公司行动</td><td>数据口径是否对齐、是否含未来信息</td></tr>
+<tr><td>单元测试</td><td>带已知真值的合成数据实验</td><td>指标实现是否真的度量了它声称的东西</td></tr>
+<tr><td>A/B 测试</td><td>样本外 / 滚动验证</td><td>结论在没有调过参数的数据上还成立吗</td></tr>
+<tr><td>灰度发布</td><td>小仓位试运行</td><td>模型假设失效时损失是否可控</td></tr>
+<tr><td>监控与告警</td><td>回撤、杠杆、集中度阈值</td><td>什么时候必须减仓而不是继续论证</td></tr>
+<tr><td>事后复盘</td><td>绩效归因与决策日志</td><td>赚的钱来自能力、风险暴露还是运气</td></tr>
+</tbody></table>
+<div class="card note"><span class="card-label">本书的主张</span><p style="margin-bottom:0">投资不是「预测价格」，而是<strong>在约束下管理一组带不确定性的现金流</strong>。一旦写成目标函数与约束，估值、组合、盘面、风控就只是同一份规格说明书的不同章节。</p></div>
+</section>
+<section id="s0-2"><h2><span class="sec-num">§0.2</span>全书主线与五个学习阶段</h2>
+<p>全书 32 章按一条因果链排列，而不是按「基金入门 / 技术分析 / 量化」拼盘：<strong>先知道能买什么</strong>（产品与制度），<strong>再知道它值多少钱</strong>（定价与组合），<strong>再知道屏幕上画的是什么</strong>（盘面与识图），<strong>再知道一个想法怎么才算被验证</strong>（因子、偏差、回测），<strong>最后才谈真金白银怎么落地</strong>（执行、风险、复盘）。</p>
+<table><thead><tr><th style="width:24%">阶段</th><th style="width:12%">章节</th><th style="width:36%">核心问题</th><th style="width:28%">交付物</th></tr></thead><tbody>
+<tr><td>一 · 共同语言与产品地图</td><td>00–08</td><td>钱放在哪里、规则如何、收益和风险怎么度量</td><td>产品字段表、净值与费用模型</td></tr>
+<tr><td>二 · 定价、组合与资产配置</td><td>09–14</td><td>价格从哪里来、怎样分散、怎样再平衡</td><td>久期 / DCF / 有效前沿 / 配置策略</td></tr>
+<tr><td>三 · 盘面语言与看图识图</td><td>15–20</td><td>K 线、盘口、指标、形态到底编码了什么</td><td>OHLCV 数据模型 + 可判定规则 + SVG 图</td></tr>
+<tr><td>四 · 从直觉到可验证的证据</td><td>21–28</td><td>一个「规律」是因子、偏差还是数据挖掘</td><td>OLS / 回测引擎 / 归因 / 多重检验</td></tr>
+<tr><td>五 · 实盘、风险与长期主义</td><td>29–31、附录</td><td>怎么下单、下多大、怎么复盘</td><td>执行成本 / 仓位上界 / IPS</td></tr>
+</tbody></table>
+<p>任意一章都可以单独读，但顺序本身携带信息：<strong>把盘面放在定价之后</strong>，是为了让你先知道「价格是折现结果」再去看图；<strong>把回测放在因子之后</strong>，是为了让你先有可证伪的假设，再写回测引擎。</p>
+</section>
+<section id="s0-3"><h2><span class="sec-num">§0.3</span>收益从哪里来，成本到哪里去</h2>
+<p>把账户的几何收益写成可审计的加法，是全书最有用的一条公式：</p>
+<p class="eq">账户几何收益 ≈ 无风险利率 + Σ(因子风险溢价 × 暴露) + 定价误差/选股 − 管理费 − 交易成本 − 税费 − 行为损耗</p>
+<p>前两项是你承担风险换来的补偿，第三项需要真本事或真信息，后面几项<strong>确定性为负</strong>。对新手而言，能稳定改善的往往不是「多抓一个涨停」，而是把费用、换手、追涨杀跌这三项减下来。第 01 章会量化费率与通胀的长期侵蚀，第 05 章量化交易成本，第 31 章把这些写进 IPS。</p>
+<div class="card note"><span class="card-label">为什么用「≈」</span><p style="margin-bottom:0">收益不可精确分解：因子暴露随时间漂移，成本与冲击和成交量互相影响。这个式子的价值在于<strong>给出一份检查清单</strong>，而不是给出一个可预报的数值。</p></div>
+</section>
+<section id="s0-4"><h2><span class="sec-num">§0.4</span>本书的代码与数据约定</h2>
+<p>所有 Python 示例遵守同一契约：<br>  1. 只用 Python 3 标准库 + 仓库内 tools/chart.py（纯标准库 SVG 绘图），无第三方包；<br>  2. 自包含：行情/组合数据由代码里的模型合成，不联网、不读外部数据文件；<br>  3. random.seed(7) 固定随机数，所有可调量集中在「参数区」；<br>  4. 打印可手算核对的数值，并生成 fig/*.svg 矢量图（写入章节目录，可提交、可离线查看）；<br>  5. 页面代码块与 code/*.py 由 tools/extract_code.py 自动同步。</p>
+<p>全书 <code>fig/*.svg</code> 是由这些脚本生成的<strong>文本矢量图</strong>：可提交进 Git、可离线查看、浏览器直接 <code>&lt;img&gt;</code> 引用。绘图库 <code>tools/chart.py</code> 同样只用标准库，所以「看懂一张图」和「改出一张图」之间没有黑箱。</p>
+<div class="disclaimer"><p><strong>风险提示与免责声明</strong>：本书为教学材料，所有行情、净值、回测与图表均为合成数据或模型示意，<strong>不构成任何投资建议、产品推荐或收益承诺</strong>。历史表现与回测结果不代表未来收益；杠杆、衍生品、跨境与场外产品可能导致本金全部损失。真实投资须遵守所在市场的法律法规、投资者适当性管理、券商与基金销售机构的风险揭示，并自行承担决策后果。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 0-1 · 同一行情下三种决策流程</h3>
+<pre class="code" data-file="code/00-decision.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""固定一条合成月度收益路径，比较一次性持有、定额投入与滞后追涨三种流程。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 120                 # 月数
+MU, SIGMA = 0.006, 0.045 # 合成月度收益的均值与波动
+INVEST = 1000.0           # 每月可投入现金
+CAPITAL = INVEST * N      # 三种流程的总投入相同
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+rets = [rng.gauss(MU, SIGMA) for _ in range(N)]
+
+def path(returns, exposure):
+    v, out = 1.0, []
+    for r, e in zip(returns, exposure):
+        v *= (1 + e * r)
+        out.append(v)
+    return out
+
+def mdd(xs):
+    peak, worst = xs[0], 0.0
+    for x in xs:
+        peak = max(peak, x)
+        worst = min(worst, x / peak - 1.0)
+    return worst
+
+hold_f = path(rets, [1.0] * N)
+chase_f = path(rets, [0.0] + [1.0 if rets[i - 1] &gt; 0 else 0.0 for i in range(1, N)])
+hold = [CAPITAL * v for v in hold_f]
+chase = [CAPITAL * v for v in chase_f]
+
+cash, shares, dca = CAPITAL, 0.0, []
+for i in range(N):
+    buy = min(INVEST, cash)
+    cash -= buy
+    shares += buy / hold_f[i]
+    dca.append(shares * hold_f[i] + cash)
+
+c = Chart(FIG / "00-decision.svg", "同一收益路径下的账户价值（总投入相同）",
+          xlabel="月", ylabel="账户价值")
+c.line(range(N), hold, BLUE, label="一次性买入并持有")
+c.line(range(N), dca, GREEN, label="每月定额投入")
+c.line(range(N), chase, RED, label="追涨杀跌（滞后信号）")
+print("图:", c.save())
+print("终值 持有=%.0f 定投=%.0f 追涨=%.0f | 最大回撤 持有=%.1f%% 定投=%.1f%% 追涨=%.1f%%" %
+      (hold[-1], dca[-1], chase[-1], 100 * mdd(hold), 100 * mdd(dca), 100 * mdd(chase)))</code></pre>
+<p class="code-hint"><strong>操作：</strong>不改代码先跑一遍，记录三行终值；再把 <code>MU</code> 改成 0 或负数，观察「定额投入」的相对表现如何变化。　<strong>预期与判读：</strong>三条曲线用的是<strong>完全相同</strong>的收益序列，差别只来自现金流规则与仓位规则。追涨规则只用了上一期信息，没有任何未来函数，却通常仍落后于简单持有——这就是「行为损耗」的可测量版本。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>SIGMA</code> 从 0.045 调到 0.09：波动越大，滞后信号被噪声触发的次数越多，差距一般越明显。　文件位置：<code>part0/00-orientation/code/00-decision.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/00-decision.svg" alt="同一合成收益路径下，三种决策流程的账户价值与回撤差异" loading="lazy"><figcaption>图 1　同一合成收益路径下，三种决策流程的账户价值与回撤差异（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>投资组合管理、道德准则与从业者教育</p>
+<span class="why"><strong>怎么用</strong>：从业者的投资组合管理框架，可对照本书的七层分解</span>
+<p style="margin:0"><code>https://www.cfainstitute.org/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></h3>
+<span class="tag">课程 · 参考资料</span>
+<p>投资学、资产定价与衍生品的免费课程材料</p>
+<span class="why"><strong>怎么用</strong>：免费的投资学与资产定价课程，适合补数学推导</span>
+<p style="margin:0"><code>https://ocw.mit.edu/search/?q=finance</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>复利、费用、风险与常见投资骗局的官方说明</p>
+<span class="why"><strong>怎么用</strong>：监管方写的复利、费用与风险科普，作为无利益冲突的起点</span>
+<p style="margin:0"><code>https://www.investor.gov/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></h3>
+<span class="tag">课程 · 参考资料</span>
+<p>长期指数投资、再平衡与税费的实践型百科</p>
+<span class="why"><strong>怎么用</strong>：长期主义与低成本实践的系统化百科</span>
+<p style="margin:0"><code>https://www.bogleheads.org/wiki/Main_Page</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把「回测年化 20%」当成结论而不是待检验的假设。</li>
+<li>用真实历史行情直接调参，再把同一段数据当样本外报告。</li>
+<li>忽略交易成本、税费与申赎费，导致毛收益与净收益差一个数量级。</li>
+<li>把教学用的合成数据误认为真实行情或收益承诺。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>把本章七层分解套用到一次真实的基金申购，写出每层你实际能拿到的信息。</li>
+<li>修改示例的 <code>INVEST</code> 与 <code>N</code>，解释为什么「定投」在下跌市里终值可能更高、但总投入也可能更少。</li>
+<li>举一个「看起来像选股能力、其实是因子暴露」的例子，并说明需要什么数据才能区分。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>CFA Institute</strong>（机构）：投资组合管理、道德准则与从业者教育<br><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a></li>
+<li><strong>MIT OpenCourseWare · Finance</strong>（课程）：投资学、资产定价与衍生品的免费课程材料<br><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></li>
+<li><strong>Investopedia</strong>（教材）：产品、账户、订单与指标的术语速查<br><a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></li>
+<li><strong>Bogleheads Wiki</strong>（课程）：长期指数投资、再平衡与税费的实践型百科<br><a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></li>
+<li><strong>Investor.gov（SEC 投资者教育）</strong>（机构）：复利、费用、风险与常见投资骗局的官方说明<br><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=personal%20investment%20curriculum%20portfolio%20management%20risk" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=personal%20investment%20curriculum%20portfolio%20management%20risk" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=personal%20investment%20curriculum%20portfolio%20management%20risk&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li>下一站：<a href='../01-time-value/index.html'>第 01 章 · 货币时间价值：复利、通胀与实际收益</a> 把复利、通胀与费率写成可计算的公式。</li>
+<li>全书地图见 <a href='../../index.html#roadmap'>全书学习路线</a>，章节清单见 <a href='../../index.html#toc'>全书目录</a>。</li>
+<li>代码约定见 <a href='../../index.html#howto'>使用说明</a>；维护命令见 <a href='../../index.html#contribute'>维护约定</a>。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>附录 A · 公式速查、术语表与工具索引 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/toc.js" defer></script>
+<script src="../assets/app.js" defer></script>
+</head>
+<body data-root="../" data-chapter="A" data-page="appendix">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb"><a href="../index.html">总目录</a> / 附录</nav>
+<header class="chapter-head">
+<span class="kicker">附录 · 速查与资源总表 · 第五阶段 · 实盘、风险与长期主义</span>
+<h1><span class="ch-num">附录 A</span>公式速查、术语表与工具索引</h1>
+<p class="lede">把全书的可查内容收在一页：公式、术语、界面字段、常见坑与全部实例索引。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s5">速查 · 附录</span>
+<span>建议 随时查阅</span>
+<span>全书速查入口</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>全书速查入口。示例索引用 A.5、手写实现与工业库对照用 A.6、外部链接总表用 A.7；章节目录见 <a href='../index.html#toc'>全书目录</a>。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">附录是全书的 <code>README + API reference + checklist</code>：A.1 是函数签名，A.2 是类型定义，A.3 是外部接口字段，A.4 是 CI 检查项，A.5～A.7 由生成器自动维护，永远与正文同步。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能快速定位全书任何一条公式与对应章节。</li>
+<li>能把产品、账户、指标术语映射到统一的英文与数据字段。</li>
+<li>能在上线前用检查清单逐项自查。</li>
+<li>能找到全书 Python 实例、参考资源与工业库对照。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>收益与风险公式</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>定价与组合公式</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>指标公式</td><td><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a> · <a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>绩效与风险公式</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>中英术语对照</td><td><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a> · <a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>交易界面字段</td><td><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> · <a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>上线检查清单</td><td><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a> · <a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>示例与资源索引</td><td><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a> · <a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="sA-1"><h2><span class="sec-num">§A.1</span>全书公式速查</h2>
+<table><thead><tr><th style="width:26%">主题</th><th style="width:62%">公式</th><th style="width:12%">章节</th></tr></thead><tbody>
+<tr><td>实际收益</td><td>1 + r_实际 = (1 + r_名义)/(1 + π) − 1</td><td>01</td></tr>
+<tr><td>波动拖累</td><td>g ≈ μ − σ²/2</td><td>01</td></tr>
+<tr><td>最大回撤</td><td>MDD = min(V_t / peak_t − 1)</td><td>02</td></tr>
+<tr><td>债券价格</td><td>P(y) = Σ C/(1+y)^t + F/(1+y)^T</td><td>08、09</td></tr>
+<tr><td>修正久期 / 凸性</td><td>D_mod = −(1/P)dP/dy；C = (1/P)d²P/dy²</td><td>09</td></tr>
+<tr><td>两阶段 DCF</td><td>V₀ = ΣFCF_t/(1+r)^t + TV/(1+r)^n</td><td>10</td></tr>
+<tr><td>看跌-看涨平价</td><td>C − P = S₀ − K·e^(−rT)</td><td>12</td></tr>
+<tr><td>组合方差</td><td>σ_p² = wᵀΣw</td><td>13</td></tr>
+<tr><td>夏普 / 信息比率</td><td>(μ − r_f)/σ；(μ_p − μ_b)/σ_(p−b)</td><td>13、27</td></tr>
+<tr><td>MACD / RSI / %B</td><td>DIF=EMA12−EMA26；RSI=100−100/(1+RS)；%B=(P−下轨)/(上轨−下轨)</td><td>18</td></tr>
+<tr><td>三因子模型</td><td>r_i − r_f = α + β_m MKT + β_s SMB + β_h HML + ε</td><td>21</td></tr>
+<tr><td>凯利上界</td><td>f* ≈ μ/σ²</td><td>30</td></tr>
+<tr><td>Brinson 归因</td><td>配置 + 选股 + 交互 = r_p − r_b</td><td>27</td></tr>
+</tbody></table>
+</section>
+<section id="sA-2"><h2><span class="sec-num">§A.2</span>术语与数据字段对照</h2>
+<table><thead><tr><th style="width:24%">中文</th><th style="width:24%">英文 / 缩写</th><th style="width:52%">数据字段或口径</th></tr></thead><tbody>
+<tr><td>开高低收</td><td>OHLC</td><td>open / high / low / close，须满足 low ≤ min(o,c) ≤ max(o,c) ≤ high</td></tr>
+<tr><td>前复权 / 后复权</td><td>adjusted close</td><td>adj_factor；前复权随新公司行动整体变化</td></tr>
+<tr><td>净值 / 折溢价</td><td>NAV / premium</td><td>price/NAV − 1</td></tr>
+<tr><td>跟踪误差</td><td>tracking error</td><td>stdev(r_fund − r_index)</td></tr>
+<tr><td>买卖价差</td><td>bid-ask spread</td><td>ask_1 − bid_1</td></tr>
+<tr><td>时间加权 / 资金加权</td><td>TWR / MWR</td><td>TWR 剔除现金流；MWR 为 IRR</td></tr>
+<tr><td>样本外</td><td>out of sample</td><td>参数冻结后未参与选择的数据段</td></tr>
+<tr><td>前视偏差</td><td>look-ahead bias</td><td>特征使用了 t 时刻尚不可得的数据</td></tr>
+<tr><td>投资政策说明书</td><td>IPS</td><td>目标、约束、规则、例外、复盘的书面契约</td></tr>
+</tbody></table>
+</section>
+<section id="sA-3"><h2><span class="sec-num">§A.3</span>交易界面的共同字段</h2>
+<p>富途牛牛、东方财富 / 东方赢家一类终端的栏目划分不同，但字段结构高度相似。本书只抽象这些<strong>共同字段</strong>，不评价任何平台或具体产品：</p>
+<table><thead><tr><th style="width:14%">分组</th><th style="width:38%">字段</th><th style="width:48%">读图/下单前必须确认</th></tr></thead><tbody>
+<tr><td>标的</td><td>代码、名称、市场、币种</td><td>同名不同市场、最小交易单位、是否含衍生品</td></tr>
+<tr><td>价格</td><td>现价、昨收、涨跌、买一/卖一</td><td>是否复权、线性还是对数坐标、集合竞价口径</td></tr>
+<tr><td>量</td><td>成交量、成交额、换手率、五档深度</td><td>是否含 ETF 申赎、索引调样</td></tr>
+<tr><td>规则</td><td>交易时段、T+n、涨跌停、风险等级</td><td>回测是否建模了不可成交日</td></tr>
+<tr><td>成本</td><td>佣金、印花税、管理费、申赎费</td><td>毛收益与净收益的差额</td></tr>
+</tbody></table>
+</section>
+<section id="sA-4"><h2><span class="sec-num">§A.4</span>上线前十条检查</h2>
+<ul>
+<li>价格是否已复权？公司行动与分红口径是否记录版本？</li>
+<li>所有特征是否只用 <code>history_up_to_t</code>？信号是否在下一根成交？</li>
+<li>是否用当前成分股/当前存活基金回测历史？</li>
+<li>涨跌停、停牌、最小报价单位与交收规则是否建模？</li>
+<li>手续费、价差、冲击、借券费与税是否逐笔计提？</li>
+<li>参数在样本外评估之前是否已冻结？试过多少组参数是否报告？</li>
+<li>是否同时给出持有基准、零成本版与随机信号对照组？</li>
+<li>是否报告净夏普、最大回撤、CVaR、换手与容量，而不只报收益率？</li>
+<li>仓位、杠杆、集中度、回撤四类硬约束是否有触发动作？</li>
+<li>IPS、决策日志与数据 manifest 是否归档，能否被第三方复跑？</li>
+</ul>
+<div class="card warn"><span class="card-label">免责声明</span><p style="margin-bottom:0">本附录与全书所有数值均为合成数据或模型示意，不构成投资建议、产品推荐或收益承诺；历史与回测表现不代表未来收益。</p></div>
+</section>
+<section id="sA-5"><h2><span class="sec-num">§A.5</span>Python 示例与 SVG 插图索引</h2>
+<p>全书 32 个分析脚本、59 张 SVG 图，全部只用 Python 3 标准库与 <code>tools/chart.py</code>、固定 <code>random.seed(7)</code>，参数集中在「参数区」，结尾打印可核对的数值。点击文件名可直接查看源码。</p><table><thead><tr><th style="width:34%">章节</th><th style="width:30%">脚本</th><th>演示内容</th></tr></thead><tbody><tr><td>第 00 章 · 投资是一套可验证的工程系统</td><td><a href='../part0/00-orientation/code/00-decision.py'><code>code/00-decision.py</code></a></td><td>实验 0-1 · 同一行情下三种决策流程</td></tr>
+<tr><td>第 01 章 · 货币时间价值：复利、通胀与实际收益</td><td><a href='../part0/01-time-value/code/01-compound.py'><code>code/01-compound.py</code></a></td><td>实验 1-1 · 四种终值口径与费率侵蚀</td></tr>
+<tr><td>第 02 章 · 收益与风险的可计算定义</td><td><a href='../part0/02-return-risk/code/02-risk.py'><code>code/02-risk.py</code></a></td><td>实验 2-1 · 厚尾样本下的收益与风险度量</td></tr>
+<tr><td>第 03 章 · 交易 App 里的产品全景图</td><td><a href='../part1/03-product-map/code/03-products.py'><code>code/03-products.py</code></a></td><td>实验 3-1 · 产品属性矩阵与上手顺序打分</td></tr>
+<tr><td>第 04 章 · 交易所制度：竞价、涨跌停、T+1 与交收</td><td><a href='../part1/04-market-rules/code/04-auction.py'><code>code/04-auction.py</code></a></td><td>实验 4-1 · 集合竞价撮合与涨跌停约束下的日内路径</td></tr>
+<tr><td>第 05 章 · 账户、费用、税与适当性</td><td><a href='../part1/05-account-cost/code/05-cost.py'><code>code/05-cost.py</code></a></td><td>实验 5-1 · 费率与换手成本对长期终值的联合侵蚀</td></tr>
+<tr><td>第 06 章 · 行情数据模型：OHLCV、复权与时间戳</td><td><a href='../part1/06-data-model/code/06-adjust.py'><code>code/06-adjust.py</code></a></td><td>实验 6-1 · 拆股造成的假暴跌与三种价格口径</td></tr>
+<tr><td>第 07 章 · 公募基金与 ETF：净值、申赎与跟踪</td><td><a href='../part1/07-funds-etf/code/07-etf.py'><code>code/07-etf.py</code></a></td><td>实验 7-1 · 净值、折溢价与申赎套利收敛</td></tr>
+<tr><td>第 08 章 · 债券、货币基金与逆回购：现金这一端</td><td><a href='../part1/08-fixed-income/code/08-cash.py'><code>code/08-cash.py</code></a></td><td>实验 8-1 · 债券价格—收益率曲线与现金工具收益换算</td></tr>
+<tr><td>第 09 章 · 债券定价、久期与期限结构</td><td><a href='../part2/09-bond-pricing/code/09-duration.py'><code>code/09-duration.py</code></a></td><td>实验 9-1 · 久期、凸性与近似误差的数值验证</td></tr>
+<tr><td>第 10 章 · 股票估值：从 DCF 到相对倍数</td><td><a href='../part2/10-equity-valuation/code/10-dcf.py'><code>code/10-dcf.py</code></a></td><td>实验 10-1 · 两阶段 DCF、敏感性矩阵与隐含增长</td></tr>
+<tr><td>第 11 章 · 指数、折溢价与 ETF 套利机制</td><td><a href='../part2/11-index-arbitrage/code/11-index.py'><code>code/11-index.py</code></a></td><td>实验 11-1 · 三种指数加权规则、换手与套利边界</td></tr>
+<tr><td>第 12 章 · 期权 payoff、平价关系与希腊字母</td><td><a href='../part2/12-option-payoff/code/12-option.py'><code>code/12-option.py</code></a></td><td>实验 12-1 · 到期损益、二叉树定价、平价关系与 delta</td></tr>
+<tr><td>第 13 章 · 均值-方差、有效前沿与夏普比率</td><td><a href='../part2/13-mean-variance/code/13-frontier.py'><code>code/13-frontier.py</code></a></td><td>实验 13-1 · 权重扫描、有效前沿与切点组合</td></tr>
+<tr><td>第 14 章 · 资产配置、再平衡与定投</td><td><a href='../part2/14-allocation/code/14-allocation.py'><code>code/14-allocation.py</code></a></td><td>实验 14-1 · 买入持有 vs 年度再平衡</td></tr>
+<tr><td>第 15 章 · 盘口、分时与逐笔：价格是怎样形成的</td><td><a href='../part3/15-order-book/code/15-book.py'><code>code/15-book.py</code></a></td><td>实验 15-1 · 五档盘口、深度失衡与市价单冲击</td></tr>
+<tr><td>第 16 章 · K 线、坐标与复权：看图前先校准数据</td><td><a href='../part3/16-candlestick/code/16-candle.py'><code>code/16-candle.py</code></a></td><td>实验 16-1 · 合成 OHLCV、K 线图与数据不变式校验</td></tr>
+<tr><td>第 17 章 · 均线、趋势与支撑阻力</td><td><a href='../part3/17-trend-ma/code/17-trend.py'><code>code/17-trend.py</code></a></td><td>实验 17-1 · SMA/EMA、交叉滞后与支撑阻力</td></tr>
+<tr><td>第 18 章 · MACD、RSI、布林带与 KDJ 的数学定义</td><td><a href='../part3/18-indicators/code/18-indicators.py'><code>code/18-indicators.py</code></a></td><td>实验 18-1 · 四个指标的手写实现与共振检查</td></tr>
+<tr><td>第 19 章 · 形态识别：从主观描述到可判定规则</td><td><a href='../part3/19-patterns/code/19-pattern.py'><code>code/19-pattern.py</code></a></td><td>实验 19-1 · 双底的机器判定与前向收益对照</td></tr>
+<tr><td>第 20 章 · 用代码画图：SVG 图与看图陷阱</td><td><a href='../part3/20-chart-pipeline/code/20-lookahead.py'><code>code/20-lookahead.py</code></a></td><td>实验 20-1 · 全样本均值泄漏如何制造虚假超额收益</td></tr>
+<tr><td>第 21 章 · 因子、CAPM 与 Fama-French</td><td><a href='../part4/21-factors/code/21-factors.py'><code>code/21-factors.py</code></a></td><td>实验 21-1 · 手写 OLS 估计三因子模型与遗漏变量偏差</td></tr>
+<tr><td>第 22 章 · 有效市场、行为偏差与处置效应</td><td><a href='../part4/22-behavior/code/22-disposition.py'><code>code/22-disposition.py</code></a></td><td>实验 22-1 · 处置效应的可测量版本（PGR / PLR）</td></tr>
+<tr><td>第 23 章 · 资金流、情绪与拥挤交易</td><td><a href='../part4/23-flow-crowding/code/23-crowding.py'><code>code/23-crowding.py</code></a></td><td>实验 23-1 · 拥挤度分箱与前向收益</td></tr>
+<tr><td>第 24 章 · 怎样读一篇因子论文：从摘要到可复现</td><td><a href='../part4/24-read-papers/code/24-replication.py'><code>code/24-replication.py</code></a></td><td>实验 24-1 · 同一策略的四种报告口径</td></tr>
+<tr><td>第 25 章 · 数据管道：对齐、公司行动与幸存者偏差</td><td><a href='../part5/25-data-pipeline/code/25-survivorship.py'><code>code/25-survivorship.py</code></a></td><td>实验 25-1 · 基金清盘造成的幸存者偏差</td></tr>
+<tr><td>第 26 章 · 事件驱动回测引擎：从信号到成交</td><td><a href='../part5/26-backtest/code/26-backtest.py'><code>code/26-backtest.py</code></a></td><td>实验 26-1 · 事件驱动主循环与「同根成交」泄漏</td></tr>
+<tr><td>第 27 章 · 绩效度量与归因：夏普、回撤与 Brinson</td><td><a href='../part5/27-performance/code/27-performance.py'><code>code/27-performance.py</code></a></td><td>实验 27-1 · 全套绩效指标、TWR/MWR 与 Brinson 归因</td></tr>
+<tr><td>第 28 章 · 过拟合、多重检验与滚动样本外</td><td><a href='../part5/28-overfitting/code/28-overfit.py'><code>code/28-overfit.py</code></a></td><td>实验 28-1 · 16 组参数的样本内/外落差与滚动验证</td></tr>
+<tr><td>第 29 章 · 订单执行、滑点与市场冲击</td><td><a href='../part6/29-execution/code/29-execution.py'><code>code/29-execution.py</code></a></td><td>实验 29-1 · 市价、TWAP、VWAP 与限价单的执行差额</td></tr>
+<tr><td>第 30 章 · 仓位、杠杆、VaR/CVaR 与凯利上界</td><td><a href='../part6/30-risk-sizing/code/30-risk.py'><code>code/30-risk.py</code></a></td><td>实验 30-1 · 杠杆、强平概率与 CVaR 的蒙特卡洛</td></tr>
+<tr><td>第 31 章 · 投资政策说明书与长期复盘</td><td><a href='../part6/31-ips-review/code/31-ips.py'><code>code/31-ips.py</code></a></td><td>实验 31-1 · 按 IPS 执行的五年账户与复盘表</td></tr></tbody></table>
+</section>
+<section id="sA-6"><h2><span class="sec-num">§A.6</span>手写实现 → 工业库对照</h2>
+<p>本书为教学而手写实现，工业项目应切换到成熟库。下表给出迁移路径；所有脚本保持零第三方依赖，正是为了让这一步「看得见」。</p><table><thead><tr><th style="width:34%">本书手写</th><th>工业实现</th><th>对应章节</th></tr></thead><tbody><tr><td>复利、收益率、风险度量</td><td><code>pandas</code> / <code>numpy</code> 向量化</td><td>01、02</td></tr><tr><td>CRR 二叉树 / 数值希腊字母</td><td><code>QuantLib</code>、<code>scipy</code></td><td>12</td></tr><tr><td>协方差矩阵 / 权重网格扫描</td><td><code>numpy.linalg</code>、<code>scipy.optimize</code></td><td>13</td></tr><tr><td>MACD / RSI / KDJ / 布林带</td><td><code>TA-Lib</code>、<code>pandas-ta</code></td><td>18</td></tr><tr><td>高斯-约当求逆 / 手写 OLS</td><td><code>statsmodels.OLS(...).fit()</code></td><td>21</td></tr><tr><td>事件驱动回测主循环</td><td><code>Backtrader</code>、<code>vectorbt</code>、<code>Zipline</code></td><td>26</td></tr><tr><td>绩效指标与归因</td><td><code>pyfolio</code>、<code>QuantStats</code>、<code>ffn</code></td><td>27</td></tr><tr><td>纯标准库 SVG 绘图</td><td><code>Matplotlib</code>、<code>Plotly</code>、<code>MDN SVG</code></td><td>全书</td></tr><tr><td>真实行情下载</td><td><code>yfinance</code>、<code>AKShare</code>、<code>Tushare</code></td><td>06、25</td></tr></tbody></table>
+</section>
+<section id="sA-7"><h2><span class="sec-num">§A.7</span>扩展学习链接总表</h2>
+<p>本书全部外部链接的唯一来源，按用途分组；各章的「知识点地图」「本章参考资料」「扩展学习」都指向这里。券商与行情网站仅用于抽象零售交易界面的共同字段，不构成推荐。</p>
+<h3>教材（1）</h3>
+<table><thead><tr><th style="width:30%">名称</th><th>说明</th></tr></thead><tbody>
+<tr><td><a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></td><td>产品、账户、订单与指标的术语速查</td></tr>
+</tbody></table>
+<h3>课程（6）</h3>
+<table><thead><tr><th style="width:30%">名称</th><th>说明</th></tr></thead><tbody>
+<tr><td><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></td><td>投资学、资产定价与衍生品的免费课程材料</td></tr>
+<tr><td><a href="https://www.khanacademy.org/economics-finance-domain/core-finance" target="_blank" rel="noopener">Khan Academy · Finance</a></td><td>复利、估值与账户基础的入门讲解</td></tr>
+<tr><td><a href="https://www.coursera.org/" target="_blank" rel="noopener">Coursera · Finance</a></td><td>投资组合、风险管理等结构化课程检索</td></tr>
+<tr><td><a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></td><td>长期指数投资、再平衡与税费的实践型百科</td></tr>
+<tr><td><a href="https://www.core-econ.org/" target="_blank" rel="noopener">CORE Econ</a></td><td>理解利率、通胀与宏观背景的开放经济学教材</td></tr>
+<tr><td><a href="https://openstax.org/details/books/principles-economics-3e" target="_blank" rel="noopener">OpenStax · Principles of Economics</a></td><td>金融市场与利率背景的开放教材</td></tr>
+</tbody></table>
+<h3>机构（25）</h3>
+<table><thead><tr><th style="width:30%">名称</th><th>说明</th></tr></thead><tbody>
+<tr><td><a href="https://www.csrc.gov.cn/" target="_blank" rel="noopener">中国证监会 CSRC</a></td><td>监管规则、投资者保护与行政处罚的权威来源</td></tr>
+<tr><td><a href="https://www.sse.com.cn/" target="_blank" rel="noopener">上海证券交易所</a></td><td>交易规则、集合竞价、ETF 与债券业务规则</td></tr>
+<tr><td><a href="https://www.szse.cn/" target="_blank" rel="noopener">深圳证券交易所</a></td><td>交易规则、创业板与基金业务规则</td></tr>
+<tr><td><a href="https://www.chinaclear.cn/" target="_blank" rel="noopener">中国证券登记结算</a></td><td>登记、托管、交收与结算规则</td></tr>
+<tr><td><a href="https://www.amac.org.cn/" target="_blank" rel="noopener">中国证券投资基金业协会</a></td><td>基金备案、从业规范与公募数据</td></tr>
+<tr><td><a href="https://www.csindex.com.cn/" target="_blank" rel="noopener">中证指数</a></td><td>指数编制方案、成分股与估值数据</td></tr>
+<tr><td><a href="http://www.cffex.com.cn/" target="_blank" rel="noopener">中国金融期货交易所</a></td><td>股指期货/期权合约与交易规则</td></tr>
+<tr><td><a href="http://www.pbc.gov.cn/" target="_blank" rel="noopener">中国人民银行</a></td><td>利率、货币政策与金融市场统计</td></tr>
+<tr><td><a href="https://www.hkex.com.hk/" target="_blank" rel="noopener">香港交易所 HKEX</a></td><td>港股、ETF、牛熊证与衍生品规则</td></tr>
+<tr><td><a href="https://www.sfc.hk/" target="_blank" rel="noopener">香港证监会 SFC</a></td><td>适当性、杠杆产品与投资者警示</td></tr>
+<tr><td><a href="https://www.sec.gov/" target="_blank" rel="noopener">美国 SEC</a></td><td>披露文件、基金监管与执法信息</td></tr>
+<tr><td><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></td><td>复利、费用、风险与常见投资骗局的官方说明</td></tr>
+<tr><td><a href="https://www.finra.org/" target="_blank" rel="noopener">FINRA</a></td><td>美国券商自律规则与投资者工具</td></tr>
+<tr><td><a href="https://www.cboe.com/" target="_blank" rel="noopener">Cboe 期权交易所</a></td><td>期权合约、VIX 与波动率产品资料</td></tr>
+<tr><td><a href="https://www.cboe.com/education/" target="_blank" rel="noopener">Cboe Options Institute</a></td><td>期权 payoff、希腊字母的官方教学材料</td></tr>
+<tr><td><a href="https://www.cmegroup.com/" target="_blank" rel="noopener">CME Group</a></td><td>期货与期权合约规格、保证金规则</td></tr>
+<tr><td><a href="https://www.federalreserve.gov/" target="_blank" rel="noopener">美联储</a></td><td>政策利率与经济数据</td></tr>
+<tr><td><a href="https://www.imf.org/" target="_blank" rel="noopener">IMF</a></td><td>全球金融稳定报告与跨国数据</td></tr>
+<tr><td><a href="https://www.bis.org/" target="_blank" rel="noopener">国际清算银行 BIS</a></td><td>市场结构、杠杆与系统性风险研究</td></tr>
+<tr><td><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a></td><td>投资组合管理、道德准则与从业者教育</td></tr>
+<tr><td><a href="https://www.spglobal.com/spdji/en/" target="_blank" rel="noopener">S&amp;P Dow Jones Indices</a></td><td>指数方法论与基准数据</td></tr>
+<tr><td><a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA 主动/被动业绩对比</a></td><td>主动基金相对基准的长期胜率统计</td></tr>
+<tr><td><a href="https://www.morningstar.com/" target="_blank" rel="noopener">Morningstar</a></td><td>基金评级、费率与持仓的研究入口</td></tr>
+<tr><td><a href="https://www.nber.org/" target="_blank" rel="noopener">NBER</a></td><td>资产定价与实证金融工作论文</td></tr>
+<tr><td><a href="https://www.ssrn.com/" target="_blank" rel="noopener">SSRN</a></td><td>金融学预印本与因子研究检索</td></tr>
+</tbody></table>
+<h3>行情（8）</h3>
+<table><thead><tr><th style="width:30%">名称</th><th>说明</th></tr></thead><tbody>
+<tr><td><a href="https://www.futunn.com/" target="_blank" rel="noopener">富途牛牛 / 富途证券</a></td><td>港股/美股零售交易界面的产品分类与行情模块示例</td></tr>
+<tr><td><a href="https://www.eastmoney.com/" target="_blank" rel="noopener">东方财富</a></td><td>A 股行情、基金与资讯模块的界面示例</td></tr>
+<tr><td><a href="https://fund.eastmoney.com/" target="_blank" rel="noopener">天天基金</a></td><td>公募基金净值、费率、持仓的查询界面示例</td></tr>
+<tr><td><a href="https://www.10jqka.com.cn/" target="_blank" rel="noopener">同花顺</a></td><td>行情看盘与技术指标模块的界面示例</td></tr>
+<tr><td><a href="https://xueqiu.com/" target="_blank" rel="noopener">雪球</a></td><td>组合展示、讨论与复权行情的界面示例</td></tr>
+<tr><td><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a></td><td>多周期图表、指标脚本与 K 线形态的通用参照</td></tr>
+<tr><td><a href="https://www.interactivebrokers.com/" target="_blank" rel="noopener">Interactive Brokers</a></td><td>多市场订单类型与保证金账户的界面示例</td></tr>
+<tr><td><a href="https://www.nasdaq.com/" target="_blank" rel="noopener">Nasdaq</a></td><td>美股行情、公司行动与股息数据入口</td></tr>
+</tbody></table>
+<h3>数据（10）</h3>
+<table><thead><tr><th style="width:30%">名称</th><th>说明</th></tr></thead><tbody>
+<tr><td><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener">FRED</a></td><td>利率、通胀、信用利差等免费时间序列</td></tr>
+<tr><td><a href="https://finance.yahoo.com/" target="_blank" rel="noopener">Yahoo Finance</a></td><td>全球股票/ETF 历史行情常用入口</td></tr>
+<tr><td><a href="https://stooq.com/" target="_blank" rel="noopener">Stooq</a></td><td>可下载的免费历史行情数据</td></tr>
+<tr><td><a href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html" target="_blank" rel="noopener">Ken French Data Library</a></td><td>Fama-French 因子与组合收益的原始数据</td></tr>
+<tr><td><a href="http://www.econ.yale.edu/~shiller/data.htm" target="_blank" rel="noopener">Robert Shiller 数据集</a></td><td>长周期股价、盈利与利率历史</td></tr>
+<tr><td><a href="https://data.worldbank.org/" target="_blank" rel="noopener">World Bank Data</a></td><td>跨国宏观与金融深度指标</td></tr>
+<tr><td><a href="https://www.oecd.org/" target="_blank" rel="noopener">OECD Data</a></td><td>养老金、储蓄与家庭金融统计</td></tr>
+<tr><td><a href="https://github.com/akfamily/akshare" target="_blank" rel="noopener">AKShare</a></td><td>开源中文金融数据接口（A 股/基金/宏观）</td></tr>
+<tr><td><a href="https://tushare.pro/" target="_blank" rel="noopener">Tushare</a></td><td>中文量化数据平台（部分数据需积分）</td></tr>
+<tr><td><a href="https://arxiv.org/list/q-fin/recent" target="_blank" rel="noopener">arXiv q-fin</a></td><td>量化金融与因子研究预印本</td></tr>
+</tbody></table>
+<h3>工具（19）</h3>
+<table><thead><tr><th style="width:30%">名称</th><th>说明</th></tr></thead><tbody>
+<tr><td><a href="https://docs.python.org/3/" target="_blank" rel="noopener">Python 3 文档</a></td><td>本书脚本的语言与标准库权威参考</td></tr>
+<tr><td><a href="https://docs.python.org/3/library/math.html" target="_blank" rel="noopener">Python math / random / statistics</a></td><td>标准库数学与统计函数</td></tr>
+<tr><td><a href="https://docs.python.org/3/library/random.html" target="_blank" rel="noopener">Python random</a></td><td>固定种子与可复现的合成数据</td></tr>
+<tr><td><a href="https://docs.python.org/3/library/statistics.html" target="_blank" rel="noopener">Python statistics</a></td><td>均值、方差、正态分位数等标准库实现</td></tr>
+<tr><td><a href="https://developer.mozilla.org/en-US/docs/Web/SVG" target="_blank" rel="noopener">MDN · SVG</a></td><td>本书自绘图表所用矢量格式参考</td></tr>
+<tr><td><a href="https://numpy.org/" target="_blank" rel="noopener">NumPy</a></td><td>从手写循环迁移到向量化计算的工业标准</td></tr>
+<tr><td><a href="https://pandas.pydata.org/" target="_blank" rel="noopener">pandas</a></td><td>时间序列对齐、分组与缺失处理的工业标准</td></tr>
+<tr><td><a href="https://matplotlib.org/" target="_blank" rel="noopener">Matplotlib</a></td><td>本书 SVG 自绘替代方案的成熟绘图库</td></tr>
+<tr><td><a href="https://www.statsmodels.org/" target="_blank" rel="noopener">statsmodels</a></td><td>回归、因子检验与时间序列建模</td></tr>
+<tr><td><a href="https://scipy.org/" target="_blank" rel="noopener">SciPy</a></td><td>优化器与分布函数</td></tr>
+<tr><td><a href="https://jupyter.org/" target="_blank" rel="noopener">Project Jupyter</a></td><td>把公式、代码、图表、结论放在同一份笔记里</td></tr>
+<tr><td><a href="https://github.com/mementum/backtrader" target="_blank" rel="noopener">Backtrader</a></td><td>事件驱动回测框架的参考实现</td></tr>
+<tr><td><a href="https://vectorbt.dev/" target="_blank" rel="noopener">vectorbt</a></td><td>向量化回测与参数扫描框架</td></tr>
+<tr><td><a href="https://github.com/quantopian/zipline" target="_blank" rel="noopener">Zipline</a></td><td>经典事件驱动回测引擎（归档项目）</td></tr>
+<tr><td><a href="https://github.com/quantopian/pyfolio" target="_blank" rel="noopener">pyfolio</a></td><td>组合绩效与风险归因报告</td></tr>
+<tr><td><a href="https://github.com/pmorissette/ffn" target="_blank" rel="noopener">ffn</a></td><td>绩效指标计算与权重优化工具</td></tr>
+<tr><td><a href="https://pypi.org/project/QuantStats/" target="_blank" rel="noopener">QuantStats（PyPI）</a></td><td>夏普、回撤、月度收益表等绩效报告</td></tr>
+<tr><td><a href="https://ta-lib.org/" target="_blank" rel="noopener">TA-Lib</a></td><td>技术指标的事实标准实现（对照本书手写公式）</td></tr>
+<tr><td><a href="https://pypi.org/project/yfinance/" target="_blank" rel="noopener">yfinance（PyPI）</a></td><td>下载真实行情做课后实验</td></tr>
+</tbody></table>
+<h3>百科（97）</h3>
+<table><thead><tr><th style="width:30%">名称</th><th>说明</th></tr></thead><tbody>
+<tr><td><a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a></td><td>复利、计息频率与终值公式</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Real_interest_rate" target="_blank" rel="noopener">Real interest rate</a></td><td>名义收益扣除通胀后的购买力收益</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Inflation" target="_blank" rel="noopener">Inflation</a></td><td>通胀对长期实际财富的侵蚀</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a></td><td>简单收益、对数收益与年化</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Logarithmic_return" target="_blank" rel="noopener">Logarithmic return</a></td><td>可跨期相加的连续复利收益</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Volatility_tax" target="_blank" rel="noopener">Volatility drag</a></td><td>算术均值与几何均值的差额</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Normal_distribution" target="_blank" rel="noopener">Normal distribution</a></td><td>标准差、置信区间与正态假设</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Heavy-tailed_distribution" target="_blank" rel="noopener">Heavy-tailed distribution</a></td><td>极端行情与正态假设的失效</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Skewness" target="_blank" rel="noopener">Skewness / kurtosis</a></td><td>收益分布的不对称与尖峰厚尾</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Drawdown_(economics)" target="_blank" rel="noopener">Drawdown (economics)</a></td><td>峰值到谷底的回撤与恢复难度</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>分位数意义下的潜在损失</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Expected_shortfall" target="_blank" rel="noopener">Expected shortfall (CVaR)</a></td><td>尾部超过 VaR 的平均损失</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a></td><td>均值-方差框架与分散化</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Efficient_frontier" target="_blank" rel="noopener">Efficient frontier</a></td><td>给定风险下最高期望收益的组合集合</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Diversification_(finance)" target="_blank" rel="noopener">Diversification (finance)</a></td><td>相关系数小于 1 时的风险削减</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Sharpe_ratio" target="_blank" rel="noopener">Sharpe ratio</a></td><td>单位总风险的超额收益</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Sortino_ratio" target="_blank" rel="noopener">Sortino ratio</a></td><td>只用下行波动衡量风险调整收益</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Information_ratio" target="_blank" rel="noopener">Information ratio</a></td><td>相对基准的主动收益/跟踪误差</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Calmar_ratio" target="_blank" rel="noopener">Calmar ratio</a></td><td>年化收益与最大回撤之比</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Capital_asset_pricing_model" target="_blank" rel="noopener">Capital asset pricing model</a></td><td>beta 与期望收益的线性关系</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Beta_(finance)" target="_blank" rel="noopener">Beta (finance)</a></td><td>资产对市场因子的敏感度</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Jensen%27s_alpha" target="_blank" rel="noopener">Jensen&#x27;s alpha</a></td><td>相对因子模型残差的超额收益</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a></td><td>规模与价值因子对 CAPM 的扩展</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Factor_investing" target="_blank" rel="noopener">Factor investing</a></td><td>把实证因子转成可交易策略</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Smart_beta" target="_blank" rel="noopener">Smart beta</a></td><td>规则化因子指数与 ETF</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Momentum_(finance)" target="_blank" rel="noopener">Momentum investing</a></td><td>横截面动量与反转效应</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Efficient-market_hypothesis" target="_blank" rel="noopener">Efficient-market hypothesis</a></td><td>价格是否已反映可用信息</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a></td><td>系统性偏离理性的行为偏差</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Prospect_theory" target="_blank" rel="noopener">Prospect theory</a></td><td>参照点依赖与损失厌恶</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Disposition_effect" target="_blank" rel="noopener">Disposition effect</a></td><td>过早卖出盈利、过久持有亏损</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Herd_behavior" target="_blank" rel="noopener">Herd behavior</a></td><td>拥挤交易与反馈环</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></td><td>战略/战术配置与长期风险预算</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a></td><td>定期回归目标权重与再平衡溢价</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Dollar_cost_averaging" target="_blank" rel="noopener">Dollar cost averaging</a></td><td>定投与一次性投入的现金流差异</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Risk_parity" target="_blank" rel="noopener">Risk parity</a></td><td>按风险贡献而非资金额分配</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Kelly_criterion" target="_blank" rel="noopener">Kelly criterion</a></td><td>长期增长率最优的仓位上界</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Lifecycle_investing" target="_blank" rel="noopener">Lifecycle investing</a></td><td>人力资本与年龄下的风险承受力</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Stock" target="_blank" rel="noopener">Stock</a></td><td>股权、投票权与剩余索取权</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Bond_(finance)" target="_blank" rel="noopener">Bond (finance)</a></td><td>票息、面值、到期与信用风险</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Bond_duration" target="_blank" rel="noopener">Bond duration</a></td><td>价格对利率的一阶敏感度</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Bond_convexity" target="_blank" rel="noopener">Bond convexity</a></td><td>久期之外的二阶价格修正</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Yield_curve" target="_blank" rel="noopener">Yield curve</a></td><td>期限结构、倒挂与远期利率</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Credit_spread_(bond)" target="_blank" rel="noopener">Credit spread (bond)</a></td><td>信用风险的额外补偿</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Exchange-traded_fund" target="_blank" rel="noopener">Exchange-traded fund</a></td><td>场内交易、申赎与跟踪指数</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Index_fund" target="_blank" rel="noopener">Index fund</a></td><td>被动复制与费率优势</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Mutual_fund" target="_blank" rel="noopener">Mutual fund</a></td><td>净值申赎与开放式基金运作</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></td><td>基金份额净值的计算口径</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Tracking_error" target="_blank" rel="noopener">Tracking error</a></td><td>组合与基准收益差的标准差</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Expense_ratio" target="_blank" rel="noopener">Expense ratio</a></td><td>长期复利下最确定的负项</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Money_market_fund" target="_blank" rel="noopener">Money market fund</a></td><td>现金管理的低波动工具与风险边界</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Repurchase_agreement" target="_blank" rel="noopener">Repurchase agreement</a></td><td>逆回购的抵押与期限结构</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Convertible_bond" target="_blank" rel="noopener">Convertible bond</a></td><td>债底 + 转股权的混合结构</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Real_estate_investment_trust" target="_blank" rel="noopener">Real estate investment trust</a></td><td>分红型不动产证券化产品</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a></td><td>或有权益与非线性 payoff</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></td><td>看涨看跌与现货的无套利约束</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Greeks_(finance)" target="_blank" rel="noopener">Greeks (finance)</a></td><td>delta/gamma/theta/vega 敏感度</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Implied_volatility" target="_blank" rel="noopener">Implied volatility</a></td><td>从期权价格反解出的市场预期波动</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model" target="_blank" rel="noopener">Black–Scholes model</a></td><td>连续时间无套利定价闭式解</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Futures_contract" target="_blank" rel="noopener">Futures contract</a></td><td>保证金、逐日盯市与基差</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Margin_(finance)" target="_blank" rel="noopener">Margin (finance)</a></td><td>融资杠杆、维持保证金与强平</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Short_(finance)" target="_blank" rel="noopener">Short (finance)</a></td><td>卖空的借券、成本与无限损失</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Dividend" target="_blank" rel="noopener">Dividend</a></td><td>分红、除息与股息税</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Stock_split" target="_blank" rel="noopener">Stock split</a></td><td>拆股与价格/数量的口径跳变</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Stock_valuation" target="_blank" rel="noopener">Stock valuation</a></td><td>相对估值与现金流折现的统一视角</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Price%E2%80%93earnings_ratio" target="_blank" rel="noopener">Price–earnings ratio</a></td><td>盈利口径下的估值倍数</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Discounted_cash_flow" target="_blank" rel="noopener">Discounted cash flow</a></td><td>把未来现金流折成现值</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Return_on_equity" target="_blank" rel="noopener">Return on equity</a></td><td>股东权益回报率与杜邦分解</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Settlement_(finance)" target="_blank" rel="noopener">Settlement (finance)</a></td><td>成交与交收分离、T+1 与货银对付</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a></td><td>流动性成本的最小单位</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a></td><td>限价单的成交不确定性与价格保护</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></td><td>买卖档位、深度与逐笔撮合</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>价格形成、冲击成本与做市机制</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>开高低收四价的数据结构</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Candlestick_chart" target="_blank" rel="noopener">Candlestick chart</a></td><td>K 线实体、影线与颜色约定</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Adjusted_closing_price" target="_blank" rel="noopener">Adjusted closing price</a></td><td>前复权/后复权与公司行动处理</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Moving_average" target="_blank" rel="noopener">Moving average</a></td><td>均线族与滞后性</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/MACD" target="_blank" rel="noopener">MACD</a></td><td>双指数均线差与柱状能量</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Relative_strength_index" target="_blank" rel="noopener">Relative strength index</a></td><td>涨跌幅度比的震荡指标</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Bollinger_Bands" target="_blank" rel="noopener">Bollinger Bands</a></td><td>均值 ± k 倍标准差通道</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Stochastic_oscillator" target="_blank" rel="noopener">Stochastic oscillator</a></td><td>KDJ 类指标原始定义</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Technical_analysis" target="_blank" rel="noopener">Technical analysis</a></td><td>价量研究的假设、流派与争议</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Chart_pattern" target="_blank" rel="noopener">Chart pattern</a></td><td>头肩、双底、三角等形态</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Support_and_resistance" target="_blank" rel="noopener">Support and resistance</a></td><td>成交密集区与自我实现的价位</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a></td><td>成交量与换手率的信息含量</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Backtesting" target="_blank" rel="noopener">Backtesting</a></td><td>用历史数据检验策略的流程与陷阱</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Look-ahead_bias" target="_blank" rel="noopener">Look-ahead bias</a></td><td>用到未来信息的隐形数据泄漏</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Survivorship_bias" target="_blank" rel="noopener">Survivorship bias</a></td><td>只看存活基金/成分股导致的虚高收益</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Overfitting" target="_blank" rel="noopener">Overfitting</a></td><td>样本内拟合、样本外失效</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Data_dredging" target="_blank" rel="noopener">Data dredging</a></td><td>反复试参数造成的假发现</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Walk_forward_optimization" target="_blank" rel="noopener">Walk forward optimization</a></td><td>滚动训练/验证的样本外检验</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Monte_Carlo_method" target="_blank" rel="noopener">Monte Carlo method</a></td><td>用模拟逼近分布与尾部风险</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>下单价格与实际成交价的差</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Time-weighted_return" target="_blank" rel="noopener">Time-weighted return</a></td><td>剔除外部现金流后的策略收益</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Money-weighted_return" target="_blank" rel="noopener">Money-weighted return</a></td><td>投资者实际体验到的IRR</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Performance_attribution" target="_blank" rel="noopener">Performance attribution</a></td><td>配置效应、选股效应与交互项</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a></td><td>把目标、约束与流程写成契约</td></tr>
+<tr><td><a href="https://en.wikipedia.org/wiki/Data_dredging" target="_blank" rel="noopener">p-hacking</a></td><td>多重检验下的假阳性膨胀</td></tr>
+</tbody></table>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>全书实例与工具</h2><div class="card note"><p style="margin-bottom:0">附录不新增示例脚本；全部可运行实例见 <a href="#sA-5">A.5 示例索引</a>。生成、抽取、批量运行与自检命令见 <a href='../index.html#contribute'>维护约定</a>。</p></div></section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>投资组合管理、道德准则与从业者教育</p>
+<span class="why"><strong>怎么用</strong>：从业者教育框架与术语标准</span>
+<p style="margin:0"><code>https://www.cfainstitute.org/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></h3>
+<span class="tag">教材 · 参考资料</span>
+<p>产品、账户、订单与指标的术语速查</p>
+<span class="why"><strong>怎么用</strong>：产品、账户与指标的术语速查</span>
+<p style="margin:0"><code>https://www.investopedia.com/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></h3>
+<span class="tag">课程 · 参考资料</span>
+<p>投资学、资产定价与衍生品的免费课程材料</p>
+<span class="why"><strong>怎么用</strong>：投资学与资产定价的免费课程</span>
+<p style="margin:0"><code>https://ocw.mit.edu/search/?q=finance</code></p></div>
+<div class="repo-card">
+<h3><a href="https://docs.python.org/3/" target="_blank" rel="noopener">Python 3 文档</a></h3>
+<span class="tag">工具 · 参考资料</span>
+<p>本书脚本的语言与标准库权威参考</p>
+<span class="why"><strong>怎么用</strong>：本书全部脚本的语言与标准库参考</span>
+<p style="margin:0"><code>https://docs.python.org/3/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把速查公式当成可直接下单的规则。</li>
+<li>忽略公式的适用条件（如 r &gt; g、收益率曲线平行移动）。</li>
+<li>只看字段名称、不核对口径与币种。</li>
+<li>把检查清单当成一次性任务，而不是每次实验都跑的 CI。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>为 A.1 中任意三条公式写出对应的 Python 实现。</li>
+<li>给自己常用的交易终端填一遍 A.3 的字段表，标出你尚未确认的三项。</li>
+<li>把 A.4 的检查项写成一个可执行的自检脚本。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>CFA Institute</strong>（机构）：投资组合管理、道德准则与从业者教育<br><a href="https://www.cfainstitute.org/" target="_blank" rel="noopener">CFA Institute</a></li>
+<li><strong>Investopedia</strong>（教材）：产品、账户、订单与指标的术语速查<br><a href="https://www.investopedia.com/" target="_blank" rel="noopener">Investopedia</a></li>
+<li><strong>MIT OpenCourseWare · Finance</strong>（课程）：投资学、资产定价与衍生品的免费课程材料<br><a href="https://ocw.mit.edu/search/?q=finance" target="_blank" rel="noopener">MIT OpenCourseWare · Finance</a></li>
+<li><strong>Python 3 文档</strong>（工具）：本书脚本的语言与标准库权威参考<br><a href="https://docs.python.org/3/" target="_blank" rel="noopener">Python 3 文档</a></li>
+<li><strong>Ken French Data Library</strong>（数据）：Fama-French 因子与组合收益的原始数据<br><a href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html" target="_blank" rel="noopener">Ken French Data Library</a></li>
+<li><strong>FRED</strong>（数据）：利率、通胀、信用利差等免费时间序列<br><a href="https://fred.stlouisfed.org/" target="_blank" rel="noopener">FRED</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=investment%20formulas%20cheat%20sheet%20terminology%20data%20sources" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=investment%20formulas%20cheat%20sheet%20terminology%20data%20sources" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=investment%20formulas%20cheat%20sheet%20terminology%20data%20sources&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../index.html#resources">全书参考资源总表</a> · <a href="../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li>全书目录 <a href='../index.html#toc'>全书目录</a>；使用说明 <a href='../index.html#howto'>使用说明</a>；参考资源 <a href='../index.html#resources'>参考资源</a>；维护约定 <a href='../index.html#contribute'>维护约定</a>。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

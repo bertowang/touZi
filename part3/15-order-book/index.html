@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 15 章 · 盘口、分时与逐笔：价格是怎样形成的 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="15">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第三篇 · 盘面语言与看图识图 · 第三阶段 · 盘面语言与看图识图</span>
+<h1><span class="ch-num">第 15 章</span>盘口、分时与逐笔：价格是怎样形成的</h1>
+<p class="lede">看盘之前先理解数据流：你看到的五档，是订单簿的一个有损快照。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s3">盘面 · 识图</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第三阶段从「价格如何形成」开始；<a href='../16-candlestick/index.html'>第 16 章 · K 线、坐标与复权：看图前先校准数据</a> 把逐笔聚合成 K 线，<a href='../17-trend-ma/index.html'>第 17 章 · 均线、趋势与支撑阻力</a>～<a href='../19-patterns/index.html'>第 19 章 · 形态识别：从主观描述到可判定规则</a> 再逐层加指标与形态。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">订单簿是两个按价格排序的优先队列；市价单是一次 <code>pop until filled</code>，VWAP 是加权平均，冲击是队列深度不足时的溢出成本。<strong>盘口快照是有损缓存，不是真相。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能读写买卖五档盘口并计算价差、深度失衡。</li>
+<li>能模拟市价单逐档吃单，计算 VWAP 与冲击成本。</li>
+<li>能说明分时图、成交明细与 K 线之间的关系。</li>
+<li>能解释为什么盘口大单不等于真实买卖意愿。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>限价订单簿</td><td><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>买卖五档与价差</td><td><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a> · <a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>深度与失衡</td><td><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a> · <a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>市价单逐档成交</td><td><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a> · <a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>VWAP 与滑点</td><td><a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>市场冲击</td><td><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a> · <a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>逐笔成交与分时</td><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>幌骗与冰山单</td><td><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a> · <a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s15-1"><h2><span class="sec-num">§15.1</span>订单簿是一个双端优先队列</h2>
+<p>买侧按价格降序、卖侧按价格升序排队，同价位按时间优先。最佳买价 bid 与最佳卖价 ask 之间的差就是 <strong>spread</strong>，它是流动性最直接的报价：你以 ask 买入、立刻以 bid 卖出，必然损失一个价差。</p>
+<p class="eq">spread = ask_1 − bid_1　|　相对价差 = spread / mid　|　mid = (ask_1 + bid_1)/2</p>
+<table><thead><tr><th style="width:22%">盘口字段</th><th style="width:36%">含义</th><th style="width:42%">误读</th></tr></thead><tbody>
+<tr><td>买一 / 卖一价量</td><td>当前最优报价与挂单量</td><td>挂单可瞬时撤单，不代表真实意愿</td></tr>
+<tr><td>五档累计深度</td><td>前五档委托量之和</td><td>不含隐藏单、冰山单与场外流动性</td></tr>
+<tr><td>委比 / 失衡</td><td>(买量−卖量)/(买量+卖量)</td><td>易被小额挂单操纵</td></tr>
+<tr><td>逐笔成交</td><td>已撮合的成交记录</td><td>主动买/卖方向依赖交易所的标记口径</td></tr>
+</tbody></table>
+</section>
+<section id="s15-2"><h2><span class="sec-num">§15.2</span>市价单的成本是一次遍历</h2>
+<p>一笔数量为 Q 的市价买单会从卖一开始逐档吃掉，成交均价 VWAP 高于 mid，差额就是<strong>冲击成本 + 价差成本</strong>。订单越大、深度越薄，VWAP 越差，且这个关系通常是凸的。第 29 章会据此设计拆单。</p>
+<p class="eq">VWAP(Q) = Σ(p_k × q_k) / Q　|　冲击 = VWAP(Q)/mid − 1</p>
+</section>
+<section id="s15-3"><h2><span class="sec-num">§15.3</span>从逐笔到分时到 K 线</h2>
+<ul>
+<li><strong>逐笔</strong>：每笔成交的时间、价、量、方向，信息最全也最噪。</li>
+<li><strong>分时</strong>：按分钟聚合的均价/最新价与成交量，常用于日内观察。</li>
+<li><strong>K 线</strong>：按周期聚合 OHLCV（第 06、16 章），信息被压缩但结构清晰。</li>
+<li><strong>盘口快照</strong>：某个时刻的委托分布，与成交序列是两种不同的数据源。</li>
+</ul>
+<div class="card note"><span class="card-label">关键区分</span><p style="margin-bottom:0">K 线的 high/low 不一定等于你能在那个价位成交；盘口挂单也不一定真的存在到你的订单到达。<strong>回测必须明确用的是哪一种数据</strong>。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 15-1 · 五档盘口、深度失衡与市价单冲击</h3>
+<pre class="code" data-file="code/15-book.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""构造订单簿快照，逐档吃单计算 VWAP，并画出订单量与冲击成本曲线。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+MID = 10.00
+TICK = 0.01
+LEVELS = 5
+BASE_SIZE = 2000     # 每档基准挂单量
+ORDER_QTY = 6000     # 待执行的市价买单
+MAX_QTY = 20000      # 冲击曲线扫描上限
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+bid_px = [round(MID - TICK / 2 - i * TICK, 2) for i in range(LEVELS)]
+ask_px = [round(MID + TICK / 2 + i * TICK, 2) for i in range(LEVELS)]
+bid_sz = [int(BASE_SIZE * (1 + abs(rng.gauss(0, 0.4)))) for _ in range(LEVELS)]
+ask_sz = [int(BASE_SIZE * (1 + abs(rng.gauss(0, 0.4)))) for _ in range(LEVELS)]
+spread = ask_px[0] - bid_px[0]
+mid = (ask_px[0] + bid_px[0]) / 2
+imbalance = (sum(bid_sz) - sum(ask_sz)) / (sum(bid_sz) + sum(ask_sz))
+
+def execute(qty):
+    left, cost, used = qty, 0.0, []
+    for px, sz in zip(ask_px, ask_sz):
+        take = min(left, sz)
+        cost += take * px
+        used.append((px, take))
+        left -= take
+        if left &lt;= 0:
+            break
+    filled = qty - left
+    return cost / filled if filled else mid, filled, used
+
+vwap, filled, used = execute(ORDER_QTY)
+impact = vwap / mid - 1
+
+c = Chart(FIG / "15-depth.svg", "五档订单簿深度（买负 / 卖正）", xlabel="价格", ylabel="挂单量")
+c.bars(ask_px, ask_sz, RED, label="卖盘")
+c.bars(bid_px, [-s for s in bid_sz], GREEN, label="买盘")
+c.hline(0.0, "#9aa6b2")
+print("深度图:", c.save())
+
+qs = list(range(1000, MAX_QTY + 1, 1000))
+impacts = [(execute(q)[0] / mid - 1) * 100 for q in qs]
+i = Chart(FIG / "15-impact.svg", "市价买单规模与价格冲击", xlabel="订单量（股）", ylabel="冲击 %")
+i.line(qs, impacts, BLUE, label="冲击成本")
+i.hline(0.0, "#9aa6b2")
+print("冲击图:", i.save())
+print("最优买=%.2f 最优卖=%.2f 价差=%.4f (%.3f%%) | 深度失衡=%+.3f" %
+      (bid_px[0], ask_px[0], spread, 100 * spread / mid, imbalance))
+print("市价买 %d 股 成交 %d 股 VWAP=%.4f 冲击=%.3f%% | 吃到第 %d 档" %
+      (ORDER_QTY, filled, vwap, 100 * impact, len(used)))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>ORDER_QTY</code> 从 6000 提高到 15000，观察吃到第几档以及冲击的增幅是否线性。　<strong>预期与判读：</strong>冲击成本随订单量<strong>加速上升</strong>（阶梯式、凸），因为便宜档位先被吃光。深度失衡只是快照，可瞬时撤单，不能单独作为方向信号。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>BASE_SIZE</code> 减半（更薄的盘口），同一订单的冲击会明显变大。　文件位置：<code>part3/15-order-book/code/15-book.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/15-depth.svg" alt="五档买卖挂单量的深度分布" loading="lazy"><figcaption>图 1　五档买卖挂单量的深度分布（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/15-impact.svg" alt="订单规模与冲击成本的非线性关系" loading="lazy"><figcaption>图 2　订单规模与冲击成本的非线性关系（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>买卖档位、深度与逐笔撮合</p>
+<span class="why"><strong>怎么用</strong>：限价订单簿与撮合的数据结构</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Order_book</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>流动性成本的最小单位</p>
+<span class="why"><strong>怎么用</strong>：买卖价差作为流动性成本</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价格形成、冲击成本与做市机制</p>
+<span class="why"><strong>怎么用</strong>：价格形成与微观结构</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Market_microstructure</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a></h3>
+<span class="tag">行情 · 参考资料</span>
+<p>多周期图表、指标脚本与 K 线形态的通用参照</p>
+<span class="why"><strong>怎么用</strong>：多周期图表与盘口展示的通用参照</span>
+<p style="margin:0"><code>https://www.tradingview.com/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把盘口挂单量当真实买卖意愿，忽略撤单与冰山单。</li>
+<li>用 mid 价回测成交，忽略价差与冲击。</li>
+<li>把逐笔主动买卖方向当成资金流入流出。</li>
+<li>用分时均价代替可成交价，忽略当时的档位深度。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导为什么相对价差是「立刻反手平仓」的最小成本。</li>
+<li>在示例里加入冰山单（每档成交后补充挂单），观察冲击曲线如何变缓。</li>
+<li>说明「放量上涨」在逐笔、分时、K 线三个层次分别对应什么数据。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Order book</strong>（百科）：买卖档位、深度与逐笔撮合<br><a href="https://en.wikipedia.org/wiki/Order_book" target="_blank" rel="noopener">Order book</a></li>
+<li><strong>Bid–ask spread</strong>（百科）：流动性成本的最小单位<br><a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a></li>
+<li><strong>Market microstructure</strong>（百科）：价格形成、冲击成本与做市机制<br><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></li>
+<li><strong>Limit order</strong>（百科）：限价单的成交不确定性与价格保护<br><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a></li>
+<li><strong>TradingView</strong>（行情）：多周期图表、指标脚本与 K 线形态的通用参照<br><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=intraday%20chart%20order%20book%20depth%20bid%20ask%20spread%20tape" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=intraday%20chart%20order%20book%20depth%20bid%20ask%20spread%20tape" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=intraday%20chart%20order%20book%20depth%20bid%20ask%20spread%20tape&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../16-candlestick/index.html'>第 16 章 · K 线、坐标与复权：看图前先校准数据</a> K 线与坐标；<a href='../../part6/29-execution/index.html'>第 29 章 · 订单执行、滑点与市场冲击</a> 拆单与执行算法；<a href='../../part5/26-backtest/index.html'>第 26 章 · 事件驱动回测引擎：从信号到成交</a> 回测中的成交价假设。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

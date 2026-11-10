@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 05 章 · 账户、费用、税与适当性 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="05">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第一篇 · 产品地图与市场基础设施 · 第一阶段 · 共同语言与产品地图</span>
+<h1><span class="ch-num">第 05 章</span>账户、费用、税与适当性</h1>
+<p class="lede">毛收益是模型的输出，净收益才是账户的结果；中间隔着一张长长的成本表。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s1">产品 · 制度</span>
+<span>建议 2 学时</span>
+<span>1 个 Python 实例 · 1 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>产品（第 03 章）与规则（第 04 章）之后，本章补齐账户侧的成本与状态；下一章 <a href='../06-data-model/index.html'>第 06 章 · 行情数据模型：OHLCV、复权与时间戳</a> 开始把行情写成可计算的数据结构。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">毛收益是算法复杂度 <code>O(f(n))</code>，成本是常数因子和 I/O。在低频、低超额的场景里，<strong>常数因子决定一切</strong>——这正是工程优化与投资优化的同构之处。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能列出一笔交易从下单到到账涉及的全部显式与隐式成本。</li>
+<li>能把费率、换手率、买卖价差折算成年化拖累。</li>
+<li>能区分管理费、托管费、申赎费、销售服务费与交易佣金。</li>
+<li>能说明「资金可用 / 可取 / 份额确认」的时间差。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>证券账户与资金账户</td><td><a href="https://www.chinaclear.cn/" target="_blank" rel="noopener">中国证券登记结算</a> · <a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>佣金与印花税</td><td><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a> · <a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>买卖价差与冲击成本</td><td><a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>基金管理费与申赎费</td><td><a href="https://en.wikipedia.org/wiki/Mutual_fund" target="_blank" rel="noopener">Mutual fund</a> · <a href="https://en.wikipedia.org/wiki/Net_asset_value" target="_blank" rel="noopener">Net asset value</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>换手率与年化拖累</td><td><a href="https://en.wikipedia.org/wiki/Rate_of_return" target="_blank" rel="noopener">Rate of return</a> · <a href="https://en.wikipedia.org/wiki/Compound_interest" target="_blank" rel="noopener">Compound interest</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>份额确认与赎回到账</td><td><a href="https://www.chinaclear.cn/" target="_blank" rel="noopener">中国证券登记结算</a> · <a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>红利税与跨境税务</td><td><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a> · <a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>投资者适当性</td><td><a href="https://www.sfc.hk/" target="_blank" rel="noopener">香港证监会 SFC</a> · <a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s5-1"><h2><span class="sec-num">§5.1</span>一张成本清单</h2>
+<table><thead><tr><th style="width:24%">成本</th><th style="width:22%">谁收</th><th style="width:26%">何时发生</th><th style="width:28%">量级感</th></tr></thead><tbody>
+<tr><td>交易佣金 / 平台费</td><td>券商</td><td>每笔成交</td><td>按成交额或笔数，常有最低收费</td></tr>
+<tr><td>印花税 / 交易税</td><td>税务或交易所</td><td>卖出或双向（看市场）</td><td>按成交额比例</td></tr>
+<tr><td>买卖价差 spread</td><td>市场（做市/对手方）</td><td>每次 crossing</td><td>流动性越差越大</td></tr>
+<tr><td>冲击成本 impact</td><td>市场</td><td>大单拆单时</td><td>随下单速度上升</td></tr>
+<tr><td>管理费 / 托管费</td><td>基金管理人</td><td>按日计提、按月支付</td><td>年化，直接从净值扣</td></tr>
+<tr><td>申购费 / 赎回费</td><td>销售机构</td><td>申赎时</td><td>持有期越短赎回费常越高</td></tr>
+<tr><td>跟踪误差</td><td>复制机制</td><td>持续</td><td>不是费用，但同样是净收益漏损</td></tr>
+<tr><td>红利税 / 利息税</td><td>税务</td><td>分派时</td><td>与持有期、市场、投资者身份相关</td></tr>
+</tbody></table>
+<p>把成本分成两类很有用：<strong>按时间计提</strong>（管理费）与<strong>按行为触发</strong>（佣金、价差、赎回费）。前者由产品选择决定，后者由换手率决定。降成本的两条路因此完全不同：选低费率产品，或降低交易频率。</p>
+</section>
+<section id="s5-2"><h2><span class="sec-num">§5.2</span>把换手率折算成年化拖累</h2>
+<p class="eq">成本年化拖累 ≈ 年换手率 × (spread + 佣金 + 税费) × 2（双边）</p>
+<p>若年换手率 150%、单次双边成本 0.23%，年化拖累约 0.69%。这对一个预期超额收益 1% 的策略是致命的——<strong>策略的容量与频率上限，往往由成本而非信号决定</strong>。第 26、29 章会把这一项直接写进回测的每次成交。</p>
+</section>
+<section id="s5-3"><h2><span class="sec-num">§5.3</span>账户状态机：可用、可取、在途</h2>
+<ul>
+<li><code>下单</code> → 资金冻结；<code>成交</code> → 形成持仓与待交收应收应付。</li>
+<li><code>交收</code> → 证券/资金所有权转移；<code>T+n</code> 决定何时可卖、何时可提现。</li>
+<li>场外基金走另一条链：<code>申购申请</code> → <code>份额确认</code> → <code>赎回申请</code> → <code>赎回到账</code>，净值按未知价成交，不能按盘中价格申赎。</li>
+<li>适当性测评、风险揭示与资产门槛是<strong>准入校验</strong>，不是策略参数；但会限制可交易集合，必须写进 IPS。</li>
+</ul>
+<div class="card note"><span class="card-label">程序员视角</span><p style="margin-bottom:0">毛收益是纯函数 <code>f(signal, prices)</code>；净收益是有状态的<code>fold(events, account_state)</code>。任何忽略 <code>account_state</code> 的回测都在解一道更简单的题。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 5-1 · 费率与换手成本对长期终值的联合侵蚀</h3>
+<pre class="code" data-file="code/05-cost.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""四条不同费率的终值曲线，并把换手成本折算成年化拖累。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+YEARS = 30
+R_GROSS = 0.07          # 毛年化收益
+FEES = (0.000, 0.001, 0.005, 0.015)
+V0 = 100000.0
+TURNOVER = 1.5          # 年换手率（双边口径见下）
+SPREAD = 0.0010         # 单边价差成本
+COMMISSION = 0.0003     # 单边佣金与税费
+
+# ---- 计算与作图 ----
+one_way = SPREAD + COMMISSION
+annual_drag = TURNOVER * 2 * one_way
+xs = list(range(YEARS + 1))
+curves = [(f, [V0 * (1 + R_GROSS - f) ** t for t in xs]) for f in FEES]
+
+c = Chart(FIG / "05-fee.svg", "不同年费率下的 30 年终值", xlabel="年", ylabel="金额（元）")
+cols = (BLUE, GREEN, AMBER, RED)
+for (f, ys), col in zip(curves, cols):
+    c.line(xs, ys, col, label="费率 %.1f%%" % (100 * f))
+net = [V0 * (1 + R_GROSS - FEES[1] - annual_drag) ** t for t in xs]
+c.line(xs, net, "#6b4f8a", label="0.1% 费率 + 换手成本")
+print("图:", c.save())
+print("双边单次成本=%.2f%% | 年换手 %.1f → 年化拖累=%.2f%%" %
+      (100 * one_way, TURNOVER, 100 * annual_drag))
+print("30年终值 零费率=%.0f 0.1%%费率=%.0f 1.5%%费率=%.0f 叠加换手=%.0f | 成本合计吞掉 %.1f%%" %
+      (curves[0][1][-1], curves[1][1][-1], curves[3][1][-1], net[-1],
+       100 * (1 - net[-1] / curves[0][1][-1])))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>TURNOVER</code> 依次设为 0.2 / 1.5 / 6.0，记录「年化拖累」与终值，画出成本—频率的直觉。　<strong>预期与判读：</strong>0.1% 与 1.5% 费率的终值差距在 30 年尺度被复利放大；再叠加高换手，净收益可能低于无风险利率。结论不是「不要交易」，而是<strong>策略必须以净收益为目标函数</strong>。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>R_GROSS</code> 改成 0.03，观察成本占比相对毛收益如何急剧上升。　文件位置：<code>part1/05-account-cost/code/05-cost.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/05-fee.svg" alt="费率、换手成本与长期终值的关系" loading="lazy"><figcaption>图 1　费率、换手成本与长期终值的关系（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Expense_ratio" target="_blank" rel="noopener">Expense ratio</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>长期复利下最确定的负项</p>
+<span class="why"><strong>怎么用</strong>：费率在长期复利下的确定性影响</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Expense_ratio</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>复利、费用、风险与常见投资骗局的官方说明</p>
+<span class="why"><strong>怎么用</strong>：监管方关于费用与复利的公开说明</span>
+<p style="margin:0"><code>https://www.investor.gov/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.chinaclear.cn/" target="_blank" rel="noopener">中国证券登记结算</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>登记、托管、交收与结算规则</p>
+<span class="why"><strong>怎么用</strong>：登记、托管与交收规则</span>
+<p style="margin:0"><code>https://www.chinaclear.cn/</code></p></div>
+<div class="repo-card">
+<h3><a href="https://fund.eastmoney.com/" target="_blank" rel="noopener">天天基金</a></h3>
+<span class="tag">行情 · 参考资料</span>
+<p>公募基金净值、费率、持仓的查询界面示例</p>
+<span class="why"><strong>怎么用</strong>：场外基金费率与净值查询界面示例</span>
+<p style="margin:0"><code>https://fund.eastmoney.com/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>用「免佣金」推断「零成本」——价差与冲击仍在。</li>
+<li>把场外基金当股票按盘中价格申赎。</li>
+<li>忽略最低佣金，导致小额高频交易的实际费率远高于名义费率。</li>
+<li>把管理费与申赎费重复计入，或反过来完全漏掉跟踪误差。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>写出一次 A 股买入并卖出的完整事件链，标出每个时间点的资金与证券状态。</li>
+<li>若策略年超额 1.2%、年换手 400%，示例中的成本参数下是否还值得做？</li>
+<li>查一只指数基金的「管理费 + 托管费 + 跟踪误差」，与同类 ETF 对比。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>中国证券登记结算</strong>（机构）：登记、托管、交收与结算规则<br><a href="https://www.chinaclear.cn/" target="_blank" rel="noopener">中国证券登记结算</a></li>
+<li><strong>Investor.gov（SEC 投资者教育）</strong>（机构）：复利、费用、风险与常见投资骗局的官方说明<br><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></li>
+<li><strong>Expense ratio</strong>（百科）：长期复利下最确定的负项<br><a href="https://en.wikipedia.org/wiki/Expense_ratio" target="_blank" rel="noopener">Expense ratio</a></li>
+<li><strong>中国证券投资基金业协会</strong>（机构）：基金备案、从业规范与公募数据<br><a href="https://www.amac.org.cn/" target="_blank" rel="noopener">中国证券投资基金业协会</a></li>
+<li><strong>天天基金</strong>（行情）：公募基金净值、费率、持仓的查询界面示例<br><a href="https://fund.eastmoney.com/" target="_blank" rel="noopener">天天基金</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=brokerage%20account%20settlement%20fees%20taxes%20fund%20distribution" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=brokerage%20account%20settlement%20fees%20taxes%20fund%20distribution" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=brokerage%20account%20settlement%20fees%20taxes%20fund%20distribution&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../07-funds-etf/index.html'>第 07 章 · 公募基金与 ETF：净值、申赎与跟踪</a> 讲基金净值与跟踪误差；<a href='../../part5/26-backtest/index.html'>第 26 章 · 事件驱动回测引擎：从信号到成交</a> 把成本写进回测；<a href='../../part6/29-execution/index.html'>第 29 章 · 订单执行、滑点与市场冲击</a> 量化冲击成本。</li>
+<li>长期费率统计见 <a href='../../index.html#resources'>参考资源</a> 的 SPIVA 报告。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 29 章 · 订单执行、滑点与市场冲击 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="29">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第六篇 · 实盘、风险与长期主义 · 第五阶段 · 实盘、风险与长期主义</span>
+<h1><span class="ch-num">第 29 章</span>订单执行、滑点与市场冲击</h1>
+<p class="lede">信号再好，也要经过「下单」这个有摩擦的物理过程才能变成账户里的钱。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s5">实盘 · 风险</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第五阶段结束、第六阶段开始：<a href='../../part5/26-backtest/index.html'>第 26 章 · 事件驱动回测引擎：从信号到成交</a> 的回测里滑点是常数，本章把它变成订单规模的函数；<a href='../30-risk-sizing/index.html'>第 30 章 · 仓位、杠杆、VaR/CVaR 与凯利上界</a> 继续把「下多大」写成硬约束。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">执行是对一个有限队列做速率限制：一次性提交会触发限流（冲击），分片提交把峰值摊平但拉长延迟（时机风险）。<strong>吞吐与时延的权衡，在交易里同样成立。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能分解滑点：价差、临时冲击、永久冲击、时机风险。</li>
+<li>能模拟市价一次性、TWAP、VWAP 与限价单的成交结果。</li>
+<li>能说明成交量曲线与订单规模如何决定冲击。</li>
+<li>能把执行成本反馈到策略容量评估。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>到达价与成交均价</td><td><a href="https://en.wikipedia.org/wiki/Volume_(finance)" target="_blank" rel="noopener">Volume (finance)</a> · <a href="https://en.wikipedia.org/wiki/Open-high-low-close_chart" target="_blank" rel="noopener">OHLC chart</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>买卖价差</td><td><a href="https://en.wikipedia.org/wiki/Bid%E2%80%93ask_spread" target="_blank" rel="noopener">Bid–ask spread</a> · <a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>临时与永久冲击</td><td><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a> · <a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>市场冲击模型</td><td><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a> · <a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>TWAP 与 VWAP</td><td><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a> · <a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>限价单与成交不确定性</td><td><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a> · <a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>拆单与时机风险</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>容量评估</td><td><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a> · <a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s29-1"><h2><span class="sec-num">§29.1</span>执行差额是一个可分解的量</h2>
+<p class="eq">Implementation Shortfall = 成交均价 − 决策到达价 = 价差 + 冲击 + 时机成本 + 机会成本</p>
+<p>第 15 章用订单簿算过一次静态冲击；本章加入<strong>时间维度</strong>：拆得越细，单笔临时冲击越小，但暴露在价格漂移里的时间越长；拆得太快，又会推高永久冲击。这是一道明确的权衡题，不是「越慢越好」。</p>
+<table><thead><tr><th style="width:20%">成本</th><th style="width:36%">来源</th><th style="width:44%">随什么增大</th></tr></thead><tbody>
+<tr><td>价差</td><td>跨买卖档位</td><td>流动性差、tick 大</td></tr>
+<tr><td>临时冲击</td><td>短期吃掉深度</td><td>单笔下单速度</td></tr>
+<tr><td>永久冲击</td><td>订单被认为含信息</td><td>累计成交量 / 日均量</td></tr>
+<tr><td>时机/机会成本</td><td>等待期间价格漂移或未成交</td><td>执行时长、限价偏离</td></tr>
+</tbody></table>
+</section>
+<section id="s29-2"><h2><span class="sec-num">§29.2</span>三种基准算法</h2>
+<ul>
+<li><strong>一次性市价</strong>：立即完成，冲击最大、时机风险最小。</li>
+<li><strong>TWAP</strong>：按时间等分，实现简单，忽略真实成交量分布。</li>
+<li><strong>VWAP</strong>：按历史成交量曲线分配，目标是贴近当日成交量加权均价。</li>
+<li><strong>限价单</strong>：价格受保护，但可能只部分成交，剩余敞口成为机会成本。</li>
+</ul>
+</section>
+<section id="s29-3"><h2><span class="sec-num">§29.3</span>容量：策略能吃下多少钱</h2>
+<p>若策略日均收益 μ、单次冲击成本 c(Q)，容量大致由 <code>μ × Q &gt; c(Q)</code> 决定。冲击通常随参与率超线性上升，所以<strong>提高资金规模会降低单位资金的净收益</strong>。报告策略时应同时给出净值曲线与容量估计，否则高夏普没有可执行含义。</p>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 29-1 · 市价、TWAP、VWAP 与限价单的执行差额</h3>
+<pre class="code" data-file="code/29-execution.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""用 U 形成交量曲线与临时/永久冲击模型，比较四种执行方式的成交均价。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+Q = 100000         # 总订单量（股）
+SLICES = 20        # 日内切片数
+ARRIVAL = 10.00    # 决策到达价
+ETA = 0.002        # 临时冲击系数
+PERM = 0.0015      # 永久冲击系数
+LIMIT_PX = 10.01   # 限价单价格上限
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+base = [ARRIVAL]
+for _ in range(SLICES):
+    base.append(base[-1] * (1 + rng.gauss(0, 0.0008)))
+vol_curve = [1.2 - 0.8 * math.sin(math.pi * t / (SLICES - 1)) for t in range(SLICES)]
+tot_vol = sum(vol_curve)
+vwap_q = [Q * v / tot_vol for v in vol_curve]
+twap_q = [Q / SLICES] * SLICES
+market_q = [Q] + [0.0] * (SLICES - 1)
+
+def execute(qtys, limit=None):
+    cum, cost, filled, marks = 0.0, 0.0, 0.0, []
+    for t, q in enumerate(qtys):
+        if q &lt;= 0:
+            marks.append(None)
+            continue
+        px = base[t] * (1 + PERM * cum / Q)
+        temp = ETA * (q / (Q / SLICES))
+        fill_px = px + temp
+        if limit is not None and fill_px &gt; limit:
+            marks.append(None)
+            continue
+        cost += q * fill_px
+        filled += q
+        cum += q
+        marks.append(fill_px)
+    return (cost / filled if filled else 0.0), filled / Q, marks
+
+results = {
+    "市价一次性": execute(market_q),
+    "TWAP": execute(twap_q),
+    "VWAP": execute(vwap_q),
+    "限价单": execute(twap_q, limit=LIMIT_PX),
+}
+
+c = Chart(FIG / "29-execution.svg", "基准价格与两类执行点", xlabel="日内切片", ylabel="价格")
+c.line(range(SLICES), base[:SLICES], BLUE, label="无冲击基准价")
+marks = results["TWAP"][2]
+c.scatter([t for t, m in enumerate(marks) if m], [m for m in marks if m], GREEN,
+          label="TWAP 成交价", radius=4)
+mm = results["市价一次性"][2]
+c.scatter([0], [mm[0]], RED, label="市价一次性", radius=6)
+print("执行图:", c.save())
+
+names = list(results)
+slips = [10000 * (v[0] / ARRIVAL - 1) if v[0] else 0.0 for v in results.values()]
+b = Chart(FIG / "29-slippage.svg", "四种执行方式的滑点（基点）", xlabel="方式", ylabel="bp",
+          xticks=[(i, n) for i, n in enumerate(names)])
+b.bars(range(len(names)), slips, AMBER, label="滑点 bp")
+print("滑点图:", b.save())
+print("到达价=%.3f | 滑点(bp) 市价=%.1f TWAP=%.1f VWAP=%.1f 限价=%.1f | 成交率 限价=%.0f%%" %
+      (ARRIVAL, *slips, 100 * results["限价单"][1]))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>ETA</code> 调大（流动性更差），观察市价一次性与拆单之间差距扩大；再放宽 <code>LIMIT_PX</code> 看限价单成交率上升。　<strong>预期与判读：</strong>一次性市价单因临时冲击最大而滑点最高；TWAP/VWAP 通过拆单降低单笔冲击；限价单价格受保护但可能部分成交。<strong>滑点与成交率必须一起看。</strong></p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>Q</code> 翻倍，观察滑点是否线性放大——这正是策略容量的约束来源。　文件位置：<code>part6/29-execution/code/29-execution.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/29-execution.svg" alt="日内基准价格与不同执行点" loading="lazy"><figcaption>图 1　日内基准价格与不同执行点（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/29-slippage.svg" alt="四种执行方式的滑点对照" loading="lazy"><figcaption>图 2　四种执行方式的滑点对照（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>限价单的成交不确定性与价格保护</p>
+<span class="why"><strong>怎么用</strong>：限价单的价格保护与成交不确定性</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Limit_order</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>下单价格与实际成交价的差</p>
+<span class="why"><strong>怎么用</strong>：成交价与预期价之差</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Slippage_(finance)</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>价格形成、冲击成本与做市机制</p>
+<span class="why"><strong>怎么用</strong>：冲击成本与价格形成</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Market_microstructure</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.interactivebrokers.com/" target="_blank" rel="noopener">Interactive Brokers</a></h3>
+<span class="tag">行情 · 参考资料</span>
+<p>多市场订单类型与保证金账户的界面示例</p>
+<span class="why"><strong>怎么用</strong>：多市场订单类型与执行设置的界面示例</span>
+<p style="margin:0"><code>https://www.interactivebrokers.com/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>回测里用收盘价成交，忽略到达价与成交价之差。</li>
+<li>只比较滑点，不比较成交率与未完成敞口。</li>
+<li>用当日成交量决定 VWAP 权重，引入未来信息。</li>
+<li>忽略涨跌停、停牌与最小报价单位对拆单的限制。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导为什么临时冲击随参与率超线性上升会使容量有限。</li>
+<li>在示例里把 VWAP 曲线改成单调递增，观察成交均价如何变化。</li>
+<li>给限价单加入「未成交部分次日补单」，讨论机会成本如何计量。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Limit order</strong>（百科）：限价单的成交不确定性与价格保护<br><a href="https://en.wikipedia.org/wiki/Limit_order" target="_blank" rel="noopener">Limit order</a></li>
+<li><strong>Slippage (finance)</strong>（百科）：下单价格与实际成交价的差<br><a href="https://en.wikipedia.org/wiki/Slippage_(finance)" target="_blank" rel="noopener">Slippage (finance)</a></li>
+<li><strong>Market microstructure</strong>（百科）：价格形成、冲击成本与做市机制<br><a href="https://en.wikipedia.org/wiki/Market_microstructure" target="_blank" rel="noopener">Market microstructure</a></li>
+<li><strong>Interactive Brokers</strong>（行情）：多市场订单类型与保证金账户的界面示例<br><a href="https://www.interactivebrokers.com/" target="_blank" rel="noopener">Interactive Brokers</a></li>
+<li><strong>CME Group</strong>（机构）：期货与期权合约规格、保证金规则<br><a href="https://www.cmegroup.com/" target="_blank" rel="noopener">CME Group</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=order%20execution%20market%20impact%20slippage%20algorithmic%20execution" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=order%20execution%20market%20impact%20slippage%20algorithmic%20execution" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=order%20execution%20market%20impact%20slippage%20algorithmic%20execution&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../30-risk-sizing/index.html'>第 30 章 · 仓位、杠杆、VaR/CVaR 与凯利上界</a> 仓位与杠杆约束；<a href='../../part3/15-order-book/index.html'>第 15 章 · 盘口、分时与逐笔：价格是怎样形成的</a> 订单簿深度；<a href='../../part1/04-market-rules/index.html'>第 04 章 · 交易所制度：竞价、涨跌停、T+1 与交收</a> 制度限制。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

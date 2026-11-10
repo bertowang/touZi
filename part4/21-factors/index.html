@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 21 章 · 因子、CAPM 与 Fama-French | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="21">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第四篇 · 因子、行为与市场证据 · 第四阶段 · 从直觉到可验证的证据</span>
+<h1><span class="ch-num">第 21 章</span>因子、CAPM 与 Fama-French</h1>
+<p class="lede">把「为什么这只股票涨得多」拆成可估计的暴露与不可解释的残差。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s4">因子 · 证据</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第四阶段从「可验证的收益分解」开始；<a href='../22-behavior/index.html'>第 22 章 · 有效市场、行为偏差与处置效应</a> 讨论模型之外的人，<a href='../23-flow-crowding/index.html'>第 23 章 · 资金流、情绪与拥挤交易</a> 讨论资金拥挤，<a href='../24-read-papers/index.html'>第 24 章 · 怎样读一篇因子论文：从摘要到可复现</a> 讨论怎样读一篇因子论文。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">因子回归是一次多元线性回归：<code>X</code> 是因子暴露矩阵，<code>α</code> 是截距，<code>t 值</code> 是信噪比。漏掉一列特征，截距就会替它背锅。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能写出 CAPM 与 Fama-French 三因子回归式。</li>
+<li>能用手写 OLS 估计 beta、alpha 与 t 值。</li>
+<li>能解释遗漏变量如何把因子收益错记成 alpha。</li>
+<li>能说明因子溢价、数据挖掘与交易成本三者之间的关系。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>CAPM 与 beta</td><td><a href="https://en.wikipedia.org/wiki/Capital_asset_pricing_model" target="_blank" rel="noopener">Capital asset pricing model</a> · <a href="https://en.wikipedia.org/wiki/Beta_(finance)" target="_blank" rel="noopener">Beta (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>市场因子</td><td><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a> · <a href="https://en.wikipedia.org/wiki/Factor_investing" target="_blank" rel="noopener">Factor investing</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>规模与价值因子 SMB/HML</td><td><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a> · <a href="https://en.wikipedia.org/wiki/Factor_investing" target="_blank" rel="noopener">Factor investing</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>三因子回归</td><td><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a> · <a href="https://en.wikipedia.org/wiki/Factor_investing" target="_blank" rel="noopener">Factor investing</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>alpha 与 t 值</td><td><a href="https://en.wikipedia.org/wiki/Jensen%27s_alpha" target="_blank" rel="noopener">Jensen&#x27;s alpha</a> · <a href="https://en.wikipedia.org/wiki/Capital_asset_pricing_model" target="_blank" rel="noopener">Capital asset pricing model</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>R² 与残差</td><td><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a> · <a href="https://en.wikipedia.org/wiki/Factor_investing" target="_blank" rel="noopener">Factor investing</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>遗漏变量偏差</td><td><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a> · <a href="https://en.wikipedia.org/wiki/Factor_investing" target="_blank" rel="noopener">Factor investing</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>因子与 Smart Beta</td><td><a href="https://en.wikipedia.org/wiki/Beta_(finance)" target="_blank" rel="noopener">Beta (finance)</a> · <a href="https://en.wikipedia.org/wiki/Capital_asset_pricing_model" target="_blank" rel="noopener">Capital asset pricing model</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s21-1"><h2><span class="sec-num">§21.1</span>收益的线性分解</h2>
+<p class="eq">r_i − r_f = α_i + β_m MKT + β_s SMB + β_h HML + ε_i</p>
+<p>α 是<strong>模型无法解释的平均残差</strong>，β 是对共同因子的暴露。第 13 章末尾留下的问题「分散不掉的那部分风险」在这里有了名字：市场因子。SMB（小市值减大市值）与 HML（高账面市值比减低）是后续加入的横截面维度。</p>
+<table><thead><tr><th style="width:18%">模型</th><th style="width:30%">解释变量</th><th style="width:28%">α 的含义</th><th style="width:24%">主要风险</th></tr></thead><tbody>
+<tr><td>CAPM</td><td>MKT</td><td>相对市场的超额收益</td><td>遗漏其他系统性因子</td></tr>
+<tr><td>FF3</td><td>MKT + SMB + HML</td><td>相对三因子的残差均值</td><td>样本期与构造口径依赖</td></tr>
+<tr><td>FF5 / 动量</td><td>再加 RMW/CMA/UMD</td><td>更严格的残差</td><td>因子越来越多，过拟合风险上升</td></tr>
+</tbody></table>
+</section>
+<section id="s21-2"><h2><span class="sec-num">§21.2</span>alpha 是最容易被偷换的概念</h2>
+<p>若真实收益由三因子生成，却只用 CAPM 回归，β_s、β_h 的贡献会被挤进 α，于是「选股能力」其实是<strong>规模/价值暴露</strong>。这在工程上就是遗漏变量偏差：模型少了一列，系数就会去吸收它的影响。评估基金时，先问「对什么基准、加了哪些因子」。</p>
+</section>
+<section id="s21-3"><h2><span class="sec-num">§21.3</span>从因子到可交易策略还差四步</h2>
+<ul>
+<li>因子必须在<strong>样本外</strong>与不同市场重复出现（第 24、28 章）。</li>
+<li>构建组合要处理停牌、退市与成分股历史（第 25 章）。</li>
+<li>换手、冲击与税费会吞掉大部分毛溢价（第 26、29 章）。</li>
+<li>拥挤与结构性变化会让历史上有效的因子失效（第 23 章）。</li>
+</ul>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 21-1 · 手写 OLS 估计三因子模型与遗漏变量偏差</h3>
+<pre class="code" data-file="code/21-factors.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""用已知真值的合成数据生成个股收益，估计 CAPM 与 FF3，比较 alpha。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+N = 600
+TRUE_ALPHA = 0.0002
+TRUE_B = (0.90, 0.30, -0.20)   # MKT / SMB / HML 的真实暴露
+NOISE = 0.006
+ANN = 252                       # 年化天数
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+mkt = [rng.gauss(0.0003, 0.010) for _ in range(N)]
+smb = [rng.gauss(0.0001, 0.005) for _ in range(N)]
+hml = [rng.gauss(0.0001, 0.006) for _ in range(N)]
+rets = [TRUE_ALPHA + TRUE_B[0] * mkt[i] + TRUE_B[1] * smb[i]
+        + TRUE_B[2] * hml[i] + rng.gauss(0, NOISE) for i in range(N)]
+
+def inv(A):
+    k = len(A)
+    M = [row[:] + [1.0 if i == j else 0.0 for j in range(k)]
+         for i, row in enumerate(A)]
+    for col in range(k):
+        piv = max(range(col, k), key=lambda r: abs(M[r][col]))
+        M[col], M[piv] = M[piv], M[col]
+        d = M[col][col]
+        M[col] = [v / d for v in M[col]]
+        for r in range(k):
+            if r != col:
+                f = M[r][col]
+                M[r] = [M[r][j] - f * M[col][j] for j in range(2 * k)]
+    return [row[k:] for row in M]
+
+def ols(X, y):
+    n, k = len(y), len(X[0])
+    xtx = [[sum(X[t][i] * X[t][j] for t in range(n)) for j in range(k)]
+           for i in range(k)]
+    xty = [sum(X[t][i] * y[t] for t in range(n)) for i in range(k)]
+    inv_xtx = inv(xtx)
+    coef = [sum(inv_xtx[i][j] * xty[j] for j in range(k)) for i in range(k)]
+    resid = [y[t] - sum(coef[i] * X[t][i] for i in range(k)) for t in range(n)]
+    s2 = sum(e * e for e in resid) / (n - k)
+    se = [math.sqrt(s2 * inv_xtx[i][i]) for i in range(k)]
+    ybar = statistics.fmean(y)
+    r2 = 1 - sum(e * e for e in resid) / sum((v - ybar) ** 2 for v in y)
+    return coef, [coef[i] / se[i] for i in range(k)], r2, resid
+
+X1 = [[1.0, mkt[i]] for i in range(N)]
+X3 = [[1.0, mkt[i], smb[i], hml[i]] for i in range(N)]
+c1, t1, r21, _e1 = ols(X1, rets)
+c3, t3, r23, e3 = ols(X3, rets)
+
+def cum(series):
+    v, out = 0.0, []
+    for x in series:
+        v += x
+        out.append(v)
+    return out
+
+c = Chart(FIG / "21-factors.svg", "三个合成因子的累计收益", xlabel="交易日", ylabel="累计收益")
+c.line(range(N), cum(mkt), BLUE, label="MKT")
+c.line(range(N), cum(smb), GREEN, label="SMB")
+c.line(range(N), cum(hml), AMBER, label="HML")
+print("因子图:", c.save())
+a = Chart(FIG / "21-alpha.svg", "FF3 残差累计（alpha 的稳定性）", xlabel="交易日", ylabel="累计残差")
+a.line(range(N), cum(e3), RED, label="残差")
+a.hline(0.0, "#9aa6b2")
+print("残差图:", a.save())
+print("真值 α=%.5f β=(%.2f,%.2f,%.2f) | CAPM α=%.5f β=%.3f R²=%.3f" %
+      (TRUE_ALPHA, *TRUE_B, c1[0], c1[1], r21))
+print("FF3 α=%.5f(t=%.2f) β=(%.3f,%.3f,%.3f) t=(%.1f,%.1f,%.1f) R²=%.3f | 年化 α=%.2f%%" %
+      (c3[0], t3[0], c3[1], c3[2], c3[3], t3[1], t3[2], t3[3], r23, 100 * ANN * c3[0]))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>TRUE_B[1]</code> 设为 0，观察 CAPM 与 FF3 的 alpha 是否趋于一致；再把它调大，看遗漏变量如何被错记成选股能力。　<strong>预期与判读：</strong>FF3 的估计 β 应接近真值，α 的 t 值通常不显著；而 CAPM 的 α 会吸收 SMB/HML 的贡献。这说明<strong>「超额收益」永远依赖于你声明了哪些因子</strong>。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>N</code> 改成 60，t 值会明显变小——小样本下几乎无法区分 α 与噪声。　文件位置：<code>part4/21-factors/code/21-factors.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/21-factors.svg" alt="三个合成因子的累计收益路径" loading="lazy"><figcaption>图 1　三个合成因子的累计收益路径（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/21-alpha.svg" alt="三因子模型残差的累计轨迹" loading="lazy"><figcaption>图 2　三因子模型残差的累计轨迹（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>规模与价值因子对 CAPM 的扩展</p>
+<span class="why"><strong>怎么用</strong>：三因子模型的标准表述</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model</code></p></div>
+<div class="repo-card">
+<h3><a href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html" target="_blank" rel="noopener">Ken French Data Library</a></h3>
+<span class="tag">数据 · 参考资料</span>
+<p>Fama-French 因子与组合收益的原始数据</p>
+<span class="why"><strong>怎么用</strong>：Ken French Data Library 的原始因子序列</span>
+<p style="margin:0"><code>https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Smart_beta" target="_blank" rel="noopener">Smart beta</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>规则化因子指数与 ETF</p>
+<span class="why"><strong>怎么用</strong>：规则化因子指数与对应 ETF</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Smart_beta</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA 主动/被动业绩对比</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>主动基金相对基准的长期胜率统计</p>
+<span class="why"><strong>怎么用</strong>：主动基金相对基准的长期统计</span>
+<p style="margin:0"><code>https://www.spglobal.com/spdji/en/research-insights/spiva/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把 CAPM alpha 当成选股能力。</li>
+<li>用同一段数据既挑因子又评估显著性。</li>
+<li>忽略因子构建口径（市值加权、分组断点、换仓频率）。</li>
+<li>把因子 ETF 的历史回测当成因子溢价的未来承诺。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>推导遗漏变量偏差公式，说明 α 的偏移方向由 β 与因子均值决定。</li>
+<li>在示例中加入第四个与 MKT 高度相关的因子，观察 t 值如何下降（共线性）。</li>
+<li>查一份指数编制方案，列出至少三个会影响因子暴露的实现细节。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Fama–French three-factor model</strong>（百科）：规模与价值因子对 CAPM 的扩展<br><a href="https://en.wikipedia.org/wiki/Fama%E2%80%93French_three-factor_model" target="_blank" rel="noopener">Fama–French three-factor model</a></li>
+<li><strong>Factor investing</strong>（百科）：把实证因子转成可交易策略<br><a href="https://en.wikipedia.org/wiki/Factor_investing" target="_blank" rel="noopener">Factor investing</a></li>
+<li><strong>Smart beta</strong>（百科）：规则化因子指数与 ETF<br><a href="https://en.wikipedia.org/wiki/Smart_beta" target="_blank" rel="noopener">Smart beta</a></li>
+<li><strong>Ken French Data Library</strong>（数据）：Fama-French 因子与组合收益的原始数据<br><a href="https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html" target="_blank" rel="noopener">Ken French Data Library</a></li>
+<li><strong>SPIVA 主动/被动业绩对比</strong>（机构）：主动基金相对基准的长期胜率统计<br><a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA 主动/被动业绩对比</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=Fama%20French%20factors%20smart%20beta%20factor%20investing%20evidence" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=Fama%20French%20factors%20smart%20beta%20factor%20investing%20evidence" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=Fama%20French%20factors%20smart%20beta%20factor%20investing%20evidence&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../24-read-papers/index.html'>第 24 章 · 怎样读一篇因子论文：从摘要到可复现</a> 论文复现清单；<a href='../../part5/27-performance/index.html'>第 27 章 · 绩效度量与归因：夏普、回撤与 Brinson</a> 信息比率与归因；<a href='../../part5/28-overfitting/index.html'>第 28 章 · 过拟合、多重检验与滚动样本外</a> 多重检验。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

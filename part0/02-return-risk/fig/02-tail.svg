@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 430" width="780" height="430" role="img">
+<title>日收益分布与 95% VaR</title>
+<desc>由 tools/chart.py 生成的教材示意插图，数据为合成数据。</desc>
+<rect x="0" y="0" width="780" height="430" fill="#ffffff"/>
+<text x="76.0" y="24" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#23262b">日收益分布与 95% VaR</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="376.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">-46.30</text>
+<line x1="76.0" y1="306.8" x2="756.0" y2="306.8" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="310.8" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">64.82</text>
+<line x1="76.0" y1="241.6" x2="756.0" y2="241.6" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="245.6" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">175.9</text>
+<line x1="76.0" y1="176.4" x2="756.0" y2="176.4" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="180.4" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">287.1</text>
+<line x1="76.0" y1="111.2" x2="756.0" y2="111.2" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="115.2" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">398.2</text>
+<line x1="76.0" y1="46.0" x2="756.0" y2="46.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="68.0" y="50.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="end">509.3</text>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="76.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-0.108</text>
+<line x1="212.0" y1="46.0" x2="212.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="212.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-0.067</text>
+<line x1="348.0" y1="46.0" x2="348.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="348.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">-0.026</text>
+<line x1="484.0" y1="46.0" x2="484.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="484.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">0.016</text>
+<line x1="620.0" y1="46.0" x2="620.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="620.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">0.057</text>
+<line x1="756.0" y1="46.0" x2="756.0" y2="372.0" stroke="#e8e6e0" stroke-width="1"/>
+<text x="756.0" y="390.0" font-family="SF Mono, JetBrains Mono, Menlo, Consolas, monospace" font-size="11" fill="#8a909b" text-anchor="middle">0.098</text>
+<line x1="76.0" y1="372.0" x2="756.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<line x1="76.0" y1="46.0" x2="76.0" y2="372.0" stroke="#8a909b" stroke-width="1.4"/>
+<text x="416.0" y="418.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" text-anchor="middle">日收益</text>
+<text x="14" y="209.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="12" fill="#8a909b" transform="rotate(-90 14 209.0)" text-anchor="middle">频数</text>
+<rect x="94.91" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="111.48" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="128.05" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="144.62" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="161.19" y="343.66" width="12.55" height="1.17" fill="#2f6b4f" opacity="0.85"/>
+<rect x="177.75" y="344.25" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="194.32" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="210.89" y="344.25" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="227.46" y="343.07" width="12.55" height="1.76" fill="#2f6b4f" opacity="0.85"/>
+<rect x="244.03" y="343.66" width="12.55" height="1.17" fill="#2f6b4f" opacity="0.85"/>
+<rect x="260.60" y="344.25" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="277.17" y="343.07" width="12.55" height="1.76" fill="#2f6b4f" opacity="0.85"/>
+<rect x="293.74" y="340.73" width="12.55" height="4.11" fill="#2f6b4f" opacity="0.85"/>
+<rect x="310.31" y="342.49" width="12.55" height="2.35" fill="#2f6b4f" opacity="0.85"/>
+<rect x="326.88" y="340.14" width="12.55" height="4.69" fill="#2f6b4f" opacity="0.85"/>
+<rect x="343.45" y="337.79" width="12.55" height="7.04" fill="#2f6b4f" opacity="0.85"/>
+<rect x="360.02" y="312.56" width="12.55" height="32.27" fill="#2f6b4f" opacity="0.85"/>
+<rect x="376.58" y="268.56" width="12.55" height="76.28" fill="#2f6b4f" opacity="0.85"/>
+<rect x="393.15" y="189.93" width="12.55" height="154.90" fill="#2f6b4f" opacity="0.85"/>
+<rect x="409.72" y="87.25" width="12.55" height="257.58" fill="#2f6b4f" opacity="0.85"/>
+<rect x="426.29" y="73.17" width="12.55" height="271.67" fill="#2f6b4f" opacity="0.85"/>
+<rect x="442.86" y="147.10" width="12.55" height="197.74" fill="#2f6b4f" opacity="0.85"/>
+<rect x="459.43" y="241.56" width="12.55" height="103.27" fill="#2f6b4f" opacity="0.85"/>
+<rect x="476.00" y="315.50" width="12.55" height="29.34" fill="#2f6b4f" opacity="0.85"/>
+<rect x="492.57" y="336.03" width="12.55" height="8.80" fill="#2f6b4f" opacity="0.85"/>
+<rect x="509.14" y="340.14" width="12.55" height="4.69" fill="#2f6b4f" opacity="0.85"/>
+<rect x="525.71" y="343.66" width="12.55" height="1.17" fill="#2f6b4f" opacity="0.85"/>
+<rect x="542.28" y="343.66" width="12.55" height="1.17" fill="#2f6b4f" opacity="0.85"/>
+<rect x="558.85" y="342.49" width="12.55" height="2.35" fill="#2f6b4f" opacity="0.85"/>
+<rect x="575.42" y="343.07" width="12.55" height="1.76" fill="#2f6b4f" opacity="0.85"/>
+<rect x="591.98" y="343.07" width="12.55" height="1.76" fill="#2f6b4f" opacity="0.85"/>
+<rect x="608.55" y="344.25" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="625.12" y="344.25" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="641.69" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="658.26" y="344.25" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="674.83" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="691.40" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="707.97" y="344.83" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<rect x="724.54" y="344.25" width="12.55" height="0.60" fill="#2f6b4f" opacity="0.85"/>
+<line x1="383.22" y1="46.0" x2="383.22" y2="372.0" stroke="#8a3b26" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="80.0" y="50.0" width="178" height="28" fill="#ffffff" fill-opacity="0.86" stroke="#e8e6e0" rx="3"/>
+<line x1="86.0" y1="66.0" x2="104.0" y2="66.0" stroke="#2f6b4f" stroke-width="3"/>
+<text x="110.0" y="70.0" font-family="PingFang SC, Microsoft YaHei, Noto Sans CJK SC, -apple-system, sans-serif" font-size="11" fill="#23262b">收益直方图</text>
+</svg>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 12 章 · 期权 payoff、平价关系与希腊字母 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="12">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第二篇 · 估值定价与组合理论 · 第二阶段 · 定价、组合与资产配置</span>
+<h1><span class="ch-num">第 12 章</span>期权 payoff、平价关系与希腊字母</h1>
+<p class="lede">或有权益把「折现」升级成「无套利」：价格不由预测决定，而由可复制关系约束。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s2">定价 · 组合</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>第 09～11 章都是「折现现金流」，本章第一次遇到现金流依赖未来状态的情形；接下来 <a href='../13-mean-variance/index.html'>第 13 章 · 均值-方差、有效前沿与夏普比率</a> 把多个风险资产放进同一个方差—协方差框架。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">期权定价是<strong>用可复制组合做类型检查</strong>：<code>call − put ≡ stock − discounted_strike</code> 是一条编译期恒等式。二叉树只是把终端枚举 + 概率加权折现，等价于一次动态规划。</p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能画出四种基本期权头寸的到期损益并写出分段函数。</li>
+<li>能用二叉树给出欧式看涨/看跌价格，并验证平价关系。</li>
+<li>能用数值差分计算 delta 与 gamma，理解对冲的含义。</li>
+<li>能说明时间价值衰减、隐含波动率与杠杆的关系。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>看涨与看跌 payoff</td><td><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a> · <a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>多头与空头</td><td><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a> · <a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>内在价值与时间价值</td><td><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a> · <a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>看跌-看涨平价</td><td><a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a> · <a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>二叉树与风险中性概率</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>delta 与 gamma</td><td><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a> · <a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>theta 与 vega</td><td><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a> · <a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>保证金与非线性风险</td><td><a href="https://en.wikipedia.org/wiki/Modern_portfolio_theory" target="_blank" rel="noopener">Modern portfolio theory</a> · <a href="https://en.wikipedia.org/wiki/Value_at_risk" target="_blank" rel="noopener">Value at risk</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s12-1"><h2><span class="sec-num">§12.1</span>payoff 是分段函数，不是预测</h2>
+<p class="eq">long call: max(S_T − K, 0) − C　|　long put: max(K − S_T, 0) − P</p>
+<p>把期权当成一段纯函数 <code>payoff(S_T)</code> 最不容易出错：买入是收益无上界/损失有界，卖出恰好镜像；组合多个行权价就能拼出任意分段线性形状。交易 App 里的「期权策略组合」本质上就是这些分段函数的叠加预览。</p>
+<table><thead><tr><th style="width:20%">头寸</th><th style="width:22%">最大收益</th><th style="width:22%">最大损失</th><th style="width:36%">主要暴露</th></tr></thead><tbody>
+<tr><td>买入看涨</td><td>无上界</td><td>权利金</td><td>方向上行 + 波动率上行</td></tr>
+<tr><td>卖出看涨</td><td>权利金</td><td>无上界</td><td>方向上行的负凸性、保证金</td></tr>
+<tr><td>买入看跌</td><td>K − P（S→0）</td><td>权利金</td><td>下行保护 + 波动率</td></tr>
+<tr><td>卖出看跌</td><td>权利金</td><td>K − P</td><td>愿意在 K 接货 + 保证金</td></tr>
+</tbody></table>
+</section>
+<section id="s12-2"><h2><span class="sec-num">§12.2</span>无套利：平价关系与二叉树</h2>
+<p class="eq">C − P = S_0 − K · e^(−rT)</p>
+<p>左边是「合成股票」，右边是「现货 − 折现后的行权价」。若两边不等，可以买入便宜的一边、卖出贵的一边锁定无风险收益。用 CRR 二叉树把终端 payoff 按风险中性概率折现，得到的 C、P 会自然满足平价关系——这是<strong>可运行的验证</strong>，不是需要相信的结论。</p>
+<p class="eq">u = e^(σ√Δt), d = 1/u, p = (e^(rΔt) − d)/(u − d)</p>
+</section>
+<section id="s12-3"><h2><span class="sec-num">§12.3</span>希腊字母就是偏导数</h2>
+<p class="eq">Δ = ∂V/∂S　|　Γ = ∂²V/∂S²　|　Θ = ∂V/∂t　|　ν = ∂V/∂σ</p>
+<p>对冲的工程含义是<strong>把一阶暴露调到零，再监控二阶残差</strong>。gamma 大的头寸需要更频繁地重平衡，theta 是这种维护的时间成本。第 30 章会把同样的「敏感度—再平衡」结构用于杠杆与保证金。</p>
+<div class="card warn"><span class="card-label">风险边界</span><p style="margin-bottom:0">卖出期权的收益分布是「多次小赚 + 偶发巨亏」，最大损失在理论上无上界；保证金与强平发生在尾部，而不是平均情形。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 12-1 · 到期损益、二叉树定价、平价关系与 delta</h3>
+<pre class="code" data-file="code/12-option.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""用标准库实现 CRR 二叉树，验证平价关系，并用中心差分求 delta。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+S0, K = 100.0, 100.0
+R, SIGMA, T = 0.03, 0.20, 1.0
+STEPS = 60          # 二叉树步数
+
+# ---- 计算与作图 ----
+def crr(S, kind):
+    dt = T / STEPS
+    u, d = math.exp(SIGMA * math.sqrt(dt)), math.exp(-SIGMA * math.sqrt(dt))
+    p = (math.exp(R * dt) - d) / (u - d)
+    disc = math.exp(-R * dt)
+    total = 0.0
+    for j in range(STEPS + 1):
+        st = S * u ** j * d ** (STEPS - j)
+        prob = math.comb(STEPS, j) * p ** j * (1 - p) ** (STEPS - j)
+        val = max(st - K, 0.0) if kind == "call" else max(K - st, 0.0)
+        total += prob * val
+    return (disc ** STEPS) * total
+
+call, put = crr(S0, "call"), crr(S0, "put")
+parity = (call - put) - (S0 - K * math.exp(-R * T))
+eps = S0 * 0.01
+delta = (crr(S0 + eps, "call") - crr(S0 - eps, "call")) / (2 * eps)
+gamma = (crr(S0 + eps, "call") - 2 * call + crr(S0 - eps, "call")) / (eps * eps)
+
+s_grid = [60.0 + i * 1.0 for i in range(81)]
+call_pl = [max(s - K, 0.0) - call for s in s_grid]
+put_pl = [max(K - s, 0.0) - put for s in s_grid]
+stock_pl = [s - S0 for s in s_grid]
+c = Chart(FIG / "12-payoff.svg", "到期损益图（含权利金）", xlabel="标的到期价 S_T", ylabel="损益")
+c.line(s_grid, call_pl, RED, label="买入看涨")
+c.line(s_grid, put_pl, GREEN, label="买入看跌")
+c.line(s_grid, stock_pl, BLUE, label="持有现货")
+c.hline(0.0, "#9aa6b2", label="盈亏平衡基准")
+c.vline(K, AMBER, label="行权价 K")
+print("损益图:", c.save())
+
+s_delta = [70.0 + i * 1.0 for i in range(61)]
+d_values = [(crr(s + eps, "call") - crr(s - eps, "call")) / (2 * eps) for s in s_delta]
+d = Chart(FIG / "12-delta.svg", "看涨期权 delta 随标的价格变化", xlabel="标的价格", ylabel="delta")
+d.line(s_delta, d_values, BLUE, label="delta（数值差分）")
+d.hline(0.5, RED, label="平值附近 ≈ 0.5")
+print("delta 图:", d.save())
+print("CRR 看涨=%.4f 看跌=%.4f | 平价残差=%.6f | delta=%.4f gamma=%.6f" %
+      (call, put, parity, delta, gamma))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>STEPS</code> 依次设为 10 / 60 / 200，观察平价残差与定价的收敛；再把 <code>SIGMA</code> 调大，看期权价格与 delta 曲线如何变化。　<strong>预期与判读：</strong>只要用同一棵树算 call 与 put，平价残差应接近 0（数值精度量级）；delta 在平值附近约 0.5，向实值/虚值两端分别趋于 1 与 0。<strong>希腊字母就是数值导数，不需要额外公式。</strong></p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>K</code> 从 100 改成 120，delta 曲线整体右移，说明行权价改变了敏感度分布。　文件位置：<code>part2/12-option-payoff/code/12-option.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/12-payoff.svg" alt="三种头寸在到期日的分段线性损益" loading="lazy"><figcaption>图 1　三种头寸在到期日的分段线性损益（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/12-delta.svg" alt="由二叉树数值差分得到的 delta 曲线" loading="lazy"><figcaption>图 2　由二叉树数值差分得到的 delta 曲线（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>或有权益与非线性 payoff</p>
+<span class="why"><strong>怎么用</strong>：或有权益与非线性 payoff</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Option_(finance)</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>看涨看跌与现货的无套利约束</p>
+<span class="why"><strong>怎么用</strong>：看跌-看涨平价的无套利推导</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Put%E2%80%93call_parity</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model" target="_blank" rel="noopener">Black–Scholes model</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>连续时间无套利定价闭式解</p>
+<span class="why"><strong>怎么用</strong>：连续时间闭式解，与二叉树结果对照</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Black%E2%80%93Scholes_model</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.cboe.com/education/" target="_blank" rel="noopener">Cboe Options Institute</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>期权 payoff、希腊字母的官方教学材料</p>
+<span class="why"><strong>怎么用</strong>：交易所官方的期权与希腊字母教学材料</span>
+<p style="margin:0"><code>https://www.cboe.com/education/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把权利金当成最大损失的唯一来源，忽略卖出方的无限损失。</li>
+<li>用历史波动率直接当隐含波动率。</li>
+<li>把 delta 当成常数，忽略 gamma 带来的再平衡需求。</li>
+<li>忽略流动性差的期权合约上买卖价差可以吞掉全部时间价值。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>用示例的二叉树给 K=90/100/110 三个行权价定价，画出波动率微笑需要什么额外信息。</li>
+<li>推导平价关系，并指出股息存在时公式应如何修改。</li>
+<li>用中心差分补出 vega（对 σ 求导）并与 delta 比较量纲。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Option (finance)</strong>（百科）：或有权益与非线性 payoff<br><a href="https://en.wikipedia.org/wiki/Option_(finance)" target="_blank" rel="noopener">Option (finance)</a></li>
+<li><strong>Put–call parity</strong>（百科）：看涨看跌与现货的无套利约束<br><a href="https://en.wikipedia.org/wiki/Put%E2%80%93call_parity" target="_blank" rel="noopener">Put–call parity</a></li>
+<li><strong>Greeks (finance)</strong>（百科）：delta/gamma/theta/vega 敏感度<br><a href="https://en.wikipedia.org/wiki/Greeks_(finance)" target="_blank" rel="noopener">Greeks (finance)</a></li>
+<li><strong>Implied volatility</strong>（百科）：从期权价格反解出的市场预期波动<br><a href="https://en.wikipedia.org/wiki/Implied_volatility" target="_blank" rel="noopener">Implied volatility</a></li>
+<li><strong>Cboe Options Institute</strong>（机构）：期权 payoff、希腊字母的官方教学材料<br><a href="https://www.cboe.com/education/" target="_blank" rel="noopener">Cboe Options Institute</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=option%20payoff%20put%20call%20parity%20Greeks%20implied%20volatility" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=option%20payoff%20put%20call%20parity%20Greeks%20implied%20volatility" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=option%20payoff%20put%20call%20parity%20Greeks%20implied%20volatility&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li><a href='../../part6/30-risk-sizing/index.html'>第 30 章 · 仓位、杠杆、VaR/CVaR 与凯利上界</a> 杠杆、保证金与强平；<a href='../../part6/29-execution/index.html'>第 29 章 · 订单执行、滑点与市场冲击</a> 期权组合的执行成本。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>

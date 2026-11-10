@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 31 章 · 投资政策说明书与长期复盘 | 投资理财：从产品到证据</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/toc.js" defer></script>
+<script src="../../assets/app.js" defer></script>
+</head>
+<body data-root="../../" data-chapter="31">
+<aside id="sidebar"></aside>
+<main class="book-page">
+<nav class="breadcrumb" data-autofill>总目录</nav>
+<header class="chapter-head">
+<span class="kicker">第六篇 · 实盘、风险与长期主义 · 第五阶段 · 实盘、风险与长期主义</span>
+<h1><span class="ch-num">第 31 章</span>投资政策说明书与长期复盘</h1>
+<p class="lede">把目标、约束、流程与例外写下来，才轮得到讨论今年赚了多少。</p>
+<div class="meta">
+<span class="badge done">已完稿</span>
+<span class="badge s5">实盘 · 风险</span>
+<span>建议 3 学时</span>
+<span>1 个 Python 实例 · 2 张图</span>
+<span>投资理财：从产品到证据</span>
+</div></header>
+<p class="bridge"><strong>本章位置：</strong>全书终章。回望 <a href='../../part0/00-orientation/index.html'>第 00 章 · 投资是一套可验证的工程系统</a> 提出的七层工程分解：目标、约束、数据、假设、检验、执行、复盘，到本章正好闭环。</p>
+<div class="analogy"><span class="card-label">给程序员的翻译</span><p style="margin-bottom:0">IPS 是配置文件 + SLO + 变更日志：目标权重是 config，再平衡带是告警阈值，决策日志是 audit log。<strong>没有日志的系统无法复盘，也无法证明自己没有临场改规则。</strong></p></div>
+<div class="card objectives"><span class="card-label">学习目标</span><ul>
+<li>能写出一份含目标、约束、规则与例外的 IPS。</li>
+<li>能模拟「按纪律执行」与「随意偏离」的长期差异。</li>
+<li>能区分决策质量与结果质量，并用决策日志复盘。</li>
+<li>能把 TWR、MWR、费用与合规检查纳入年度复盘。</li>
+</ul></div>
+<section id="map"><h2><span class="sec-num">§</span>知识点地图</h2>
+<p class="code-hint">每个知识点都配了 1～2 个扩展学习链接；本章完整资源清单见 <a href="#extra-links">扩展学习</a>。</p>
+<table><thead><tr><th style="width:44px">#</th><th style="width:26%">知识点</th><th>扩展学习</th><th style="width:100px">状态</th></tr></thead><tbody>
+<tr><td>1</td><td>投资政策说明书 IPS</td><td><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a> · <a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></td><td>正文已覆盖</td></tr>
+<tr><td>2</td><td>目标与约束</td><td><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a> · <a href="https://en.wikipedia.org/wiki/Time-weighted_return" target="_blank" rel="noopener">Time-weighted return</a></td><td>正文已覆盖</td></tr>
+<tr><td>3</td><td>再平衡规则与例外</td><td><a href="https://en.wikipedia.org/wiki/Rebalancing_investments" target="_blank" rel="noopener">Rebalancing investments</a> · <a href="https://en.wikipedia.org/wiki/Asset_allocation" target="_blank" rel="noopener">Asset allocation</a></td><td>正文已覆盖</td></tr>
+<tr><td>4</td><td>决策日志</td><td><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a> · <a href="https://en.wikipedia.org/wiki/Time-weighted_return" target="_blank" rel="noopener">Time-weighted return</a></td><td>正文已覆盖</td></tr>
+<tr><td>5</td><td>TWR / MWR 复盘</td><td><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a> · <a href="https://en.wikipedia.org/wiki/Time-weighted_return" target="_blank" rel="noopener">Time-weighted return</a></td><td>正文已覆盖</td></tr>
+<tr><td>6</td><td>费用与税</td><td><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a> · <a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></td><td>正文已覆盖</td></tr>
+<tr><td>7</td><td>行为约束与冷却期</td><td><a href="https://en.wikipedia.org/wiki/Behavioral_finance" target="_blank" rel="noopener">Behavioral finance</a> · <a href="https://en.wikipedia.org/wiki/Prospect_theory" target="_blank" rel="noopener">Prospect theory</a></td><td>正文已覆盖</td></tr>
+<tr><td>8</td><td>年度回顾清单</td><td><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a> · <a href="https://en.wikipedia.org/wiki/Time-weighted_return" target="_blank" rel="noopener">Time-weighted return</a></td><td>正文已覆盖</td></tr>
+</tbody></table></section>
+<section id="s31-1"><h2><span class="sec-num">§31.1</span>IPS 是一份给自己签的 SLA</h2>
+<table><thead><tr><th style="width:14%">章节</th><th style="width:44%">内容</th><th style="width:42%">可检查的形式</th></tr></thead><tbody>
+<tr><td>目标</td><td>用途、时间 horizon、所需现金流</td><td>可量化的目标区间，而非「多多益善」</td></tr>
+<tr><td>约束</td><td>流动性、最大回撤、杠杆、集中度、合规</td><td>带数值的硬阈值</td></tr>
+<tr><td>规则</td><td>目标权重、再平衡带、定投额、下单方式</td><td>可执行的 if-then</td></tr>
+<tr><td>例外</td><td>允许偏离的条件、审批与冷却期</td><td>书面记录 + 生效日期</td></tr>
+<tr><td>复盘</td><td>频率、指标、归因、日志归档</td><td>固定模板与数据 manifest</td></tr>
+</tbody></table>
+<p>写下来的意义不在于预测未来，而在于<strong>让未来的你无法悄悄改规则</strong>。这与工程里把 SLO、回滚条件与值班手册提前写死是同一个道理。</p>
+</section>
+<section id="s31-2"><h2><span class="sec-num">§31.2</span>复盘要看决策质量，不只看收益</h2>
+<p>好决策可能亏钱，坏决策可能赚钱。年度复盘应至少回答四问：是否遵守了 IPS？偏离时有没有记录理由？收益来自配置、选股、因子还是运气（第 27 章归因）？成本与税能否再降（第 05 章）？把答案与当时的市场信息一起存进决策日志，才能避免用结果反推过程。</p>
+</section>
+<section id="s31-3"><h2><span class="sec-num">§31.3</span>全书收束：一条可复现的链路</h2>
+<p class="eq">目标(IPS) → 产品(03) → 定价(09–12) → 组合(13–14) → 盘面(15–20) → 证据(21–28) → 执行(29) → 风险(30) → 复盘(31)</p>
+<p>这条链路的每一环都可以用本书的 Python 脚本替换成你自己的数据与参数：改参数 → 重跑 → 看图 → 写结论。<strong>把投资变成可复现的工程，是这门课唯一想留下的习惯。</strong></p>
+<div class="card note"><span class="card-label">最后一句</span><p style="margin-bottom:0">所有示例都是合成数据与模型示意，不构成投资建议、产品推荐或收益承诺。真实投资请遵守所在市场的法规、适当性要求与风险揭示。</p></div>
+</section>
+<section id="lab"><h2><span class="sec-num">§</span>Python 分析实例</h2>
+<h3>实验 31-1 · 按 IPS 执行的五年账户与复盘表</h3>
+<pre class="code" data-file="code/31-ips.py" data-lang="Python 3 · 标准库"><code>#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""模拟月度定投、阈值再平衡与决策日志，输出 TWR/MWR、费用与合规检查。
+
+数据为合成数据或模型示意，仅用于教学，不构成投资建议。
+"""
+from __future__ import annotations
+
+import math
+import pathlib
+import random
+import statistics
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "tools"))
+from chart import Chart, candlestick, heatmap, BLUE, RED, GREEN, AMBER
+
+FIG = pathlib.Path(__file__).resolve().parents[1] / "fig"
+FIG.mkdir(exist_ok=True)
+
+random.seed(7)
+
+# ---- 参数区 ----
+YEARS, ANN = 5, 12
+MONTHS = YEARS * ANN
+MONTHLY = 5000.0           # 每月投入
+TARGET, BAND = 0.70, 0.03  # 股票目标权重与再平衡带
+FEE = 0.001                # 调仓成本率
+
+# ---- 计算与作图 ----
+rng = random.Random(7)
+rs, rb = [], []
+for i in range(MONTHS):
+    z, z2 = rng.gauss(0, 1), rng.gauss(0, 1)
+    rs.append((0.012 if i &lt; 30 else -0.004) + 0.045 * z)
+    rb.append(0.0015 + 0.008 * (-0.15 * z + math.sqrt(1 - 0.0225) * z2))
+
+cash_in, value, stock_part, bond_part = 0.0, 0.0, 0.0, 0.0
+unit, w_prev = 1.0, TARGET
+values, contributed, weights, log = [], [], [], []
+for i in range(MONTHS):
+    unit *= (1 + w_prev * rs[i] + (1 - w_prev) * rb[i])
+    cash_in += MONTHLY
+    stock_part += MONTHLY * TARGET
+    bond_part += MONTHLY * (1 - TARGET)
+    stock_part *= (1 + rs[i])
+    bond_part *= (1 + rb[i])
+    value = stock_part + bond_part
+    w = stock_part / value
+    if abs(w - TARGET) &gt; BAND:
+        trade = abs(TARGET - w) * value
+        value -= trade * FEE
+        stock_part, bond_part = value * TARGET, value * (1 - TARGET)
+        w = TARGET
+        log.append((i, "再平衡", round(trade, 0)))
+    w_prev = w
+    values.append(value)
+    contributed.append(cash_in)
+    weights.append(w)
+
+twr = unit - 1
+cf = [0.0] * (MONTHS + 1)
+for i in range(MONTHS):
+    cf[i] -= MONTHLY
+cf[-1] += values[-1]
+
+def npv(rate):
+    return sum(c / (1 + rate) ** i for i, c in enumerate(cf))
+
+lo, hi = -0.30, 0.30
+for _ in range(120):
+    mid = (lo + hi) / 2
+    if npv(mid) &gt; 0:
+        lo = mid
+    else:
+        hi = mid
+mwr = (1 + (lo + hi) / 2) ** ANN - 1
+
+c = Chart(FIG / "31-plan.svg", "账户价值与累计投入", xlabel="月", ylabel="金额")
+c.line(range(MONTHS), values, BLUE, label="账户价值")
+c.line(range(MONTHS), contributed, GREEN, label="累计投入")
+print("计划图:", c.save())
+d = Chart(FIG / "31-drift.svg", "股票权重与 IPS 再平衡带", xlabel="月", ylabel="权重")
+d.line(range(MONTHS), weights, AMBER, label="实际权重")
+d.hline(TARGET, BLUE, label="目标 70%")
+d.hline(TARGET + BAND, RED, label="上界")
+d.hline(TARGET - BAND, RED, label="下界")
+print("权重图:", d.save())
+max_drift = max(abs(w - TARGET) for w in weights)
+print("期末账户=%.0f 累计投入=%.0f TWR(单位净值)=%.2f%% MWR年化=%.2f%%" %
+      (values[-1], cash_in, 100 * twr, 100 * mwr))
+print("决策日志 %d 条 | 最大偏离=%.2f%% 带宽=%.1f%% | 合规=%s" %
+      (len(log), 100 * max_drift, 100 * BAND, "是" if max_drift &lt;= BAND + 0.02 else "需复核"))</code></pre>
+<p class="code-hint"><strong>操作：</strong>把 <code>BAND</code> 改成 0.15，观察决策日志条数与最大偏离；再改回 0.03 比较费用。　<strong>预期与判读：</strong>阈值再平衡让权重始终落在事先声明的带内，决策日志把每次偏离都变成可审计记录。TWR 与 MWR 不同是因为存在持续现金流，两者分别回答「策略」与「投资者」的问题。</p>
+<p class="code-hint"><strong>改参数看趋势：</strong>把 <code>MONTHLY</code> 设为 0 并给初始资金，TWR 与 MWR 应趋于一致。　文件位置：<code>part6/31-ips-review/code/31-ips.py</code></p>
+<div class="chart-grid">
+<figure class="chart-figure"><img src="fig/31-plan.svg" alt="账户价值与累计投入的长期轨迹" loading="lazy"><figcaption>图 1　账户价值与累计投入的长期轨迹（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+<figure class="chart-figure"><img src="fig/31-drift.svg" alt="股票权重与 IPS 再平衡带" loading="lazy"><figcaption>图 2　股票权重与 IPS 再平衡带（合成数据 / 模型示意，不构成投资建议）</figcaption></figure>
+</div>
+<div class="card note"><p style="margin-bottom:0">代码块右上角可一键复制；仓库里的 <code>code/*.py</code> 由 <code>tools/extract_code.py</code> 从这些代码块自动抽取。脚本只用标准库、固定 <code>random.seed(7)</code>，运行后写出 <code>fig/*.svg</code>；批量运行用 <code>./tools/run_python.sh</code>。</p></div>
+</section>
+<section id="highlights"><h2><span class="sec-num">§</span>本章参考资料</h2><p>按本章知识点挑选的精读资料；更多检索入口见 <a href="#extra-links">扩展学习</a>。</p><div class="repo-grid">
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>把目标、约束与流程写成契约</p>
+<span class="why"><strong>怎么用</strong>：投资政策说明书的标准要素</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Investment_policy_statement</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Time-weighted_return" target="_blank" rel="noopener">Time-weighted return</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>剔除外部现金流后的策略收益</p>
+<span class="why"><strong>怎么用</strong>：时间加权收益与策略评估</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Time-weighted_return</code></p></div>
+<div class="repo-card">
+<h3><a href="https://en.wikipedia.org/wiki/Money-weighted_return" target="_blank" rel="noopener">Money-weighted return</a></h3>
+<span class="tag">百科 · 参考资料</span>
+<p>投资者实际体验到的IRR</p>
+<span class="why"><strong>怎么用</strong>：资金加权收益与投资者体验</span>
+<p style="margin:0"><code>https://en.wikipedia.org/wiki/Money-weighted_return</code></p></div>
+<div class="repo-card">
+<h3><a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA 主动/被动业绩对比</a></h3>
+<span class="tag">机构 · 参考资料</span>
+<p>主动基金相对基准的长期胜率统计</p>
+<span class="why"><strong>怎么用</strong>：长期主动/被动业绩对照，用于校准预期</span>
+<p style="margin:0"><code>https://www.spglobal.com/spdji/en/research-insights/spiva/</code></p></div>
+</div></section>
+<section id="pitfalls"><h2><span class="sec-num">§</span>常见误区</h2><div class="card warn"><ul><li>把 IPS 写成收益目标而不是约束与流程。</li>
+<li>行情不利时临时放宽再平衡带且不留记录。</li>
+<li>用结果好坏评价决策质量。</li>
+<li>复盘只看收益率，不看费用、税、归因与合规。</li></ul></div></section>
+<section id="exercises"><h2><span class="sec-num">§</span>习题与思考</h2><ol><li>写一份自己的 IPS，至少包含四条带数值的硬约束与两条例外条款。</li>
+<li>在示例里加入「偏离超带但延迟一个月才调仓」，量化成本与合规差异。</li>
+<li>设计一份年度复盘模板，列出至少六项指标与各自的判断标准。</li></ol></section>
+<section id="extra-links"><h2><span class="sec-num">§</span>扩展学习</h2>
+<p>以下资料按本章知识点挑选，可直接精读或对照真实数据；知识点地图里每一条也挂了 1～2 个直达链接。</p>
+<ul>
+<li><strong>Investment policy statement</strong>（百科）：把目标、约束与流程写成契约<br><a href="https://en.wikipedia.org/wiki/Investment_policy_statement" target="_blank" rel="noopener">Investment policy statement</a></li>
+<li><strong>Time-weighted return</strong>（百科）：剔除外部现金流后的策略收益<br><a href="https://en.wikipedia.org/wiki/Time-weighted_return" target="_blank" rel="noopener">Time-weighted return</a></li>
+<li><strong>Money-weighted return</strong>（百科）：投资者实际体验到的IRR<br><a href="https://en.wikipedia.org/wiki/Money-weighted_return" target="_blank" rel="noopener">Money-weighted return</a></li>
+<li><strong>Investor.gov（SEC 投资者教育）</strong>（机构）：复利、费用、风险与常见投资骗局的官方说明<br><a href="https://www.investor.gov/" target="_blank" rel="noopener">Investor.gov（SEC 投资者教育）</a></li>
+<li><strong>Bogleheads Wiki</strong>（课程）：长期指数投资、再平衡与税费的实践型百科<br><a href="https://www.bogleheads.org/wiki/Main_Page" target="_blank" rel="noopener">Bogleheads Wiki</a></li>
+<li><strong>SPIVA 主动/被动业绩对比</strong>（机构）：主动基金相对基准的长期胜率统计<br><a href="https://www.spglobal.com/spdji/en/research-insights/spiva/" target="_blank" rel="noopener">SPIVA 主动/被动业绩对比</a></li>
+</ul>
+<p class="code-hint">继续扩展：<a href="https://scholar.google.com/scholar?q=investment%20policy%20statement%20performance%20review%20tax%20compliance" target="_blank" rel="noopener">在 Google Scholar 检索本章相关论文</a> · <a href="https://ocw.mit.edu/search/?q=investment%20policy%20statement%20performance%20review%20tax%20compliance" target="_blank" rel="noopener">在 MIT OCW 检索配套课程</a> · <a href="https://arxiv.org/search/?query=investment%20policy%20statement%20performance%20review%20tax%20compliance&searchtype=all" target="_blank" rel="noopener">在 arXiv 检索预印本</a> · <a href="../../index.html#resources">全书参考资源总表</a> · <a href="../../appendix/index.html">附录 A 速查与链接总表</a></p>
+</section>
+<section id="further"><h2><span class="sec-num">§</span>延伸阅读与内链</h2><ul><li>回看 <a href='../../index.html#roadmap'>全书学习路线</a> 与 <a href='../../index.html#toc'>全书目录</a>；公式与术语见附录 A；资源总表见 <a href='../../index.html#resources'>参考资源</a>。</li></ul></section>
+<footer class="pager" data-autofill></footer>
+<footer class="site-foot">
+<p class="credits"><strong>作者</strong>：汪亮（bertonwang）　<strong>联系邮箱</strong>：<a href="mailto:47608843@qq.com">47608843@qq.com</a></p>
+<p class="ai-note"><strong>AI 使用说明</strong>：本教材的知识框架、正文、Python 分析示例与参考资料清单在 AI 辅助下整理生成，并经人工校订、实际运行与静态自检。公式、数值与运行结果请以Python 3 实际输出及权威教材、官方文档为准；发现错漏欢迎通过上方邮箱勘误。</p>
+<p class="imprint">投资理财：从产品到证据 · 每章一个 <code>code/*.py</code> 分析脚本与 <code>fig/*.svg</code> 矢量图（由 <code>tools/extract_code.py</code> 与脚本运行同步）· 只用 Python 3 标准库 · 教学材料，合成数据，不构成投资建议。</p>
+</footer>
+</main>
+</body>
+</html>
